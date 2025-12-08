@@ -1,0 +1,627 @@
+.scd-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.scd-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 3rem;
+}
+
+.scd-header-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.scd-header-icon {
+  flex-shrink: 0;
+  color: #FF5722;
+}
+
+.scd-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, #FF5722 0%, #FFC107 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scd-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+[data-theme='light'] .scd-subtitle {
+  color: #616161;
+}
+
+[data-theme='dark'] .scd-subtitle {
+  color: #BDBDBD;
+}
+
+/* Layout */
+.scd-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+}
+
+/* Main Content */
+.scd-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Skill Meter Card */
+.scd-skill-meter-card {
+  padding: 2.5rem;
+}
+
+.scd-skill-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.scd-flame-icon {
+  color: #FF5722;
+}
+
+.scd-skill-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+[data-theme='light'] .scd-skill-title {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-skill-title {
+  color: #FFFFFF;
+}
+
+.scd-skill-meter {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+/* Flame Container */
+.scd-flame-container {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  border-radius: 100px 100px 20px 20px;
+  overflow: hidden;
+}
+
+[data-theme='light'] .scd-flame-container {
+  background: rgba(0, 0, 0, 0.05);
+  border: 3px solid #E0E0E0;
+}
+
+[data-theme='dark'] .scd-flame-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 3px solid #424242;
+}
+
+.scd-flame-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #FFC107 0%, #FF9800 50%, #FF5722 100%);
+  border-radius: 100px 100px 20px 20px;
+}
+
+.scd-skill-score {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.scd-score-number {
+  font-family: 'Sora', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  display: block;
+}
+
+.scd-score-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Stats Grid */
+.scd-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scd-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme='light'] .scd-stat-item {
+  background: rgba(255, 87, 34, 0.05);
+}
+
+[data-theme='dark'] .scd-stat-item {
+  background: rgba(255, 87, 34, 0.1);
+}
+
+.scd-stat-item:hover {
+  transform: translateX(10px);
+}
+
+.scd-stat-item svg {
+  color: #FF5722;
+  flex-shrink: 0;
+}
+
+.scd-stat-value {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+[data-theme='light'] .scd-stat-value {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-stat-value {
+  color: #FFFFFF;
+}
+
+.scd-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #9E9E9E;
+}
+
+/* Submission Card */
+.scd-submission-card {
+  padding: 2.5rem;
+}
+
+.scd-section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+[data-theme='light'] .scd-section-title {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-section-title {
+  color: #FFFFFF;
+}
+
+.scd-upload-section {
+  margin: 2rem 0;
+}
+
+.scd-upload-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+[data-theme='light'] .scd-upload-label {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-upload-label {
+  color: #FFFFFF;
+}
+
+.scd-file-input {
+  display: none;
+}
+
+.scd-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+[data-theme='light'] .scd-upload-area {
+  background: rgba(255, 87, 34, 0.05);
+  border: 2px dashed #E0E0E0;
+}
+
+[data-theme='dark'] .scd-upload-area {
+  background: rgba(255, 87, 34, 0.03);
+  border: 2px dashed #424242;
+}
+
+.scd-upload-area:hover {
+  border-color: #FF5722;
+  background: rgba(255, 87, 34, 0.1);
+}
+
+.scd-upload-area svg {
+  color: #FF5722;
+}
+
+.scd-upload-area h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+[data-theme='light'] .scd-upload-area h3 {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-upload-area h3 {
+  color: #FFFFFF;
+}
+
+.scd-upload-area p {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  color: #9E9E9E;
+}
+
+.scd-preview-card {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+.scd-preview-image {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 1.5rem;
+}
+
+[data-theme='light'] .scd-preview-image {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] .scd-preview-image {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scd-preview-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+  display: flex;
+  justify-content: center;
+}
+
+.scd-preview-change {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: #FF5722;
+  color: #FFFFFF;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scd-preview-change:hover {
+  background: #FF9800;
+  transform: scale(1.05);
+}
+
+.scd-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2rem;
+  border-top: 2px solid;
+}
+
+[data-theme='light'] .scd-actions {
+  border-color: #E0E0E0;
+}
+
+[data-theme='dark'] .scd-actions {
+  border-color: #424242;
+}
+
+/* Sidebar */
+.scd-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.scd-category-card,
+.scd-recent-card {
+  padding: 2rem;
+}
+
+.scd-card-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+}
+
+[data-theme='light'] .scd-card-title {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-card-title {
+  color: #FFFFFF;
+}
+
+/* Category List */
+.scd-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scd-category-item {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.scd-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.scd-category-label {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+}
+
+.scd-category-count {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.scd-category-bar {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+[data-theme='light'] .scd-category-bar {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .scd-category-bar {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scd-category-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.scd-category-item--easy {
+  background: rgba(102, 187, 106, 0.1);
+}
+
+.scd-category-item--easy .scd-category-label,
+.scd-category-item--easy .scd-category-count {
+  color: #66BB6A;
+}
+
+.scd-category-fill--easy {
+  background: #66BB6A;
+}
+
+.scd-category-item--medium {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.scd-category-item--medium .scd-category-label,
+.scd-category-item--medium .scd-category-count {
+  color: #FFC107;
+}
+
+.scd-category-fill--medium {
+  background: #FFC107;
+}
+
+.scd-category-item--hard {
+  background: rgba(229, 57, 53, 0.1);
+}
+
+.scd-category-item--hard .scd-category-label,
+.scd-category-item--hard .scd-category-count {
+  color: #E53935;
+}
+
+.scd-category-fill--hard {
+  background: #E53935;
+}
+
+/* Recent Submissions */
+.scd-submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scd-submission-item {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+[data-theme='light'] .scd-submission-item {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] .scd-submission-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scd-submission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.scd-submission-problem {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+[data-theme='light'] .scd-submission-problem {
+  color: #000000;
+}
+
+[data-theme='dark'] .scd-submission-problem {
+  color: #FFFFFF;
+}
+
+.scd-submission-difficulty {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.scd-submission-difficulty--easy {
+  background: #66BB6A;
+  color: #FFFFFF;
+}
+
+.scd-submission-difficulty--medium {
+  background: #FFC107;
+  color: #000000;
+}
+
+.scd-submission-difficulty--hard {
+  background: #E53935;
+  color: #FFFFFF;
+}
+
+.scd-submission-footer {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: #9E9E9E;
+}
+
+.scd-submission-status {
+  color: #66BB6A;
+  font-weight: 600;
+}
+
+/* Achievement Badge */
+.scd-achievement-badge {
+  padding: 2rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, #FF5722 0%, #FFC107 100%);
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.scd-achievement-badge svg {
+  margin-bottom: 1rem;
+}
+
+.scd-achievement-badge h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.scd-achievement-badge p {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .scd-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .scd-skill-meter {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .scd-flame-container {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .scd-container {
+    padding: 1rem;
+  }
+
+  .scd-title {
+    font-size: 2rem;
+  }
+
+  .scd-header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .scd-skill-meter-card,
+  .scd-submission-card,
+  .scd-category-card,
+  .scd-recent-card {
+    padding: 1.5rem;
+  }
+}

@@ -1,0 +1,173 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut } from 'lucide-react';
+import { ThemeProvider } from './theme/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ThemeToggle from './components/ThemeToggle';
+import ProtectedRoute from './components/ProtectedRoute';
+import HomePage from './pages/Home';
+import CLT from './pages/CLT';
+import SRI from './pages/SRI';
+import CFC from './pages/CFC';
+import IIPC from './pages/IIPC';
+import SCD from './pages/SCD';
+import Login from './pages/Login';
+import './App.css';
+
+const NAV_ITEMS = [
+  { path: '/', label: 'Home', icon: Home },
+  { path: '/clt', label: 'CLT', icon: Lightbulb },
+  { path: '/sri', label: 'SRI', icon: Heart },
+  { path: '/cfc', label: 'CFC', icon: Trophy },
+  { path: '/iipc', label: 'IIPC', icon: Linkedin },
+  { path: '/scd', label: 'SCD', icon: Code },
+];
+
+function Navigation() {
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  return (
+    <nav className="nav">
+      <div className="nav-container">
+        {/* Logo */}
+        <Link to="/" className="nav-logo">
+          <motion.div
+            className="nav-logo-icon"
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Lightbulb size={32} />
+          </motion.div>
+          <span className="nav-logo-text">Cohort Web</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="nav-links">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-link ${isActive ? 'nav-link--active' : ''}`}
+              >
+                <Icon size={20} />
+                <span>{item.label}</span>
+                {isActive && (
+                  <motion.div
+                    className="nav-link-indicator"
+                    layoutId="activeLink"
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Theme Toggle & Mobile Menu */}
+        <div className="nav-actions">
+          {user && (
+            <div className="nav-user-info">
+              <span className="nav-user-role">{user.role}</span>
+            </div>
+          )}
+          <ThemeToggle />
+          {user && (
+            <button
+              className="nav-logout-button"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Logout"
+            >
+              <LogOut size={20} />
+            </button>
+          )}
+          <button
+            className="nav-menu-button"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="nav-mobile"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`nav-mobile-link ${isActive ? 'nav-mobile-link--active' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon size={20} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="app">
+      {!isLoginPage && <Navigation />}
+
+      <main className="app-main">
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/clt" element={<ProtectedRoute><CLT /></ProtectedRoute>} />
+            <Route path="/sri" element={<ProtectedRoute><SRI /></ProtectedRoute>} />
+            <Route path="/cfc" element={<ProtectedRoute><CFC /></ProtectedRoute>} />
+            <Route path="/iipc" element={<ProtectedRoute><IIPC /></ProtectedRoute>} />
+            <Route path="/scd" element={<ProtectedRoute><SCD /></ProtectedRoute>} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
+
+export default App;

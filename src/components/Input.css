@@ -1,0 +1,151 @@
+.input-wrapper {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+[data-theme='light'] .input-field {
+  background: rgba(0, 0, 0, 0.02);
+  color: #000000;
+  border-color: #E0E0E0;
+}
+
+[data-theme='dark'] .input-field {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  border-color: #424242;
+}
+
+.input-field::placeholder {
+  color: #9E9E9E;
+}
+
+.input-field:focus {
+  border-color: #F7C948;
+  box-shadow: 0 0 0 3px rgba(247, 201, 72, 0.1);
+}
+
+[data-theme='light'] .input-field:focus {
+  background: #FFFFFF;
+}
+
+[data-theme='dark'] .input-field:focus {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Floating Label */
+.input-field--floating {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.input-label {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  padding: 0 0.25rem;
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme='light'] .input-label {
+  color: #616161;
+}
+
+[data-theme='dark'] .input-label {
+  color: #BDBDBD;
+}
+
+.input-label--active {
+  top: -0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[data-theme='light'] .input-label--active {
+  background: #FFFFFF;
+}
+
+[data-theme='dark'] .input-label--active {
+  background: #000000;
+}
+
+/* Static Label */
+.input-label-static {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+[data-theme='light'] .input-label-static {
+  color: #000000;
+}
+
+[data-theme='dark'] .input-label-static {
+  color: #FFFFFF;
+}
+
+/* With Icon */
+.input-field--with-icon {
+  padding-left: 3rem;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme='light'] .input-icon {
+  color: #616161;
+}
+
+[data-theme='dark'] .input-icon {
+  color: #BDBDBD;
+}
+
+.input-container--focused .input-icon {
+  color: #F7C948;
+}
+
+/* Error State */
+.input-container--error .input-field {
+  border-color: #E53935;
+}
+
+.input-container--error .input-field:focus {
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.input-error {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #E53935;
+  font-family: 'Inter', sans-serif;
+}
