@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Linkedin, Upload, Search, CheckCircle, TrendingUp, Hash, Calendar, Users } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import './IIPC.css';
 
 export const IIPC = () => {
-  const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState('post');
 
   // Post Verification State
@@ -71,7 +70,7 @@ export const IIPC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="iipc-title">Industry Interaction & Professional Competency</h1>
+        <h1 className="iipc-title">Industry Institute Partneship Cell</h1>
         <p className="iipc-subtitle">
           Verify your LinkedIn activity and professional network
         </p>

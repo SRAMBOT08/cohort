@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, CheckCircle, Image as ImageIcon } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -9,7 +9,6 @@ import ProgressBar from '../../components/ProgressBar';
 import './CLT.css';
 
 export const CLT = () => {
-  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: '',
@@ -80,7 +79,7 @@ export const CLT = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="clt-title">Creative Learning Track</h1>
+        <h1 className="clt-title">Center for Learning and Teaching</h1>
         <p className="clt-subtitle">
           Document your creative projects and learning journey
         </p>

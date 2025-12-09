@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -15,7 +15,6 @@ const TABS = [
 ];
 
 export const CFC = () => {
-  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('hackathon');
 
   // Hackathon state
@@ -80,7 +79,7 @@ export const CFC = () => {
     setVideoUrl(url);
 
     // Extract YouTube video ID
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeRegex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
     const match = url.match(youtubeRegex);
     if (match) {
       setVideoPreview(`https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`);
@@ -96,7 +95,7 @@ export const CFC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="cfc-title">Career, Future & Competency Development</h1>
+        <h1 className="cfc-title">Center for Creativity</h1>
         <p className="cfc-subtitle">
           Build your professional portfolio and track your career development
         </p>

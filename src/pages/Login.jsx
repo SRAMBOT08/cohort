@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn, UserPlus, Lightbulb, ArrowRight, GraduationCap, Users, Shield, Crown } from 'lucide-react';

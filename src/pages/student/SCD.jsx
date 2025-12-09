@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Code, Flame, Trophy, Upload, TrendingUp, Target, Award } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import './SCD.css';
 
 export const SCD = () => {
-  const { theme } = useTheme();
   const [leetcodeUrl, setLeetcodeUrl] = useState('');
   const [screenshot, setScreenshot] = useState(null);
   const [screenshotPreview, setScreenshotPreview] = useState(null);
@@ -49,7 +48,7 @@ export const SCD = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="scd-title">Skill & Career Development</h1>
+        <h1 className="scd-title">Skill and Career Development</h1>
         <p className="scd-subtitle">
           Track your coding skills and competitive programming journey
         </p>

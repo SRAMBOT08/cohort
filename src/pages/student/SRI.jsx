@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Camera, Plus, Calendar, Clock, Heart, Users } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import './SRI.css';
 
 export const SRI = () => {
-  const { theme } = useTheme();
   const [selectedImages, setSelectedImages] = useState([]);
   const [reflection, setReflection] = useState('');
   const [activityTitle, setActivityTitle] = useState('');
@@ -47,7 +46,7 @@ export const SRI = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="sri-title">Social Responsibility Initiative</h1>
+        <h1 className="sri-title">Social Responsibility Initiatives</h1>
         <p className="sri-subtitle">
           Make a difference in your community through meaningful social service
         </p>

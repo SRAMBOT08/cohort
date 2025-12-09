@@ -1,15 +1,15 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Lightbulb, Heart, Trophy, Linkedin, Code, ArrowRight, Sparkles } from 'lucide-react';
-import { useTheme } from '../../theme/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import './Home.css';
 
 const PILLARS = [
   {
     id: 'clt',
-    title: 'Creative Learning Track',
+    title: 'Center for Learning and Teaching',
     description: 'Document your creative projects and showcase your learning journey',
     icon: Lightbulb,
     color: '#F7C948',
@@ -17,7 +17,7 @@ const PILLARS = [
   },
   {
     id: 'sri',
-    title: 'Social Responsibility Initiative',
+    title: 'Social Responsibility Initiatives',
     description: 'Track your community service and social impact activities',
     icon: Heart,
     color: '#E53935',
@@ -25,7 +25,7 @@ const PILLARS = [
   },
   {
     id: 'cfc',
-    title: 'Career, Future & Competency',
+    title: 'Center for Creativity',
     description: 'Build your professional portfolio and track career development',
     icon: Trophy,
     color: '#FFC107',
@@ -33,7 +33,7 @@ const PILLARS = [
   },
   {
     id: 'iipc',
-    title: 'Industry Interaction',
+    title: 'Industry Institute Partnership Cell',
     description: 'Verify your LinkedIn activity and professional network',
     icon: Linkedin,
     color: '#0A66C2',
@@ -41,7 +41,7 @@ const PILLARS = [
   },
   {
     id: 'scd',
-    title: 'Skill & Career Development',
+    title: 'Skill and Career Development',
     description: 'Track your coding skills and competitive programming journey',
     icon: Code,
     color: '#FF5722',
@@ -50,8 +50,6 @@ const PILLARS = [
 ];
 
 export const HomePage = () => {
-  const { theme } = useTheme();
-
   return (
     <div className="home-container">
       {/* Animated Background */}
