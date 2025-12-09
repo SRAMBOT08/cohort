@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class StudentTrackingConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.student_tracking'
+    verbose_name = 'Student Tracking'
