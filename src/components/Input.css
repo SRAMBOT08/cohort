@@ -6,6 +6,7 @@
 .input-container {
   position: relative;
   width: 100%;
+  isolation: isolate;
 }
 
 .input-field {
@@ -17,22 +18,49 @@
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
+  position: relative;
+  z-index: 1;
 }
 
 [data-theme='light'] .input-field {
-  background: rgba(0, 0, 0, 0.02);
+  background: #FFFFFF;
   color: #000000;
   border-color: #E0E0E0;
 }
 
 [data-theme='dark'] .input-field {
-  background: rgba(255, 255, 255, 0.05);
+  background: #121212;
   color: #FFFFFF;
   border-color: #424242;
 }
 
 .input-field::placeholder {
   color: #9E9E9E;
+}
+
+/* Hide date input placeholder */
+.input-field[type="date"] {
+  color: transparent;
+}
+
+.input-field[type="date"]:focus,
+.input-field[type="date"]:not([value=""]) {
+  color: inherit;
+}
+
+[data-theme='light'] .input-field[type="date"]:focus,
+[data-theme='light'] .input-field[type="date"]:not([value=""]) {
+  color: #000000;
+}
+
+[data-theme='dark'] .input-field[type="date"]:focus,
+[data-theme='dark'] .input-field[type="date"]:not([value=""]) {
+  color: #FFFFFF;
+}
+
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
 }
 
 .input-field:focus {
@@ -61,17 +89,20 @@
   transform: translateY(-50%);
   pointer-events: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: transparent;
   padding: 0 0.25rem;
   font-family: 'Inter', sans-serif;
+  z-index: 2;
+  white-space: nowrap;
 }
 
 [data-theme='light'] .input-label {
   color: #616161;
+  background: transparent;
 }
 
 [data-theme='dark'] .input-label {
   color: #BDBDBD;
+  background: transparent;
 }
 
 .input-label--active {
@@ -81,11 +112,11 @@
 }
 
 [data-theme='light'] .input-label--active {
-  background: #FFFFFF;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 50%, rgba(255, 255, 255, 0.95) 100%);
 }
 
 [data-theme='dark'] .input-label--active {
-  background: #000000;
+  background: linear-gradient(180deg, #121212 0%, #121212 50%, rgba(18, 18, 18, 0.95) 100%);
 }
 
 /* Static Label */
@@ -118,6 +149,7 @@
   pointer-events: none;
   display: flex;
   align-items: center;
+  z-index: 2;
   justify-content: center;
 }
 

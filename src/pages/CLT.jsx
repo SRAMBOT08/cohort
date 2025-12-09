@@ -184,8 +184,13 @@ export const CLT = () => {
               <div className="clt-form-actions">
                 <Button
                   variant="primary"
-                  onClick={() => setCurrentStep(2)}
-                  disabled={!formData.title || !formData.description}
+                  onClick={() => {
+                    if (formData.title && formData.description) {
+                      setCurrentStep(2);
+                    } else {
+                      alert('Please fill in all required fields');
+                    }
+                  }}
                 >
                   Next Step
                 </Button>
@@ -283,8 +288,13 @@ export const CLT = () => {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => setCurrentStep(3)}
-                  disabled={formData.files.length === 0}
+                  onClick={() => {
+                    if (formData.files.length > 0) {
+                      setCurrentStep(3);
+                    } else {
+                      alert('Please upload at least one file');
+                    }
+                  }}
                 >
                   Next Step
                 </Button>

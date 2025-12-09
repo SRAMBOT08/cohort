@@ -363,7 +363,10 @@ export const IIPC = () => {
                     {screenshots.length > 0 && (
                       <Button
                         variant="primary"
-                        onClick={handleVerifyConnections}
+                        onClick={() => {
+                          handleVerifyConnections();
+                          alert('Connection verification in progress...');
+                        }}
                         withGlow
                       >
                         Verify Connections
@@ -393,8 +396,14 @@ export const IIPC = () => {
 
                     <Button
                       variant="primary"
-                      onClick={handleVerifyConnections}
-                      disabled={!profileUrl}
+                      onClick={() => {
+                        if (profileUrl) {
+                          handleVerifyConnections();
+                          alert('Profile verification in progress...');
+                        } else {
+                          alert('Please enter your LinkedIn profile URL');
+                        }
+                      }}
                       withGlow={profileUrl}
                     >
                       Connect & Verify

@@ -37,7 +37,7 @@ function Navigation() {
     <nav className="nav">
       <div className="nav-container">
         {/* Logo */}
-        <Link to="/" className="nav-logo">
+        <Link to="/login" className="nav-logo">
           <motion.div
             className="nav-logo-icon"
             whileHover={{ rotate: 360 }}

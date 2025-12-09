@@ -193,7 +193,16 @@ export const SCD = () => {
               <Button
                 variant="primary"
                 withGlow
-                disabled={!leetcodeUrl || !screenshot}
+                onClick={() => {
+                  if (leetcodeUrl && screenshot) {
+                    alert('LeetCode progress submitted successfully!');
+                    setLeetcodeUrl('');
+                    setScreenshot(null);
+                    setScreenshotPreview(null);
+                  } else {
+                    alert('Please fill in all required fields');
+                  }
+                }}
               >
                 Submit Progress
               </Button>

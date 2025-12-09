@@ -167,11 +167,26 @@ export const SRI = () => {
             </div>
 
             <div className="sri-form-actions">
-              <Button variant="outline">Save as Draft</Button>
+              <Button
+                variant="outline"
+                onClick={() => alert('Activity saved as draft!')}
+              >
+                Save as Draft
+              </Button>
               <Button
                 variant="primary"
                 withGlow
-                disabled={!activityTitle || !activityDate || selectedImages.length === 0}
+                onClick={() => {
+                  if (activityTitle && activityDate && selectedImages.length > 0) {
+                    alert('Activity submitted successfully!');
+                    setActivityTitle('');
+                    setActivityDate('');
+                    setSelectedImages([]);
+                    setReflection('');
+                  } else {
+                    alert('Please fill in all required fields');
+                  }
+                }}
               >
                 Submit Activity
               </Button>

@@ -271,7 +271,22 @@ export const CFC = () => {
               </div>
 
               <div className="cfc-actions">
-                <Button variant="primary" disabled={!certificate || !hackathonName || !hackathonMode || !registrationDate || !participationDate}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (certificate && hackathonName && hackathonMode && registrationDate && participationDate) {
+                      alert('Hackathon submission successful!');
+                      setCertificate(null);
+                      setCertificatePreview(null);
+                      setHackathonName('');
+                      setHackathonMode('');
+                      setRegistrationDate('');
+                      setParticipationDate('');
+                    } else {
+                      alert('Please fill in all required fields');
+                    }
+                  }}
+                >
                   Submit
                 </Button>
               </div>
@@ -333,7 +348,18 @@ export const CFC = () => {
               )}
 
               <div className="cfc-actions">
-                <Button variant="primary" disabled={!videoUrl}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (videoUrl) {
+                      alert('BMC Video submitted successfully!');
+                      setVideoUrl('');
+                      setVideoPreview(null);
+                    } else {
+                      alert('Please enter a video URL');
+                    }
+                  }}
+                >
                   Submit Video
                 </Button>
               </div>
@@ -550,7 +576,23 @@ export const CFC = () => {
               <div className="cfc-actions">
                 <Button
                   variant="primary"
-                  disabled={!internshipData.company || !internshipData.mode || !internshipData.role || !internshipData.duration || !internshipData.completionCertificate}
+                  onClick={() => {
+                    if (internshipData.company && internshipData.mode && internshipData.role && internshipData.duration && internshipData.completionCertificate) {
+                      alert('Internship details submitted successfully!');
+                      setInternshipData({
+                        company: '',
+                        mode: '',
+                        role: '',
+                        duration: '',
+                        completionCertificate: null,
+                        letterOfRecommendation: null,
+                      });
+                      setCompletionCertPreview(null);
+                      setLorPreview(null);
+                    } else {
+                      alert('Please fill in all required fields');
+                    }
+                  }}
                 >
                   Submit
                 </Button>
@@ -662,7 +704,20 @@ export const CFC = () => {
               <div className="cfc-actions">
                 <Button
                   variant="primary"
-                  disabled={!genAIData.problemStatement || !genAIData.solutionType || !genAIData.innovationTechnology || !genAIData.innovationIndustry || !genAIData.githubRepo}
+                  onClick={() => {
+                    if (genAIData.problemStatement && genAIData.solutionType && genAIData.innovationTechnology && genAIData.innovationIndustry && genAIData.githubRepo) {
+                      alert('GenAI Project submitted successfully!');
+                      setGenAIData({
+                        problemStatement: '',
+                        solutionType: '',
+                        innovationTechnology: '',
+                        innovationIndustry: '',
+                        githubRepo: '',
+                      });
+                    } else {
+                      alert('Please fill in all required fields');
+                    }
+                  }}
                 >
                   Submit Project
                 </Button>

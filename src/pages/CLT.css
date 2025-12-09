@@ -208,13 +208,13 @@
 }
 
 [data-theme='light'] .clt-textarea {
-  background: rgba(0, 0, 0, 0.02);
+  background: #FFFFFF;
   color: #000000;
   border-color: #E0E0E0;
 }
 
 [data-theme='dark'] .clt-textarea {
-  background: rgba(255, 255, 255, 0.05);
+  background: #121212;
   color: #FFFFFF;
   border-color: #424242;
 }
