@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import authService from '../services/auth';
 
 const AuthContext = createContext();
 
@@ -21,25 +22,35 @@ const ROLE_ACCESS = {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         // Initialize state from localStorage
-        const storedUser = localStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : null;
+        return authService.getCurrentUser();
     });
-    const [loading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const login = (userData, role) => {
-        const userWithRole = {
-            ...userData,
-            role: role,
-            timestamp: new Date().toISOString(),
-        };
-        setUser(userWithRole);
-        localStorage.setItem('user', JSON.stringify(userWithRole));
-        return userWithRole;
+    const login = async (username, password, role) => {
+        try {
+            setLoading(true);
+            const response = await authService.login(username, password);
+            
+            const userWithRole = {
+                ...response.user,
+                role: role || response.user.role || 'student',
+                timestamp: new Date().toISOString(),
+            };
+            
+            setUser(userWithRole);
+            localStorage.setItem('user', JSON.stringify(userWithRole));
+            return userWithRole;
+        } catch (error) {
+            console.error('Login failed:', error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
     };
 
     const logout = () => {
+        authService.logout();
         setUser(null);
-        localStorage.removeItem('user');
     };
 
     const hasAccess = (path) => {
@@ -48,13 +59,18 @@ export const AuthProvider = ({ children }) => {
         return allowedPaths.includes(path) || path === '/login';
     };
 
+    const getToken = () => {
+        return authService.getAccessToken();
+    };
+
     const value = {
         user,
         login,
         logout,
         hasAccess,
         loading,
-        isAuthenticated: !!user,
+        isAuthenticated: authService.isAuthenticated(),
+        getToken,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

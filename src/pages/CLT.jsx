@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { useTheme } from '../theme/ThemeContext';
@@ -6,6 +6,7 @@ import GlassCard from '../components/GlassCard';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import ProgressBar from '../components/ProgressBar';
+import cltService from '../services/clt';
 import './CLT.css';
 
 export const CLT = () => {
@@ -21,6 +22,9 @@ export const CLT = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissions, setSubmissions] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState(null);
 
   const steps = [
     { id: 1, label: 'Course Details', icon: FileText },
@@ -46,28 +50,97 @@ export const CLT = () => {
 
   const handleFileInput = (e) => {
     const files = Array.from(e.target.files);
-    setFormData({ ...formData, files: [...formData.files, ...files] });
+    // Validate file size (10MB max per file)
+    const validFiles = files.filter(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`File ${file.name} exceeds 10MB limit`);
+        return false;
+      }
+      return true;
+    });
+    setFormData({ ...formData, files: [...formData.files, ...validFiles] });
   };
 
-  const handleSubmit = () => {
+  // Load submissions and stats on component mount
+  useEffect(() => {
+    loadSubmissions();
+    loadStats();
+  }, []);
+
+  const loadSubmissions = async () => {
+    try {
+      const data = await cltService.getSubmissions();
+      setSubmissions(data.results || data);
+    } catch (err) {
+      console.error('Failed to load submissions:', err);
+      setError('Failed to load submissions. Please ensure you are logged in.');
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await cltService.getStats();
+      setStats(data);
+    } catch (err) {
+      console.error('Failed to load stats:', err);
+    }
+  };
+
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsSubmitting(false);
-          alert('Submission successful!');
-          // Reset form
-          setFormData({ title: '', description: '', platform: '', completionDate: '', files: [] });
-          setCurrentStep(1);
-          setUploadProgress(0);
-        }, 500);
-      }
-    }, 200);
+    setError(null);
+
+    try {
+      // Simulate upload progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+
+      // Create submission with files
+      const submissionData = {
+        title: formData.title,
+        description: formData.description,
+        platform: formData.platform,
+        completion_date: formData.completionDate,
+        files: formData.files,
+      };
+
+      const createdSubmission = await cltService.createSubmission(submissionData);
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      // Wait a moment to show 100% progress
+      setTimeout(async () => {
+        // Submit the submission for review
+        await cltService.submitForReview(createdSubmission.id);
+
+        alert('Submission successful! Your submission is now under review.');
+        
+        // Reset form
+        setFormData({ 
+          title: '', 
+          description: '', 
+          platform: '', 
+          completionDate: '', 
+          files: [] 
+        });
+        setCurrentStep(1);
+        setUploadProgress(0);
+        setIsSubmitting(false);
+
+        // Reload data
+        loadSubmissions();
+        loadStats();
+      }, 500);
+
+    } catch (err) {
+      console.error('Submission failed:', err);
+      setError(err.response?.data?.message || 'Submission failed. Please try again.');
+      setIsSubmitting(false);
+      setUploadProgress(0);
+      alert('Submission failed: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   return (
@@ -337,6 +410,24 @@ export const CLT = () => {
                 <h3 className="clt-review-label">Uploaded Files</h3>
                 <p className="clt-review-value">{formData.files.length} file(s)</p>
               </div>
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="clt-error-section"
+                  style={{
+                    padding: '1rem',
+                    marginBottom: '1rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    borderRadius: '0.5rem',
+                    color: '#ef4444'
+                  }}
+                >
+                  <p>{error}</p>
+                </motion.div>
+              )}
 
               {isSubmitting && (
                 <motion.div
