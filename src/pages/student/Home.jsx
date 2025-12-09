@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Lightbulb, Heart, Trophy, Linkedin, Code, ArrowRight, Sparkles } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
 import './Home.css';
 
 const PILLARS = [
@@ -199,7 +199,7 @@ export const HomePage = () => {
       >
         <GlassCard variant="heavy" className="home-features-card">
           <h2 className="home-features-title">Built for Excellence</h2>
-          
+
           <div className="home-features-grid">
             <div className="home-feature-item">
               <div className="home-feature-icon">✨</div>

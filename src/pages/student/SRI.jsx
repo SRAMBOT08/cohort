@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Plus, Calendar, Clock, Heart, Users } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
-import Button from '../components/Button';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
 import './SRI.css';
 
 export const SRI = () => {

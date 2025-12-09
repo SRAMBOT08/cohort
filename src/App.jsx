@@ -6,12 +6,15 @@ import { ThemeProvider } from './theme/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ThemeToggle from './components/ThemeToggle';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './pages/Home';
-import CLT from './pages/CLT';
-import SRI from './pages/SRI';
-import CFC from './pages/CFC';
-import IIPC from './pages/IIPC';
-import SCD from './pages/SCD';
+import HomePage from './pages/student/Home';
+import CLT from './pages/student/CLT';
+import SRI from './pages/student/SRI';
+import CFC from './pages/student/CFC';
+import IIPC from './pages/student/IIPC';
+import SCD from './pages/student/SCD';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import MentorDashboard from './pages/mentor/MentorDashboard';
+import FloorWingDashboard from './pages/floorwing/FloorWingDashboard';
 import Login from './pages/Login';
 import './App.css';
 
@@ -151,6 +154,9 @@ function AppContent() {
             <Route path="/cfc" element={<ProtectedRoute><CFC /></ProtectedRoute>} />
             <Route path="/iipc" element={<ProtectedRoute><IIPC /></ProtectedRoute>} />
             <Route path="/scd" element={<ProtectedRoute><SCD /></ProtectedRoute>} />
+            <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/mentor-dashboard" element={<ProtectedRoute><MentorDashboard /></ProtectedRoute>} />
+            <Route path="/floorwing-dashboard" element={<ProtectedRoute><FloorWingDashboard /></ProtectedRoute>} />
           </Routes>
         </AnimatePresence>
       </main>

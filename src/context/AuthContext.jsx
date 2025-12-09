@@ -13,9 +13,9 @@ export const useAuth = () => {
 // Role-based access control configuration
 const ROLE_ACCESS = {
     student: ['/', '/clt', '/sri', '/cfc', '/iipc', '/scd'],
-    mentor: ['/', '/clt', '/sri', '/cfc', '/iipc', '/scd', '/mentor-dashboard'],
-    floorwing: ['/', '/clt', '/sri', '/cfc', '/iipc', '/scd', '/floorwing-dashboard'],
-    admin: ['/', '/clt', '/sri', '/cfc', '/iipc', '/scd', '/admin-dashboard', '/mentor-dashboard', '/floorwing-dashboard'],
+    mentor: ['/mentor-dashboard'],
+    floorwing: ['/floorwing-dashboard'],
+    admin: ['/admin-dashboard'],
 };
 
 export const AuthProvider = ({ children }) => {

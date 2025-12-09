@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code, Flame, Trophy, Upload, TrendingUp, Target, Award } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
 import './SCD.css';
 
 export const SCD = () => {

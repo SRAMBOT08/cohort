@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Linkedin, Upload, Search, CheckCircle, TrendingUp, Hash, Calendar, Users } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
 import './IIPC.css';
 
 export const IIPC = () => {

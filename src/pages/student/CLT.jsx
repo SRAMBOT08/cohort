@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, CheckCircle, Image as ImageIcon } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import ProgressBar from '../components/ProgressBar';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
+import ProgressBar from '../../components/ProgressBar';
 import './CLT.css';
 
 export const CLT = () => {

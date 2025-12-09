@@ -81,10 +81,21 @@ const Login = () => {
             login(userData, selectedRole);
 
             // Navigate based on role
-            if (selectedRole === 'student') {
-                navigate('/');
-            } else {
-                navigate('/'); // For now, all roles go to home. You can create role-specific dashboards later
+            switch (selectedRole) {
+                case 'student':
+                    navigate('/');
+                    break;
+                case 'mentor':
+                    navigate('/mentor-dashboard');
+                    break;
+                case 'floorwing':
+                    navigate('/floorwing-dashboard');
+                    break;
+                case 'admin':
+                    navigate('/admin-dashboard');
+                    break;
+                default:
+                    navigate('/');
             }
         }
     };
