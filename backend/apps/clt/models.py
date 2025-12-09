@@ -41,6 +41,12 @@ class CLTSubmission(models.Model):
         ordering = ['-created_at']
         verbose_name = 'CLT Submission'
         verbose_name_plural = 'CLT Submissions'
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['user', 'status']),
+            models.Index(fields=['status', '-created_at']),
+            models.Index(fields=['submitted_at']),
+        ]
     
     def __str__(self):
         return f"{self.user.username} - {self.title}"
@@ -70,6 +76,9 @@ class CLTFile(models.Model):
         ordering = ['uploaded_at']
         verbose_name = 'CLT File'
         verbose_name_plural = 'CLT Files'
+        indexes = [
+            models.Index(fields=['submission', 'uploaded_at']),
+        ]
     
     def __str__(self):
         return f"{self.submission.title} - {self.file_name}"
