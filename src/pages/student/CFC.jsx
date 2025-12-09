@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink } from 'lucide-react';
-import { useTheme } from '../theme/ThemeContext';
-import GlassCard from '../components/GlassCard';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { useTheme } from '../../theme/ThemeContext';
+import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
 import './CFC.css';
 
 const TABS = [
@@ -41,7 +41,6 @@ export const CFC = () => {
   });
   const [completionCertPreview, setCompletionCertPreview] = useState(null);
   const [lorPreview, setLorPreview] = useState(null);
-  const [internshipStatus, setInternshipStatus] = useState(1); // 1-4 steps
 
   // GenAI state
   const [genAIData, setGenAIData] = useState({
@@ -51,7 +50,6 @@ export const CFC = () => {
     innovationIndustry: '',
     githubRepo: '',
   });
-  const [genAIStatus, setGenAIStatus] = useState(1);
 
   const handleCertificateUpload = (e) => {
     const file = e.target.files[0];
@@ -88,8 +86,6 @@ export const CFC = () => {
       setVideoPreview(`https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`);
     }
   };
-
-  const statusSteps = ['Application', 'Interview', 'Offer', 'Completion'];
 
   return (
     <div className="cfc-container">
@@ -386,43 +382,6 @@ export const CFC = () => {
                 </div>
               </div>
 
-              {/* Status Tracker */}
-              <div className="cfc-status-tracker">
-                {statusSteps.map((step, index) => {
-                  const stepNumber = index + 1;
-                  const isActive = internshipStatus === stepNumber;
-                  const isCompleted = internshipStatus > stepNumber;
-
-                  return (
-                    <React.Fragment key={step}>
-                      <motion.div
-                        className={`cfc-status-step ${isActive ? 'cfc-status-step--active' : ''} ${isCompleted ? 'cfc-status-step--completed' : ''}`}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        onClick={() => setInternshipStatus(stepNumber)}
-                      >
-                        <div className="cfc-status-number">
-                          {isCompleted ? <CheckCircle size={16} /> : stepNumber}
-                        </div>
-                        <div className="cfc-status-label">{step}</div>
-                      </motion.div>
-
-                      {index < statusSteps.length - 1 && (
-                        <div className="cfc-status-line">
-                          <motion.div
-                            className="cfc-status-line-fill"
-                            initial={{ width: 0 }}
-                            animate={{ width: isCompleted ? '100%' : '0%' }}
-                            transition={{ duration: 0.5 }}
-                          />
-                        </div>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-
               <Input
                 label="Company Name"
                 placeholder="Enter company name"
@@ -618,43 +577,6 @@ export const CFC = () => {
                     Track your AI/ML project progress and certifications
                   </p>
                 </div>
-              </div>
-
-              {/* Status Tracker */}
-              <div className="cfc-status-tracker">
-                {['Enrolled', 'In Progress', 'Completed', 'Certified'].map((step, index) => {
-                  const stepNumber = index + 1;
-                  const isActive = genAIStatus === stepNumber;
-                  const isCompleted = genAIStatus > stepNumber;
-
-                  return (
-                    <React.Fragment key={step}>
-                      <motion.div
-                        className={`cfc-status-step ${isActive ? 'cfc-status-step--active' : ''} ${isCompleted ? 'cfc-status-step--completed' : ''}`}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        onClick={() => setGenAIStatus(stepNumber)}
-                      >
-                        <div className="cfc-status-number">
-                          {isCompleted ? <CheckCircle size={16} /> : stepNumber}
-                        </div>
-                        <div className="cfc-status-label">{step}</div>
-                      </motion.div>
-
-                      {index < 3 && (
-                        <div className="cfc-status-line">
-                          <motion.div
-                            className="cfc-status-line-fill"
-                            initial={{ width: 0 }}
-                            animate={{ width: isCompleted ? '100%' : '0%' }}
-                            transition={{ duration: 0.5 }}
-                          />
-                        </div>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
               </div>
 
               <div className="cfc-textarea-group">
