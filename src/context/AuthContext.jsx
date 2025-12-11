@@ -8,7 +8,7 @@ const ROLE_ACCESS = {
     student: ['/', '/clt', '/sri', '/cfc', '/iipc', '/scd'],
     mentor: ['/mentor-dashboard'],
     floorwing: ['/floorwing-dashboard'],
-    admin: ['/admin-dashboard'],
+    admin: ['/admin-dashboard', '/admin'],
 };
 
 export const AuthProvider = ({ children }) => {
@@ -22,13 +22,13 @@ export const AuthProvider = ({ children }) => {
         try {
             setLoading(true);
             const response = await authService.login(username, password);
-            
+
             const userWithRole = {
                 ...response.user,
                 role: role || response.user.role || 'student',
                 timestamp: new Date().toISOString(),
             };
-            
+
             setUser(userWithRole);
             localStorage.setItem('user', JSON.stringify(userWithRole));
             return userWithRole;
@@ -48,7 +48,13 @@ export const AuthProvider = ({ children }) => {
     const hasAccess = (path) => {
         if (!user) return false;
         const allowedPaths = ROLE_ACCESS[user.role] || [];
-        return allowedPaths.includes(path) || path === '/login';
+
+        // Allow exact matches or paths that start with allowed prefixes
+        const hasDirectAccess = allowedPaths.some(allowedPath =>
+            path === allowedPath || path.startsWith(allowedPath + '/')
+        );
+
+        return hasDirectAccess || path === '/login';
     };
 
     const getToken = () => {

@@ -1,0 +1,117 @@
+/* Theme Variables */
+[data-theme="light"] .admin-dashboard-enhanced {
+    --dashboard-text: #111827;
+    --dashboard-text-secondary: #6B7280;
+    --dashboard-border: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .admin-dashboard-enhanced {
+    --dashboard-text: #F9FAFB;
+    --dashboard-text-secondary: #9CA3AF;
+    --dashboard-border: rgba(255, 255, 255, 0.1);
+}
+
+.admin-dashboard-enhanced {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* Header */
+.admin-header {
+    margin-bottom: 3rem;
+}
+
+.admin-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+    color: var(--dashboard-text-secondary);
+    font-size: 1rem;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    transition: all 0.3s ease;
+}
+
+.dashboard-card-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.dashboard-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dashboard-info {
+    flex: 1;
+}
+
+.dashboard-card-title {
+    font-size: 0.9rem;
+    color: var(--dashboard-text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.dashboard-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dashboard-text);
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-subtitle {
+    font-size: 0.875rem;
+    color: var(--dashboard-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-dashboard-enhanced {
+        padding: 1rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-title {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .dashboard-value {
+        font-size: 1.5rem;
+    }
+}

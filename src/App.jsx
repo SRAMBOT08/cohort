@@ -14,6 +14,13 @@ import CFC from './pages/student/CFC';
 import IIPC from './pages/student/IIPC';
 import SCD from './pages/student/SCD';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminLayout from './pages/admin/AdminLayout';
+import StudentProfiles from './pages/admin/profiles/StudentProfiles';
+import MentorProfiles from './pages/admin/profiles/MentorProfiles';
+import Leaderboard from './pages/admin/leaderboard/Leaderboard';
+import Notifications from './pages/admin/notifications/Notifications';
+import Roles from './pages/admin/roles/Roles';
+import Settings from './pages/admin/settings/Settings';
 import MentorDashboard from './pages/mentor/MentorDashboard';
 import FloorWingDashboard from './pages/floorwing/FloorWingDashboard';
 import Login from './pages/Login';
@@ -176,13 +183,29 @@ function AppContent() {
       <main className="app-main">
         <Routes>
           <Route path="/login" element={<Login />} />
+
+          {/* Student Routes */}
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/clt" element={<ProtectedRoute><CLT /></ProtectedRoute>} />
           <Route path="/sri" element={<ProtectedRoute><SRI /></ProtectedRoute>} />
           <Route path="/cfc" element={<ProtectedRoute><CFC /></ProtectedRoute>} />
           <Route path="/iipc" element={<ProtectedRoute><IIPC /></ProtectedRoute>} />
           <Route path="/scd" element={<ProtectedRoute><SCD /></ProtectedRoute>} />
-          <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+
+          {/* Admin Routes with Sidebar Layout */}
+          <Route path="/admin-dashboard" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminDashboard />} />
+          </Route>
+
+          {/* Admin routes with /admin prefix */}
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route path="students" element={<StudentProfiles />} />
+            <Route path="mentors" element={<MentorProfiles />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="roles" element={<Roles />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>          {/* Other Role Dashboards */}
           <Route path="/mentor-dashboard" element={<ProtectedRoute><MentorDashboard /></ProtectedRoute>} />
           <Route path="/floorwing-dashboard" element={<ProtectedRoute><FloorWingDashboard /></ProtectedRoute>} />
         </Routes>
