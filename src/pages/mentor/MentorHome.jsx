@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Users, TrendingUp, Award, Calendar, Bell, User, Mail, Phone, Hash } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import { useAuth } from '../../context/AuthContext';
-import './MentorHome_new.css';
+import './MentorHome.css';
 
 function MentorHome() {
     const { user } = useAuth();
