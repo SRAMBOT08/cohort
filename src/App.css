@@ -1,5 +1,6 @@
 .app {
   min-height: 100vh;
+  width: 100%;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -16,6 +17,7 @@
 .app-main {
   position: relative;
   z-index: 1;
+  width: 100%;
 }
 
 /* Navigation */
@@ -41,7 +43,8 @@
 }
 
 .nav-container {
-  max-width: 1400px;
+  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;

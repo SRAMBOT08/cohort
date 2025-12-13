@@ -11,36 +11,36 @@
   --color-text-primary: #000000;
   --color-text-secondary: #616161;
   --color-border: #E0E0E0;
-  
+
   /* Typography */
   --font-primary: 'Inter', sans-serif;
   --font-secondary: 'Manrope', sans-serif;
   --font-display: 'Sora', sans-serif;
   --font-mono: 'Fira Code', monospace;
-  
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-xl: 2rem;
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
-  
+
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Vite compat */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -72,6 +72,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* Body Styles */
@@ -84,11 +86,23 @@ body {
   color: var(--color-text-primary);
   background-color: var(--color-background);
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
 /* Remove default styles */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: inherit;
   font-size: inherit;
 }
@@ -197,6 +211,7 @@ img {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -207,6 +222,7 @@ img {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -214,9 +230,12 @@ img {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -226,6 +245,7 @@ img {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

@@ -1,5 +1,6 @@
 .mentor-layout {
     min-height: calc(100vh - 80px);
+    width: 100%;
 }
 
 /* Navigation Bar */
@@ -12,6 +13,9 @@
     position: relative;
     z-index: 100;
     justify-content: center;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 .mentor-nav-item {
@@ -71,6 +75,7 @@
 /* Content */
 .mentor-layout-content {
     position: relative;
+    width: 100%;
 }
 
 /* Responsive */
