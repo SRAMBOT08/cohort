@@ -41,7 +41,7 @@ export const Input = ({
             initial={false}
             animate={{
               top: isFocused || hasValue ? '-0.75rem' : '50%',
-              left: (isFocused || hasValue) ? '1.25rem' : (icon ? '3rem' : '1.25rem'),
+              left: (isFocused || hasValue) ? '0.75rem' : (icon ? '3.25rem' : '1rem'),
               fontSize: isFocused || hasValue ? '0.75rem' : '1rem',
               color: error ? '#E53935' : isFocused ? '#F7C948' : 'inherit',
             }}

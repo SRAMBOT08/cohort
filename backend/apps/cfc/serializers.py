@@ -17,7 +17,7 @@ class HackathonSubmissionSerializer(serializers.ModelSerializer):
         model = HackathonSubmission
         fields = [
             'id', 'user', 'hackathon_name', 'mode', 'registration_date',
-            'participation_date', 'certificate_link', 'status', 'current_step',
+            'participation_date', 'github_repo', 'certificate_link', 'status', 'current_step',
             'submitted_at', 'reviewer_comments', 'reviewer', 'reviewed_at',
             'created_at', 'updated_at'
         ]
@@ -32,7 +32,7 @@ class HackathonSubmissionCreateSerializer(serializers.ModelSerializer):
         model = HackathonSubmission
         fields = [
             'hackathon_name', 'mode', 'registration_date', 'participation_date',
-            'certificate_link', 'current_step'
+            'github_repo', 'certificate_link', 'current_step'
         ]
     
     def create(self, validated_data):

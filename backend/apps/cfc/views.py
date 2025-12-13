@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q, Count
+import re
+import requests
 
 from .models import (
     HackathonSubmission,
@@ -37,6 +39,113 @@ class HackathonSubmissionViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return HackathonSubmissionCreateSerializer
         return HackathonSubmissionSerializer
+    
+    def extract_github_repo_info(self, github_url):
+        """Extract owner and repo name from GitHub URL"""
+        github_regex = r'(?:https?://)?(?:www\.)?github\.com/([^/]+)/([^/\.]+)'
+        match = re.search(github_regex, github_url)
+        if match:
+            return match.group(1), match.group(2)
+        return None, None
+    
+    def validate_github_repo(self, github_url):
+        """Validate and fetch GitHub repository information"""
+        owner, repo = self.extract_github_repo_info(github_url)
+        
+        if not owner or not repo:
+            return {
+                'valid': False,
+                'error': 'Invalid GitHub URL format. Use: https://github.com/owner/repo'
+            }
+        
+        try:
+            # Fetch repository info from GitHub API
+            api_url = f'https://api.github.com/repos/{owner}/{repo}'
+            response = requests.get(api_url, timeout=10)
+            
+            if response.status_code == 404:
+                return {
+                    'valid': False,
+                    'error': 'Repository not found. Make sure the repository is public.'
+                }
+            elif response.status_code == 403:
+                return {
+                    'valid': False,
+                    'error': 'GitHub API rate limit exceeded. Please try again later.'
+                }
+            elif response.status_code != 200:
+                return {
+                    'valid': False,
+                    'error': f'Unable to access repository. Status: {response.status_code}'
+                }
+            
+            repo_data = response.json()
+            
+            # Check if repository has README
+            readme_url = f'https://api.github.com/repos/{owner}/{repo}/readme'
+            readme_response = requests.get(readme_url, timeout=10)
+            has_readme = readme_response.status_code == 200
+            
+            # Get commit count
+            commits_url = f'https://api.github.com/repos/{owner}/{repo}/commits'
+            commits_response = requests.get(commits_url, params={'per_page': 1}, timeout=10)
+            commit_count = 0
+            if commits_response.status_code == 200:
+                # Get commit count from Link header if available
+                link_header = commits_response.headers.get('Link', '')
+                if 'last' in link_header:
+                    last_page_match = re.search(r'page=(\d+)>; rel="last"', link_header)
+                    if last_page_match:
+                        commit_count = int(last_page_match.group(1))
+                else:
+                    commit_count = len(commits_response.json()) if commits_response.json() else 0
+            
+            return {
+                'valid': True,
+                'owner': owner,
+                'repo': repo,
+                'full_name': repo_data.get('full_name'),
+                'description': repo_data.get('description', ''),
+                'stars': repo_data.get('stargazers_count', 0),
+                'forks': repo_data.get('forks_count', 0),
+                'language': repo_data.get('language', 'Unknown'),
+                'is_private': repo_data.get('private', False),
+                'has_readme': has_readme,
+                'commit_count': commit_count,
+                'created_at': repo_data.get('created_at'),
+                'updated_at': repo_data.get('updated_at'),
+                'html_url': repo_data.get('html_url'),
+                'warnings': []
+            }
+            
+        except requests.exceptions.Timeout:
+            return {
+                'valid': False,
+                'error': 'Request timeout. Please try again.'
+            }
+        except Exception as e:
+            return {
+                'valid': False,
+                'error': f'Error validating repository: {str(e)}'
+            }
+    
+    @action(detail=False, methods=['post'])
+    def validate_repo(self, request):
+        """Validate GitHub repository URL"""
+        github_url = request.data.get('github_url', '')
+        
+        if not github_url:
+            return Response(
+                {'error': 'GitHub URL is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        validation_result = self.validate_github_repo(github_url)
+        
+        if not validation_result['valid']:
+            return Response(validation_result, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(validation_result)
     
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
@@ -84,6 +193,84 @@ class BMCVideoSubmissionViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return BMCVideoSubmissionCreateSerializer
         return BMCVideoSubmissionSerializer
+    
+    def extract_youtube_video_id(self, url):
+        """Extract YouTube video ID from URL"""
+        youtube_regex = r'(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})'
+        match = re.search(youtube_regex, url)
+        return match.group(1) if match else None
+    
+    def get_youtube_video_duration(self, video_id):
+        """Get YouTube video duration using oEmbed API and page scraping"""
+        try:
+            # Try to get duration from YouTube page
+            response = requests.get(f'https://www.youtube.com/watch?v={video_id}', timeout=10)
+            if response.status_code == 200:
+                # Extract lengthSeconds from YouTube page
+                duration_match = re.search(r'"lengthSeconds":"(\d+)"', response.text)
+                if duration_match:
+                    duration_seconds = int(duration_match.group(1))
+                    duration_minutes = duration_seconds / 60
+                    return duration_minutes
+        except Exception as e:
+            print(f"Error fetching YouTube video duration: {str(e)}")
+        return None
+    
+    def create(self, request, *args, **kwargs):
+        """Override create to validate video duration"""
+        video_url = request.data.get('video_url', '')
+        
+        if video_url:
+            video_id = self.extract_youtube_video_id(video_url)
+            
+            if video_id:
+                duration_minutes = self.get_youtube_video_duration(video_id)
+                
+                if duration_minutes is not None:
+                    if duration_minutes < 5:
+                        return Response(
+                            {
+                                'error': f'Video must be at least 5 minutes long. Current video is {duration_minutes:.1f} minutes.',
+                                'duration': duration_minutes
+                            },
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+        
+        return super().create(request, *args, **kwargs)
+    
+    @action(detail=False, methods=['post'])
+    def check_duration(self, request):
+        """Check YouTube video duration"""
+        video_url = request.data.get('video_url', '')
+        
+        if not video_url:
+            return Response(
+                {'error': 'Video URL is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        video_id = self.extract_youtube_video_id(video_url)
+        
+        if not video_id:
+            return Response(
+                {'error': 'Invalid YouTube URL'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        duration_minutes = self.get_youtube_video_duration(video_id)
+        
+        if duration_minutes is None:
+            return Response(
+                {'error': 'Unable to determine video duration'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response({
+            'duration_minutes': round(duration_minutes, 1),
+            'duration_seconds': int(duration_minutes * 60),
+            'is_valid': duration_minutes >= 5,
+            'video_id': video_id
+        })
     
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
@@ -214,6 +401,117 @@ class GenAIProjectSubmissionViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return GenAIProjectSubmissionCreateSerializer
         return GenAIProjectSubmissionSerializer
+    
+    def extract_github_repo_info(self, github_url):
+        """Extract owner and repo name from GitHub URL"""
+        # Match patterns like:
+        # https://github.com/owner/repo
+        # https://github.com/owner/repo.git
+        # github.com/owner/repo
+        github_regex = r'(?:https?://)?(?:www\.)?github\.com/([^/]+)/([^/\.]+)'
+        match = re.search(github_regex, github_url)
+        if match:
+            return match.group(1), match.group(2)
+        return None, None
+    
+    def validate_github_repo(self, github_url):
+        """Validate and fetch GitHub repository information"""
+        owner, repo = self.extract_github_repo_info(github_url)
+        
+        if not owner or not repo:
+            return {
+                'valid': False,
+                'error': 'Invalid GitHub URL format. Use: https://github.com/owner/repo'
+            }
+        
+        try:
+            # Fetch repository info from GitHub API
+            api_url = f'https://api.github.com/repos/{owner}/{repo}'
+            response = requests.get(api_url, timeout=10)
+            
+            if response.status_code == 404:
+                return {
+                    'valid': False,
+                    'error': 'Repository not found. Make sure the repository is public.'
+                }
+            elif response.status_code == 403:
+                return {
+                    'valid': False,
+                    'error': 'GitHub API rate limit exceeded. Please try again later.'
+                }
+            elif response.status_code != 200:
+                return {
+                    'valid': False,
+                    'error': f'Unable to access repository. Status: {response.status_code}'
+                }
+            
+            repo_data = response.json()
+            
+            # Check if repository has README
+            readme_url = f'https://api.github.com/repos/{owner}/{repo}/readme'
+            readme_response = requests.get(readme_url, timeout=10)
+            has_readme = readme_response.status_code == 200
+            
+            # Get commit count
+            commits_url = f'https://api.github.com/repos/{owner}/{repo}/commits'
+            commits_response = requests.get(commits_url, params={'per_page': 1}, timeout=10)
+            commit_count = 0
+            if commits_response.status_code == 200:
+                # Get commit count from Link header if available
+                link_header = commits_response.headers.get('Link', '')
+                if 'last' in link_header:
+                    last_page_match = re.search(r'page=(\d+)>; rel="last"', link_header)
+                    if last_page_match:
+                        commit_count = int(last_page_match.group(1))
+                else:
+                    commit_count = len(commits_response.json()) if commits_response.json() else 0
+            
+            return {
+                'valid': True,
+                'owner': owner,
+                'repo': repo,
+                'full_name': repo_data.get('full_name'),
+                'description': repo_data.get('description', ''),
+                'stars': repo_data.get('stargazers_count', 0),
+                'forks': repo_data.get('forks_count', 0),
+                'language': repo_data.get('language', 'Unknown'),
+                'is_private': repo_data.get('private', False),
+                'has_readme': has_readme,
+                'commit_count': commit_count,
+                'created_at': repo_data.get('created_at'),
+                'updated_at': repo_data.get('updated_at'),
+                'html_url': repo_data.get('html_url'),
+                'warnings': []
+            }
+            
+        except requests.exceptions.Timeout:
+            return {
+                'valid': False,
+                'error': 'Request timeout. Please try again.'
+            }
+        except Exception as e:
+            return {
+                'valid': False,
+                'error': f'Error validating repository: {str(e)}'
+            }
+    
+    @action(detail=False, methods=['post'])
+    def validate_repo(self, request):
+        """Validate GitHub repository URL"""
+        github_url = request.data.get('github_url', '')
+        
+        if not github_url:
+            return Response(
+                {'error': 'GitHub URL is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        validation_result = self.validate_github_repo(github_url)
+        
+        if not validation_result['valid']:
+            return Response(validation_result, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(validation_result)
     
     def create(self, request, *args, **kwargs):
         """Override create to add detailed error logging"""

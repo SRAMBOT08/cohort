@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -26,12 +26,19 @@ export const CFC = () => {
   const [hackathonMode, setHackathonMode] = useState('');
   const [registrationDate, setRegistrationDate] = useState('');
   const [participationDate, setParticipationDate] = useState('');
+  const [hackathonGithubRepo, setHackathonGithubRepo] = useState('');
   const [certificateLink, setCertificateLink] = useState('');
+  const [hackathonRepoValidation, setHackathonRepoValidation] = useState(null);
+  const [checkingHackathonRepo, setCheckingHackathonRepo] = useState(false);
 
   // BMC Video state
   const [videoUrl, setVideoUrl] = useState('');
   const [videoDescription, setVideoDescription] = useState('');
   const [videoPreview, setVideoPreview] = useState(null);
+  const [videoId, setVideoId] = useState(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(null);
+  const [checkingDuration, setCheckingDuration] = useState(false);
 
   // Internship state
   const [internshipData, setInternshipData] = useState({
@@ -53,6 +60,8 @@ export const CFC = () => {
     githubRepo: '',
     demoLink: '',
   });
+  const [repoValidation, setRepoValidation] = useState(null);
+  const [checkingRepo, setCheckingRepo] = useState(false);
 
   // Clear messages after 5 seconds
   useEffect(() => {
@@ -68,12 +77,47 @@ export const CFC = () => {
   const handleVideoUrlChange = (e) => {
     const url = e.target.value;
     setVideoUrl(url);
+    setIsVideoPlaying(false);
+    setVideoDuration(null);
 
     // Extract YouTube video ID
     const youtubeRegex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
     const match = url.match(youtubeRegex);
     if (match) {
-      setVideoPreview(`https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`);
+      const extractedVideoId = match[1];
+      setVideoId(extractedVideoId);
+      setVideoPreview(`https://img.youtube.com/vi/${extractedVideoId}/mqdefault.jpg`);
+      
+      // Check video duration
+      checkVideoDuration(extractedVideoId);
+    } else {
+      setVideoId(null);
+      setVideoPreview(null);
+    }
+  };
+
+  const checkVideoDuration = async (videoId) => {
+    setCheckingDuration(true);
+    try {
+      const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      const result = await cfcService.checkVideoDuration(videoUrl);
+      
+      if (result.duration_minutes !== undefined) {
+        setVideoDuration(result.duration_minutes);
+      } else {
+        setVideoDuration(null);
+      }
+    } catch (err) {
+      console.error('Error checking video duration:', err);
+      setVideoDuration(null);
+    } finally {
+      setCheckingDuration(false);
+    }
+  };
+
+  const handlePlayVideo = () => {
+    if (videoId) {
+      setIsVideoPlaying(true);
     }
   };
 
@@ -85,6 +129,12 @@ export const CFC = () => {
       return;
     }
 
+    // Check if repository validation passed (if repo URL was provided)
+    if (hackathonGithubRepo && (!hackathonRepoValidation || !hackathonRepoValidation.valid)) {
+      setError('Please provide a valid GitHub repository URL or leave it empty');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -93,6 +143,7 @@ export const CFC = () => {
         mode: hackathonMode,
         registration_date: registrationDate,
         participation_date: participationDate,
+        github_repo: hackathonGithubRepo || '',
         certificate_link: certificateLink,
       };
       
@@ -104,7 +155,9 @@ export const CFC = () => {
       setHackathonMode('');
       setRegistrationDate('');
       setParticipationDate('');
+      setHackathonGithubRepo('');
       setCertificateLink('');
+      setHackathonRepoValidation(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit hackathon');
       console.error('Hackathon submission error:', err);
@@ -113,9 +166,51 @@ export const CFC = () => {
     }
   };
 
+  const handleHackathonGithubUrlChange = async (e) => {
+    const url = e.target.value;
+    setHackathonGithubRepo(url);
+    setHackathonRepoValidation(null);
+    
+    // Auto-validate if URL looks like a GitHub repo
+    if (url && url.includes('github.com') && url.split('/').length >= 5) {
+      await validateHackathonGithubRepo(url);
+    }
+  };
+
+  const validateHackathonGithubRepo = async (url) => {
+    if (!url) {
+      setHackathonRepoValidation(null);
+      return;
+    }
+
+    setCheckingHackathonRepo(true);
+    try {
+      const result = await cfcService.validateHackathonRepo(url);
+      setHackathonRepoValidation(result);
+    } catch (err) {
+      setHackathonRepoValidation({
+        valid: false,
+        error: err.response?.data?.error || 'Failed to validate repository'
+      });
+    } finally {
+      setCheckingHackathonRepo(false);
+    }
+  };
+
   const handleBMCVideoSubmit = async () => {
     if (!videoUrl) {
       setError('Please enter a video URL');
+      return;
+    }
+
+    // Check if video duration is available and valid
+    if (videoDuration !== null && videoDuration < 5) {
+      setError('Video must be at least 5 minutes long. Current video duration is ' + videoDuration + ' minutes.');
+      return;
+    }
+
+    if (checkingDuration) {
+      setError('Please wait while we check the video duration...');
       return;
     }
 
@@ -134,6 +229,7 @@ export const CFC = () => {
       setVideoUrl('');
       setVideoDescription('');
       setVideoPreview(null);
+      setVideoDuration(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit BMC video');
       console.error('BMC Video submission error:', err);
@@ -182,11 +278,48 @@ export const CFC = () => {
     }
   };
 
+  const handleGithubUrlChange = async (e) => {
+    const url = e.target.value;
+    setGenAIData({ ...genAIData, githubRepo: url });
+    setRepoValidation(null);
+    
+    // Auto-validate if URL looks like a GitHub repo
+    if (url && url.includes('github.com') && url.split('/').length >= 5) {
+      await validateGithubRepo(url);
+    }
+  };
+
+  const validateGithubRepo = async (url) => {
+    if (!url) {
+      setRepoValidation(null);
+      return;
+    }
+
+    setCheckingRepo(true);
+    try {
+      const result = await cfcService.validateGithubRepo(url);
+      setRepoValidation(result);
+    } catch (err) {
+      setRepoValidation({
+        valid: false,
+        error: err.response?.data?.error || 'Failed to validate repository'
+      });
+    } finally {
+      setCheckingRepo(false);
+    }
+  };
+
   const handleGenAISubmit = async () => {
     if (!genAIData.problemStatement || !genAIData.solutionType || 
         !genAIData.innovationTechnology || !genAIData.innovationIndustry || 
         !genAIData.githubRepo) {
       setError('Please fill in all required fields');
+      return;
+    }
+
+    // Check if repository validation passed
+    if (!repoValidation || !repoValidation.valid) {
+      setError('Please provide a valid GitHub repository URL');
       return;
     }
 
@@ -214,6 +347,7 @@ export const CFC = () => {
         githubRepo: '',
         demoLink: '',
       });
+      setRepoValidation(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit GenAI project');
       console.error('GenAI submission error:', err);
@@ -370,6 +504,105 @@ export const CFC = () => {
               />
 
               <Input
+                label="GitHub Repository (Optional)"
+                placeholder="https://github.com/username/repository"
+                value={hackathonGithubRepo}
+                onChange={handleHackathonGithubUrlChange}
+                icon={<ExternalLink size={20} />}
+                floatingLabel
+              />
+
+              {/* Repository Validation Status */}
+              {checkingHackathonRepo && (
+                <div className="repo-validation-info repo-checking">
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Validating repository...</span>
+                </div>
+              )}
+
+              {hackathonRepoValidation && !checkingHackathonRepo && (
+                <>
+                  {hackathonRepoValidation.valid ? (
+                    <div className="repo-preview">
+                      <div className="repo-preview-header">
+                        <CheckCircle size={20} className="repo-valid-icon" />
+                        <h4>Repository Validated</h4>
+                      </div>
+                      <div className="repo-preview-content">
+                        <div className="repo-info-item">
+                          <strong>{hackathonRepoValidation.full_name}</strong>
+                        </div>
+                        {hackathonRepoValidation.description && (
+                          <div className="repo-info-item">
+                            <p className="repo-description">{hackathonRepoValidation.description}</p>
+                          </div>
+                        )}
+                        <div className="repo-stats">
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Language:</span>
+                            <span className="repo-stat-value">{hackathonRepoValidation.language}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Stars:</span>
+                            <span className="repo-stat-value">{hackathonRepoValidation.stars}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Forks:</span>
+                            <span className="repo-stat-value">{hackathonRepoValidation.forks}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Commits:</span>
+                            <span className="repo-stat-value">{hackathonRepoValidation.commit_count || 'N/A'}</span>
+                          </div>
+                        </div>
+                        <div className="repo-features">
+                          {hackathonRepoValidation.has_readme ? (
+                            <div className="repo-feature repo-feature-good">
+                              <CheckCircle size={16} />
+                              <span>README.md found</span>
+                            </div>
+                          ) : (
+                            <div className="repo-feature repo-feature-warning">
+                              <AlertCircle size={16} />
+                              <span>README.md not found</span>
+                            </div>
+                          )}
+                          {!hackathonRepoValidation.is_private ? (
+                            <div className="repo-feature repo-feature-good">
+                              <CheckCircle size={16} />
+                              <span>Public repository</span>
+                            </div>
+                          ) : (
+                            <div className="repo-feature repo-feature-warning">
+                              <AlertCircle size={16} />
+                              <span>Private repository</span>
+                            </div>
+                          )}
+                        </div>
+                        <a 
+                          href={hackathonRepoValidation.html_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="repo-link"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(hackathonRepoValidation.html_url, '_blank', 'noopener,noreferrer');
+                          }}
+                        >
+                          View on GitHub <ExternalLink size={14} />
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="repo-validation-info repo-invalid">
+                      <AlertCircle size={16} />
+                      <span>{hackathonRepoValidation.error}</span>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <Input
                 label="Certificate Link (Google Drive)"
                 placeholder="https://drive.google.com/file/d/..."
                 value={certificateLink}
@@ -434,28 +667,71 @@ export const CFC = () => {
                 floatingLabel
               />
 
+              {videoId && (
+                <div className="video-duration-info">
+                  {checkingDuration ? (
+                    <p className="duration-checking">
+                      <Loader2 size={16} className="animate-spin" />
+                      Checking video duration...
+                    </p>
+                  ) : videoDuration !== null ? (
+                    <p className={`duration-display ${videoDuration >= 5 ? 'duration-valid' : 'duration-invalid'}`}>
+                      {videoDuration >= 5 ? (
+                        <>
+                          <CheckCircle size={16} />
+                          Video Duration: {videoDuration} minutes (Valid)
+                        </>
+                      ) : (
+                        <>
+                          <ExternalLink size={16} />
+                          Video Duration: {videoDuration} minutes (Minimum 5 minutes required)
+                        </>
+                      )}
+                    </p>
+                  ) : (
+                    <p className="duration-unknown">
+                      Unable to determine video duration. Please ensure video is at least 5 minutes long.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {videoPreview && (
                 <motion.div
                   className="cfc-video-preview"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >
-                  <img src={videoPreview} alt="Video thumbnail" className="cfc-video-thumbnail" />
-                  <motion.button
-                    className="cfc-watch-button"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    animate={{
-                      boxShadow: [
-                        '0 0 20px rgba(247, 201, 72, 0.4)',
-                        '0 0 40px rgba(247, 201, 72, 0.8)',
-                        '0 0 20px rgba(247, 201, 72, 0.4)',
-                      ],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Video size={32} />
-                  </motion.button>
+                  {!isVideoPlaying ? (
+                    <>
+                      <img src={videoPreview} alt="Video thumbnail" className="cfc-video-thumbnail" />
+                      <motion.button
+                        className="cfc-watch-button"
+                        onClick={handlePlayVideo}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        animate={{
+                          boxShadow: [
+                            '0 0 20px rgba(247, 201, 72, 0.4)',
+                            '0 0 40px rgba(247, 201, 72, 0.8)',
+                            '0 0 20px rgba(247, 201, 72, 0.4)',
+                          ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <Video size={32} />
+                      </motion.button>
+                    </>
+                  ) : (
+                    <iframe
+                      className="cfc-video-iframe"
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                  )}
                 </motion.div>
               )}
 
@@ -714,10 +990,100 @@ export const CFC = () => {
                 label="GitHub Repository"
                 placeholder="https://github.com/username/repository"
                 value={genAIData.githubRepo}
-                onChange={(e) => setGenAIData({ ...genAIData, githubRepo: e.target.value })}
+                onChange={handleGithubUrlChange}
                 icon={<ExternalLink size={20} />}
                 floatingLabel
               />
+
+              {/* Repository Validation Status */}
+              {checkingRepo && (
+                <div className="repo-validation-info repo-checking">
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Validating repository...</span>
+                </div>
+              )}
+
+              {repoValidation && !checkingRepo && (
+                <>
+                  {repoValidation.valid ? (
+                    <div className="repo-preview">
+                      <div className="repo-preview-header">
+                        <CheckCircle size={20} className="repo-valid-icon" />
+                        <h4>Repository Validated</h4>
+                      </div>
+                      <div className="repo-preview-content">
+                        <div className="repo-info-item">
+                          <strong>{repoValidation.full_name}</strong>
+                        </div>
+                        {repoValidation.description && (
+                          <div className="repo-info-item">
+                            <p className="repo-description">{repoValidation.description}</p>
+                          </div>
+                        )}
+                        <div className="repo-stats">
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Language:</span>
+                            <span className="repo-stat-value">{repoValidation.language}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Stars:</span>
+                            <span className="repo-stat-value">{repoValidation.stars}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Forks:</span>
+                            <span className="repo-stat-value">{repoValidation.forks}</span>
+                          </div>
+                          <div className="repo-stat">
+                            <span className="repo-stat-label">Commits:</span>
+                            <span className="repo-stat-value">{repoValidation.commit_count || 'N/A'}</span>
+                          </div>
+                        </div>
+                        <div className="repo-features">
+                          {repoValidation.has_readme ? (
+                            <div className="repo-feature repo-feature-good">
+                              <CheckCircle size={16} />
+                              <span>README.md found</span>
+                            </div>
+                          ) : (
+                            <div className="repo-feature repo-feature-warning">
+                              <AlertCircle size={16} />
+                              <span>README.md not found</span>
+                            </div>
+                          )}
+                          {!repoValidation.is_private ? (
+                            <div className="repo-feature repo-feature-good">
+                              <CheckCircle size={16} />
+                              <span>Public repository</span>
+                            </div>
+                          ) : (
+                            <div className="repo-feature repo-feature-warning">
+                              <AlertCircle size={16} />
+                              <span>Private repository</span>
+                            </div>
+                          )}
+                        </div>
+                        <a 
+                          href={repoValidation.html_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="repo-link"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(repoValidation.html_url, '_blank', 'noopener,noreferrer');
+                          }}
+                        >
+                          View on GitHub <ExternalLink size={14} />
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="repo-validation-info repo-invalid">
+                      <AlertCircle size={16} />
+                      <span>{repoValidation.error}</span>
+                    </div>
+                  )}
+                </>
+              )}
 
               <Input
                 label="Demo Link (Optional)"

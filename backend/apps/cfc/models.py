@@ -26,6 +26,8 @@ class HackathonSubmission(models.Model):
     mode = models.CharField(max_length=20, choices=MODE_CHOICES, help_text="Participation mode")
     registration_date = models.DateField(help_text="Date of registration")
     participation_date = models.DateField(help_text="Date of participation")
+    github_repo = models.URLField(max_length=500, blank=True, null=True, 
+                                  help_text="GitHub repository link for hackathon project")
     certificate_link = models.URLField(max_length=500, blank=True, null=True, 
                                        help_text="Google Drive link to certificate")
     

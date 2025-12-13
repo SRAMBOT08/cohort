@@ -44,12 +44,17 @@ urlpatterns = [
     # User Profile
     path('api/auth/user/', UserProfileView.as_view(), name='user_profile'),
     
+    # User Profile Settings
+    path('api/profiles/', include('apps.profiles.urls')),
+    
     # App URLs
     path('api/clt/', include('apps.clt.urls')),
     path('api/sri/', include('apps.sri.urls')),
     path('api/cfc/', include('apps.cfc.urls')),
     path('api/iipc/', include('apps.iipc.urls')),
     path('api/scd/', include('apps.scd.urls')),
+    path('api/dashboard/', include('apps.dashboard.urls')),
+    path('api/hackathons/', include('hackathons.urls')),
 ]
 
 # Serve media files in development

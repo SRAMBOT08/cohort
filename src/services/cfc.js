@@ -61,6 +61,11 @@ export const getHackathonStats = async () => {
   return response.data;
 };
 
+export const validateHackathonRepo = async (githubUrl) => {
+  const response = await axiosInstance.post('/hackathons/validate_repo/', { github_url: githubUrl });
+  return response.data;
+};
+
 // ==================== BMC VIDEO SUBMISSIONS ====================
 
 export const getBMCVideoSubmissions = async () => {
@@ -90,6 +95,11 @@ export const submitBMCVideoForReview = async (id) => {
 
 export const getBMCVideoStats = async () => {
   const response = await axiosInstance.get('/bmc-videos/stats/');
+  return response.data;
+};
+
+export const checkVideoDuration = async (videoUrl) => {
+  const response = await axiosInstance.post('/bmc-videos/check_duration/', { video_url: videoUrl });
   return response.data;
 };
 
@@ -164,6 +174,11 @@ export const getGenAIProjectStats = async () => {
   return response.data;
 };
 
+export const validateGithubRepo = async (githubUrl) => {
+  const response = await axiosInstance.post('/genai-projects/validate_repo/', { github_url: githubUrl });
+  return response.data;
+};
+
 // ==================== UTILITY FUNCTIONS ====================
 
 export const getAllStats = async () => {
@@ -195,6 +210,7 @@ export default {
   updateHackathonSubmission,
   submitHackathonForReview,
   getHackathonStats,
+  validateHackathonRepo,
   // BMC Video
   getBMCVideoSubmissions,
   getBMCVideoSubmission,
@@ -202,6 +218,7 @@ export default {
   updateBMCVideoSubmission,
   submitBMCVideoForReview,
   getBMCVideoStats,
+  checkVideoDuration,
   // Internship
   getInternshipSubmissions,
   getInternshipSubmission,
@@ -217,6 +234,7 @@ export default {
   updateGenAIProjectSubmission,
   submitGenAIProjectForReview,
   getGenAIProjectStats,
+  validateGithubRepo,
   // Utility
   getAllStats,
 };

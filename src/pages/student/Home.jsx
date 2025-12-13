@@ -5,11 +5,12 @@ import { Link } from 'react-router-dom';
 import {
   Lightbulb, Heart, Trophy, Linkedin, Code,
   User, Mail, Phone, Users, Bell, Clock,
-  CheckCircle, XCircle, AlertCircle, FileText, MessageCircle
+  CheckCircle, XCircle, AlertCircle, FileText, Settings, Loader2, Calendar
 } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
+import Button from '../../components/Button';
 import { useAuth } from '../../context/AuthContext';
-import messageService from '../../services/messageService';
+import dashboardService from '../../services/dashboard';
 import './Home.css';
 
 const PILLARS = [
@@ -58,68 +59,147 @@ const PILLARS = [
 export const HomePage = () => {
   const { user } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Mock data - Replace with actual API calls
-  const pillarProgress = {
-    clt: { completed: 1, total: 1, percentage: 100 },
-    sri: { completed: 0, total: 1, percentage: 0 },
-    cfc: { completed: 2, total: 4, percentage: 50 },
-    iipc: { completed: 1, total: 2, percentage: 50 },
-    scd: { completed: 6, total: 10, percentage: 60 },
-  };
-
-  // Fetch messages from backend
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const messages = await messageService.getUnreadMessages();
-        const formattedNotifications = messages.map(msg => ({
-          id: msg.id,
-          message: `${msg.sender_name}: ${msg.content}`,
-          time: new Date(msg.created_at).toLocaleString(),
-          read: msg.is_read,
-          type: msg.message_type,
-          icon: MessageCircle
-        }));
-        setNotifications(formattedNotifications);
-      } catch (error) {
-        console.error('Failed to fetch messages:', error);
-        // Fallback to mock data if API fails
-        setNotifications([
-          { id: 1, message: 'Your CLT submission has been reviewed', time: '2 hours ago', read: false },
-          { id: 2, message: 'New assignment available in SRI', time: '1 day ago', read: false },
-          { id: 3, message: 'Mentor feedback on CFC project', time: '2 days ago', read: true },
-        ]);
-      } finally {
-        setLoadingMessages(false);
-      }
+    document.title = 'Dashboard | Cohort Web';
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setError('Please log in to view dashboard');
+      setLoading(false);
+      return;
+    }
+    
+    fetchDashboardData();
+
+    // Set up auto-refresh every 30 seconds
+    const refreshInterval = setInterval(() => {
+      fetchDashboardData(true); // Silent refresh
+    }, 30000);
+
+    // Cleanup interval on unmount
+    return () => {
+      clearInterval(refreshInterval);
     };
-
-    fetchMessages();
-
-    // Poll for new messages every 30 seconds
-    const interval = setInterval(fetchMessages, 30000);
-
-    return () => clearInterval(interval);
   }, []);
 
-  const recentActivities = [
-    { id: 1, title: 'CLT: Web Development Course', status: 'completed', date: '2 days ago' },
-    { id: 2, title: 'IIPC: LinkedIn Post Verified', status: 'completed', date: '3 days ago' },
-    { id: 3, title: 'CFC: Portfolio Project', status: 'pending', date: '5 days ago' },
-  ];
+  const fetchDashboardData = async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
+    setError(null);
+    
+    try {
+      const data = await dashboardService.getStats();
+      setDashboardData(data);
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      if (!silent) {
+        const errorMessage = err.response?.data?.detail || err.message || 'Failed to load dashboard data';
+        setError(errorMessage);
+      }
+    } finally {
+      if (!silent) {
+        setLoading(false);
+      }
+    }
+  };
 
-  const overallProgress = Math.round(
-    (Object.values(pillarProgress).reduce((acc, p) => acc + p.percentage, 0) / 5)
-  );
+  // Get pillar progress from API data
+  const pillarProgress = dashboardData ? {
+    clt: {
+      completed: dashboardData.pillars.clt.completed,
+      total: dashboardData.pillars.clt.monthly_target,
+      percentage: dashboardData.pillars.clt.percentage
+    },
+    sri: {
+      completed: dashboardData.pillars.sri.completed,
+      total: dashboardData.pillars.sri.monthly_target,
+      percentage: dashboardData.pillars.sri.percentage
+    },
+    cfc: {
+      completed: dashboardData.pillars.cfc.completed,
+      total: dashboardData.pillars.cfc.monthly_target,
+      percentage: dashboardData.pillars.cfc.percentage
+    },
+    iipc: {
+      completed: dashboardData.pillars.iipc.completed,
+      total: dashboardData.pillars.iipc.monthly_target,
+      percentage: dashboardData.pillars.iipc.percentage
+    },
+    scd: {
+      completed: dashboardData.pillars.scd.completed,
+      total: dashboardData.pillars.scd.monthly_target,
+      percentage: dashboardData.pillars.scd.percentage
+    },
+  } : {
+    clt: { completed: 0, total: 1, percentage: 0 },
+    sri: { completed: 0, total: 0, percentage: 0 },
+    cfc: { completed: 0, total: 3, percentage: 0 },
+    iipc: { completed: 0, total: 2, percentage: 0 },
+    scd: { completed: 0, total: 1, percentage: 0 },
+  };
+
+  const notifications = dashboardData?.notifications || [];
+  const recentActivities = dashboardData?.recent_activities || [];
+  const overallProgress = dashboardData?.overall?.percentage || 0;
 
   const getStatusIcon = (status) => {
-    if (status === 'completed') return <CheckCircle size={16} color="#4CAF50" />;
-    if (status === 'pending') return <AlertCircle size={16} color="#FF9800" />;
+    if (status === 'completed' || status === 'approved') return <CheckCircle size={16} color="#4CAF50" />;
+    if (status === 'pending' || status === 'submitted' || status === 'under_review') return <AlertCircle size={16} color="#FF9800" />;
     return <XCircle size={16} color="#f44336" />;
   };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return `${Math.floor(diffDays / 30)} months ago`;
+  };
+
+  if (loading) {
+    return (
+      <div className="home-container">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <Loader2 size={48} className="spinner" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="home-container">
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <XCircle size={48} color="#E53935" style={{ marginBottom: '1rem' }} />
+          <h2>{error}</h2>
+          {error.includes('log in') ? (
+            <Button onClick={() => window.location.href = '/login'} style={{ marginTop: '1rem' }}>
+              Go to Login
+            </Button>
+          ) : (
+            <Button onClick={fetchDashboardData} style={{ marginTop: '1rem' }}>
+              Retry
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="home-container">
@@ -161,6 +241,11 @@ export const HomePage = () => {
                     <span>Mentor: Dr. Priya Sharma</span>
                   </div>
                 </div>
+                <Link to="/profile-settings" className="profile-settings-button">
+                  <Button variant="primary" icon={<Settings size={18} />}>
+                    Profile Settings
+                  </Button>
+                </Link>
               </div>
             </GlassCard>
           </motion.div>
@@ -174,8 +259,13 @@ export const HomePage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="home-welcome"
         >
-          <h1>Welcome back, <span className="home-title-gradient">{user?.username || 'Student'}!</span></h1>
+          <h1>Welcome back, <span className="home-title-gradient">{user?.first_name || user?.username || 'Student'}!</span></h1>
           <p>Track your progress and stay updated with your learning journey</p>
+          {lastUpdated && (
+            <p className="last-updated-home">
+              <Clock size={14} /> Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
+          )}
         </motion.div>
 
         <motion.button
@@ -221,6 +311,11 @@ export const HomePage = () => {
                   <div className="progress-text">{overallProgress}%</div>
                 </div>
                 <p className="progress-label">Completed</p>
+                <Link to="/monthly-report" className="monthly-report-link">
+                  <Button variant="secondary" icon={<Calendar size={18} />}>
+                    View Monthly Reports
+                  </Button>
+                </Link>
               </div>
             </GlassCard>
           </motion.div>
@@ -277,32 +372,20 @@ export const HomePage = () => {
               <div className="notifications-card">
                 <h2><Bell size={20} /> Notifications</h2>
                 <div className="notifications-list">
-                  {loadingMessages ? (
-                    <div className="notification-item">
-                      <div className="notification-content">
-                        <p>Loading notifications...</p>
-                      </div>
-                    </div>
-                  ) : notifications.length > 0 ? (
-                    notifications.map((notif) => {
-                      const NotifIcon = notif.icon || Bell;
-                      return (
-                        <div key={notif.id} className={`notification-item ${notif.read ? 'read' : 'unread'}`}>
-                          <div className="notification-icon">
-                            <NotifIcon size={16} />
-                          </div>
-                          <div className="notification-content">
-                            <p>{notif.message}</p>
-                            <span><Clock size={14} /> {notif.time}</span>
-                          </div>
+                  {notifications.length > 0 ? (
+                    notifications.map((notif) => (
+                      <div key={notif.id} className={`notification-item ${notif.read ? 'read' : 'unread'}`}>
+                        <div className="notification-dot" />
+                        <div className="notification-content">
+                          <p>{notif.message}</p>
+                          <span><Clock size={14} /> {notif.time}</span>
                         </div>
-                      );
-                    })
-                  ) : (
-                    <div className="notification-item">
-                      <div className="notification-content">
-                        <p>No new notifications</p>
                       </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                      <Bell size={32} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+                      <p>No new notifications</p>
                     </div>
                   )}
                 </div>
@@ -320,24 +403,31 @@ export const HomePage = () => {
               <div className="activities-card">
                 <h2>Recent Activities</h2>
                 <div className="activities-list">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="activity-item">
-                      <div className="activity-status">
-                        {getStatusIcon(activity.status)}
-                      </div>
-                      <div className="activity-content">
-                        <h4>{activity.title}</h4>
-                        <div className="activity-meta">
-                          <span className={`status-badge ${activity.status}`}>
-                            {activity.status}
-                          </span>
-                          <span className="activity-date">
-                            <Clock size={14} /> {activity.date}
-                          </span>
+                  {recentActivities.length > 0 ? (
+                    recentActivities.map((activity) => (
+                      <div key={activity.id} className="activity-item">
+                        <div className="activity-status">
+                          {getStatusIcon(activity.status)}
+                        </div>
+                        <div className="activity-content">
+                          <h4>{activity.title}</h4>
+                          <div className="activity-meta">
+                            <span className={`status-badge ${activity.status}`}>
+                              {activity.status}
+                            </span>
+                            <span className="activity-date">
+                              <Clock size={14} /> {formatDate(activity.date)}
+                            </span>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                      <AlertCircle size={32} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+                      <p>No recent activities</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </GlassCard>
