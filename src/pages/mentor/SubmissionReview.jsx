@@ -3,20 +3,52 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Lightbulb, Heart, Trophy, Linkedin, Code, Filter, Search,
     CheckCircle, XCircle, Clock, AlertCircle, Eye, FileText,
-    Calendar, ExternalLink, User, MessageSquare, Send, ChevronDown
+    Calendar, ExternalLink, User, MessageSquare, Send, ChevronDown,
+    Image, Link as LinkIcon
 } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import './SubmissionReview.css';
 
 const PILLARS = [
-    { id: 'all', label: 'All Pillars', icon: Filter, color: '#F7C948' },
     { id: 'clt', label: 'CLT', icon: Lightbulb, color: '#F7C948' },
     { id: 'sri', label: 'SRI', icon: Heart, color: '#E53935' },
     { id: 'cfc', label: 'CFC', icon: Trophy, color: '#FFC107' },
     { id: 'iipc', label: 'IIPC', icon: Linkedin, color: '#0A66C2' },
     { id: 'scd', label: 'SCD', icon: Code, color: '#FF5722' },
 ];
+
+// Generate month options for the current year
+const generateMonthOptions = () => {
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    const options = [{ value: 'all', label: 'All Months' }];
+
+    // Add months from current year (up to current month)
+    for (let i = 0; i <= currentMonth; i++) {
+        options.push({
+            value: `${currentYear}-${String(i + 1).padStart(2, '0')}`,
+            label: `${months[i]} ${currentYear}`
+        });
+    }
+
+    // Add months from previous year
+    for (let i = 0; i < 12; i++) {
+        options.push({
+            value: `${currentYear - 1}-${String(i + 1).padStart(2, '0')}`,
+            label: `${months[i]} ${currentYear - 1}`
+        });
+    }
+
+    return options;
+};
+
+const MONTH_OPTIONS = generateMonthOptions();
 
 const STATUS_OPTIONS = [
     { value: 'all', label: 'All Status', color: '#757575' },
@@ -27,11 +59,13 @@ const STATUS_OPTIONS = [
 ];
 
 function SubmissionReview({ selectedStudent }) {
-    const [selectedPillar, setSelectedPillar] = useState('all');
+    const [selectedMonth, setSelectedMonth] = useState('all');
     const [selectedStatus, setSelectedStatus] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [reviewComment, setReviewComment] = useState('');
+
+    // Get current month for indicator
+    const currentMonth = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
     // Mock submissions data
     const mockSubmissions = [
@@ -102,13 +136,21 @@ function SubmissionReview({ selectedStudent }) {
 
     // Filter submissions
     const filteredSubmissions = mockSubmissions.filter(submission => {
-        const pillarMatch = selectedPillar === 'all' || submission.pillar === selectedPillar;
+        const submissionMonth = submission.submittedDate.substring(0, 7); // Get YYYY-MM format
+        const monthMatch = selectedMonth === 'all' || submissionMonth === selectedMonth;
         const statusMatch = selectedStatus === 'all' || submission.status === selectedStatus;
-        const searchMatch = searchQuery === '' ||
-            submission.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            submission.platform.toLowerCase().includes(searchQuery.toLowerCase());
-        return pillarMatch && statusMatch && searchMatch;
+        return monthMatch && statusMatch;
     });
+
+    // Group submissions by month for display
+    const groupedSubmissions = filteredSubmissions.reduce((acc, submission) => {
+        const month = new Date(submission.submittedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        if (!acc[month]) {
+            acc[month] = [];
+        }
+        acc[month].push(submission);
+        return acc;
+    }, {});
 
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -181,29 +223,26 @@ function SubmissionReview({ selectedStudent }) {
             >
                 <GlassCard>
                     <div className="filters-container">
-                        {/* Pillar Filter */}
-                        <div className="filter-group">
-                            <label className="filter-label">Pillar</label>
-                            <div className="pillar-filter-buttons">
-                                {PILLARS.map(pillar => {
-                                    const Icon = pillar.icon;
-                                    return (
-                                        <button
-                                            key={pillar.id}
-                                            className={`pillar-filter-btn ${selectedPillar === pillar.id ? 'active' : ''}`}
-                                            onClick={() => setSelectedPillar(pillar.id)}
-                                            style={{ '--pillar-color': pillar.color }}
-                                        >
-                                            <Icon size={16} />
-                                            <span>{pillar.label}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Status and Search */}
+                        {/* Month and Status Filter Row */}
                         <div className="filter-row">
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <Calendar size={16} />
+                                    Month
+                                </label>
+                                <select
+                                    className="month-select"
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                >
+                                    {MONTH_OPTIONS.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div className="filter-group">
                                 <label className="filter-label">Status</label>
                                 <select
@@ -219,17 +258,11 @@ function SubmissionReview({ selectedStudent }) {
                                 </select>
                             </div>
 
-                            <div className="filter-group search-group">
-                                <label className="filter-label">Search</label>
-                                <div className="search-input-wrapper">
-                                    <Search size={18} />
-                                    <input
-                                        type="text"
-                                        placeholder="Search by title or platform..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="search-input"
-                                    />
+                            <div className="filter-group current-month-indicator">
+                                <label className="filter-label">Current Month</label>
+                                <div className="current-month-display">
+                                    <Calendar size={20} />
+                                    <span className="current-month-text">{currentMonth}</span>
                                 </div>
                             </div>
                         </div>
@@ -237,7 +270,7 @@ function SubmissionReview({ selectedStudent }) {
                 </GlassCard>
             </motion.div>
 
-            {/* Submissions Grid */}
+            {/* Submissions Grid - Grouped by Month */}
             <motion.div
                 className="submissions-grid"
                 initial={{ opacity: 0 }}
@@ -253,58 +286,82 @@ function SubmissionReview({ selectedStudent }) {
                         </div>
                     </GlassCard>
                 ) : (
-                    filteredSubmissions.map((submission, index) => (
-                        <motion.div
-                            key={submission.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
-                        >
-                            <GlassCard hoverable>
-                                <div className="submission-card">
-                                    <div className="submission-card-header">
-                                        {getPillarIcon(submission.pillar)}
-                                        <div className="submission-info">
-                                            <h3 className="submission-title">{submission.title}</h3>
-                                            <p className="submission-platform">{submission.platform}</p>
-                                        </div>
-                                        {getStatusBadge(submission.status)}
-                                    </div>
+                    Object.entries(groupedSubmissions).map(([month, submissions]) => (
+                        <div key={month} className="month-group">
+                            <div className="month-submissions">
+                                {submissions.map((submission, index) => {
+                                    const pillarInfo = PILLARS.find(p => p.id === submission.pillar);
+                                    const PillarIcon = pillarInfo?.icon || FileText;
+                                    const statusConfig = STATUS_OPTIONS.find(s => s.value === submission.status);
 
-                                    <p className="submission-description">{submission.description}</p>
-
-                                    <div className="submission-meta">
-                                        <div className="meta-item">
-                                            <Calendar size={14} />
-                                            <span>{new Date(submission.submittedDate).toLocaleDateString()}</span>
-                                        </div>
-                                        {submission.duration && (
-                                            <div className="meta-item">
-                                                <Clock size={14} />
-                                                <span>{submission.duration}</span>
-                                            </div>
-                                        )}
-                                        <div className="meta-item">
-                                            <ExternalLink size={14} />
-                                            <a href={submission.evidence} target="_blank" rel="noopener noreferrer">
-                                                View Evidence
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div className="submission-actions">
-                                        <Button
-                                            variant="primary"
-                                            size="small"
-                                            onClick={() => setSelectedSubmission(submission)}
+                                    return (
+                                        <motion.div
+                                            key={submission.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.05 * index }}
+                                            className={`submission-card submission-card--${submission.status}`}
                                         >
-                                            <Eye size={16} />
-                                            <span>Review</span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </GlassCard>
-                        </motion.div>
+                                            {/* Student Info Header */}
+                                            <div className="submission-card__header">
+                                                <div className="student-info">
+                                                    <div className="student-avatar">
+                                                        {submission.student.name.charAt(0)}
+                                                    </div>
+                                                    <div className="student-details">
+                                                        <h3 className="student-name">{submission.student.name}</h3>
+                                                        <p className="student-meta">
+                                                            {submission.student.rollNo} • {submission.platform}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className="status-badge"
+                                                    style={{
+                                                        color: statusConfig?.color,
+                                                        background: `${statusConfig?.color}20`,
+                                                        borderColor: statusConfig?.color
+                                                    }}
+                                                >
+                                                    {statusConfig?.label}
+                                                </div>
+                                            </div>
+
+                                            {/* Submission Content */}
+                                            <div className="submission-card__body">
+                                                <h4 className="submission-title">{submission.title}</h4>
+                                                <p className="submission-description">
+                                                    {submission.description}
+                                                </p>
+                                            </div>
+
+                                            {/* Submission Footer */}
+                                            <div className="submission-card__footer">
+                                                <div className="submission-meta">
+                                                    <span className="submission-date">
+                                                        <Clock size={14} />
+                                                        {new Date(submission.submittedDate).toLocaleDateString()}
+                                                    </span>
+                                                    <div className="evidence-links">
+                                                        <span className="evidence-badge">
+                                                            <PillarIcon size={14} />
+                                                            {pillarInfo?.label}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    className="review-button"
+                                                    onClick={() => setSelectedSubmission(submission)}
+                                                >
+                                                    <Eye size={16} />
+                                                    Review
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     ))
                 )}
             </motion.div>

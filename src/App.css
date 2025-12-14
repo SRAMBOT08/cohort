@@ -135,6 +135,20 @@
   box-shadow: 0 4px 12px rgba(247, 201, 72, 0.3);
 }
 
+.nav-link--active span {
+  color: #000000 !important;
+}
+
+[data-theme='light'] .nav-link--active,
+[data-theme='dark'] .nav-link--active {
+  color: #000000 !important;
+}
+
+[data-theme='light'] .nav-link--active span,
+[data-theme='dark'] .nav-link--active span {
+  color: #000000 !important;
+}
+
 .nav-link-indicator {
   position: absolute;
   bottom: -1rem;

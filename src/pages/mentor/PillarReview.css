@@ -14,7 +14,7 @@
 .pillar-review__title {
     font-size: 2.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
+    background: linear-gradient(135deg, #F7C948, #E53935);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -109,12 +109,12 @@
 }
 
 .pillar-review__tab--active svg {
-    color: #fbbf24;
-    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+    color: var(--text-primary);
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3));
 }
 
 .pillar-review__tab--active span {
-    color: #fbbf24;
+    color: var(--text-primary);
     font-weight: 600;
 }
 

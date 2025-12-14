@@ -43,9 +43,15 @@ function MentorHome() {
         <div className="mentor-home-container">
             {/* Profile Modal */}
             {showProfile && (
-                <div className="profile-modal-overlay" onClick={() => setShowProfile(false)}>
+                <motion.div
+                    className="profile-modal-overlay"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    onClick={() => setShowProfile(false)}
+                >
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        className="profile-modal"
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -57,26 +63,26 @@ function MentorHome() {
                                 <h2>{mentorInfo.name}</h2>
                                 <div className="profile-details">
                                     <div className="profile-detail-item">
-                                        <Mail size={20} />
+                                        <Mail size={18} />
                                         <span>{mentorInfo.email}</span>
                                     </div>
                                     <div className="profile-detail-item">
-                                        <Phone size={20} />
+                                        <Phone size={18} />
                                         <span>{mentorInfo.phone}</span>
                                     </div>
                                     <div className="profile-detail-item">
-                                        <Hash size={20} />
+                                        <Hash size={18} />
                                         <span>Mentor ID: {mentorInfo.mentorId}</span>
                                     </div>
                                     <div className="profile-detail-item">
-                                        <Users size={20} />
+                                        <Users size={18} />
                                         <span>Students Handling: {mentorInfo.studentsHandling}</span>
                                     </div>
                                 </div>
                             </div>
                         </GlassCard>
                     </motion.div>
-                </div>
+                </motion.div>
             )}
 
             {/* Header */}
@@ -85,9 +91,14 @@ function MentorHome() {
                     <h1>Welcome back, {mentorInfo.name.split(' ')[0]}!</h1>
                     <p>Track your progress and stay updated with your learning journey</p>
                 </div>
-                <button className="profile-icon-btn" onClick={() => setShowProfile(true)}>
+                <motion.button
+                    className="profile-icon-btn"
+                    onClick={() => setShowProfile(true)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                >
                     <User size={24} />
-                </button>
+                </motion.button>
             </div>
 
             {/* Stats Grid - Full Width Row */}

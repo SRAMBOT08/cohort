@@ -32,6 +32,7 @@ import Settings from './pages/admin/settings/Settings';
 import MentorLayout from './pages/mentor/MentorLayout';
 import FloorWingDashboard from './pages/floorwing/FloorWingDashboard';
 import Login from './pages/Login';
+import ParallaxIntro from './pages/ParallaxIntro';
 import './App.css';
 
 const NAV_ITEMS = [
@@ -242,18 +243,21 @@ function AppContent() {
   const location = useLocation();
   const { user } = useAuth();
   const isLoginPage = location.pathname === '/login';
+  const isIntroPage = location.pathname === '/intro';
 
-  // If not logged in and not on login page, redirect
-  if (!user && location.pathname !== '/login') {
-    return <Navigate to="/login" replace />;
+  // If not logged in and not on login or intro page, redirect to intro
+  if (!user && location.pathname !== '/login' && location.pathname !== '/intro') {
+    return <Navigate to="/intro" replace />;
   }
 
   return (
     <div className="app">
-      {user && !isLoginPage && <Navigation />}
+      {user && !isLoginPage && !isIntroPage && <Navigation />}
 
       <main className="app-main">
         <Routes>
+          {/* Public Routes */}
+          <Route path="/intro" element={<ParallaxIntro />} />
           <Route path="/login" element={<Login />} />
 
           {/* Student Routes */}
