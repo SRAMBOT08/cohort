@@ -172,7 +172,11 @@ class DashboardStatsView(APIView):
             # Get pending notifications
             notifications = self.get_notifications(user)
             
+            # Get student info including mentor
+            student_info = self.get_student_info(user)
+            
             data = {
+                'student_info': student_info,
                 'overall': {
                     'percentage': overall_percentage,
                     'monthly_target': total_monthly_target,
@@ -290,6 +294,34 @@ class DashboardStatsView(APIView):
             'date': p.updated_at.isoformat(),
             'pillar': 'scd',
         } for p in profiles]
+    
+    def get_student_info(self, user):
+        """Get student profile information including mentor details"""
+        try:
+            profile = user.profile
+            mentor_name = None
+            
+            if profile.assigned_mentor:
+                # Get mentor's full name or username
+                mentor = profile.assigned_mentor
+                mentor_name = f"{mentor.first_name} {mentor.last_name}".strip() if mentor.first_name else mentor.username
+            
+            return {
+                'name': f"{user.first_name} {user.last_name}".strip() if user.first_name else user.username,
+                'email': user.email,
+                'roll_number': user.username,  # Assuming username is roll number
+                'phone': getattr(profile, 'phone', None),
+                'mentor_name': mentor_name,
+            }
+        except Exception as e:
+            print(f"Error getting student info: {str(e)}")
+            return {
+                'name': user.username,
+                'email': user.email,
+                'roll_number': user.username,
+                'phone': None,
+                'mentor_name': None,
+            }
     
     def get_notifications(self, user):
         notifications = []

@@ -11,7 +11,7 @@
 }
 
 [data-theme='dark'] .app {
-  background-color: #000000;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
   color: #FFFFFF;
 }
 
@@ -26,21 +26,22 @@
 .nav {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
   padding: 1rem 0;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid;
   transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.95);
 }
 
 [data-theme='light'] .nav {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   border-bottom-color: #E0E0E0;
 }
 
 [data-theme='dark'] .nav {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.95);
   border-bottom-color: #424242;
 }
 
@@ -135,18 +136,8 @@
   box-shadow: 0 4px 12px rgba(247, 201, 72, 0.3);
 }
 
-.nav-link--active span {
-  color: #000000 !important;
-}
-
-[data-theme='light'] .nav-link--active,
-[data-theme='dark'] .nav-link--active {
-  color: #000000 !important;
-}
-
-[data-theme='light'] .nav-link--active span,
-[data-theme='dark'] .nav-link--active span {
-  color: #000000 !important;
+.nav-link--active:hover {
+  color: #FFFFFF !important;
 }
 
 .nav-link-indicator {

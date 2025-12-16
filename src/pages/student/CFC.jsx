@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink, Loader2, AlertCircle, Plus } from 'lucide-react';
+import { Trophy, Video, Briefcase, Brain, Upload, CheckCircle, ExternalLink, Loader2, AlertCircle, Plus, Zap, Globe, Building2, Calendar, MapPin, Sparkles, Search, IndianRupee, Clock, Award } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import HackathonRegistrationModal from '../../components/HackathonRegistrationModal';
 import * as cfcService from '../../services/cfc';
+import hackathonService from '../../services/hackathons';
+import jobsService from '../../services/jobs';
 import './CFC.css';
 
 const TABS = [
-  { id: 'hackathon', label: 'Hackathon', icon: Trophy },
+  { id: 'hackathon', label: 'Hackathon Participation', icon: Trophy },
   { id: 'bmc', label: 'BMC Video', icon: Video },
   { id: 'internship', label: 'Internship', icon: Briefcase },
   { id: 'genai', label: 'GenAI Project', icon: Brain },
+  { id: 'discovery', label: 'Hackathon Discovery', icon: Zap },
+  { id: 'jobs', label: 'Internship Hunt', icon: Search },
 ];
 
 export const CFC = () => {
@@ -25,6 +29,33 @@ export const CFC = () => {
   // Registration modal state
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [registeredHackathons, setRegisteredHackathons] = useState([]);
+
+  // Discovery tab state
+  const [discoveryFilter, setDiscoveryFilter] = useState('all');
+  const [discoveryHackathons, setDiscoveryHackathons] = useState([]);
+  const [discoveryLoading, setDiscoveryLoading] = useState(false);
+  const [currentNotificationIndex, setCurrentNotificationIndex] = useState(0);
+
+  // Jobs/Internships tab state
+  const [jobsFilter, setJobsFilter] = useState('all');
+  const [jobsOpportunities, setJobsOpportunities] = useState([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+
+  const notificationMessages = [
+    "🚀 Showing latest hackathons for Dec 2025 - Feb 2026. Updated regularly!",
+    "💡 Filter by online/in-person to find events that match your preference",
+    "🎯 Click on hackathon cards to visit registration pages",
+    "⭐ Register early for better chances and preparation time",
+    "🌟 Join hackathons to boost your skills and network!"
+  ];
+
+  const jobNotificationMessages = [
+    "💼 Fresh opportunities added daily - check back often!",
+    "🎯 Filter by internship/full-time to find your perfect match",
+    "📍 All positions are India-based and fresher-friendly",
+    "⚡ Apply early to increase your chances of selection",
+    "🌟 Build your profile with internships and move to full-time roles!"
+  ];
 
   // Hackathon state
   const [hackathonName, setHackathonName] = useState('');
@@ -73,12 +104,82 @@ export const CFC = () => {
     fetchRegisteredHackathons();
   }, []);
 
+  // Load discovery hackathons when discovery tab is active
+  useEffect(() => {
+    if (activeTab === 'discovery') {
+      fetchDiscoveryHackathons();
+    }
+  }, [activeTab]);
+
+  // Load jobs/internships when jobs tab is active
+  useEffect(() => {
+    if (activeTab === 'jobs') {
+      fetchJobsOpportunities();
+    }
+  }, [activeTab]);
+
+  // Rotate notification messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentNotificationIndex((prevIndex) => 
+        (prevIndex + 1) % notificationMessages.length
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const fetchRegisteredHackathons = async () => {
     try {
       const data = await cfcService.getHackathonRegistrations();
       setRegisteredHackathons(data);
     } catch (err) {
       console.error('Failed to fetch registered hackathons:', err);
+    }
+  };
+
+  const fetchDiscoveryHackathons = async () => {
+    setDiscoveryLoading(true);
+    try {
+      const response = await hackathonService.getHackathons();
+      // Handle the API response structure
+      const hackathonsData = response.hackathons || response || [];
+      
+      // Transform API data to match component expectations
+      const transformedHackathons = hackathonsData.map(h => ({
+        id: h.id,
+        name: h.name,
+        date: h.start_date,
+        location: h.location,
+        link: h.url,
+        mode: h.is_online ? 'online' : 'in-person',
+        description: h.description
+      }));
+      
+      setDiscoveryHackathons(transformedHackathons);
+    } catch (err) {
+      console.error('Failed to fetch discovery hackathons:', err);
+      setDiscoveryHackathons([]);
+    } finally {
+      setDiscoveryLoading(false);
+    }
+  };
+
+  const fetchJobsOpportunities = async () => {
+    setJobsLoading(true);
+    try {
+      console.log('Fetching jobs opportunities...');
+      const response = await jobsService.getOpportunities();
+      console.log('Jobs API response:', response);
+      const opportunitiesData = response.opportunities || response || [];
+      console.log('Opportunities data:', opportunitiesData);
+      setJobsOpportunities(opportunitiesData);
+    } catch (err) {
+      console.error('Failed to fetch job opportunities:', err);
+      console.error('Error details:', err.response?.data);
+      setJobsOpportunities([]);
+    } finally {
+      setJobsLoading(false);
     }
   };
 
@@ -720,6 +821,640 @@ export const CFC = () => {
                 </Button>
               </div>
             </GlassCard>
+          </motion.div>
+        )}
+
+        {activeTab === 'discovery' && (
+          <motion.div
+            key="discovery"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Notification Banner */}
+            <motion.div
+              key={currentNotificationIndex}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                padding: '1.25rem 2rem',
+                background: 'linear-gradient(135deg, rgba(136, 84, 208, 0.08) 0%, rgba(115, 103, 240, 0.08) 100%)',
+                borderRadius: '16px',
+                marginBottom: '2rem',
+                border: '1px solid rgba(136, 84, 208, 0.15)',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(136, 84, 208, 0.05)'
+              }}
+            >
+              <p style={{ 
+                margin: 0, 
+                color: 'var(--text-primary)', 
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                lineHeight: '1.6'
+              }}>
+                {notificationMessages[currentNotificationIndex]}
+              </p>
+            </motion.div>
+
+            {/* Filter Buttons */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '1rem', 
+              marginBottom: '2.5rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center'
+            }}>
+              {[
+                { value: 'all', label: 'All Hackathons', icon: Sparkles },
+                { value: 'online', label: 'Online', icon: Globe },
+                { value: 'in-person', label: 'In-Person', icon: Building2 }
+              ].map(({ value, label, icon: Icon }) => (
+                <Button
+                  key={value}
+                  variant={discoveryFilter === value ? 'primary' : 'secondary'}
+                  onClick={() => setDiscoveryFilter(value)}
+                  style={{ 
+                    flex: '1', 
+                    minWidth: '160px',
+                    maxWidth: '250px',
+                    padding: '0.75rem 1.5rem',
+                    fontWeight: '600',
+                    fontSize: '0.95rem'
+                  }}
+                >
+                  <Icon size={18} />
+                  {label}
+                </Button>
+              ))}
+            </div>
+
+            {/* Loading State */}
+            {discoveryLoading && (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                padding: '3rem',
+                minHeight: '300px'
+              }}>
+                <Loader2 size={40} className="animate-spin" style={{ color: 'var(--primary-color)' }} />
+              </div>
+            )}
+
+            {/* Hackathons Grid */}
+            {!discoveryLoading && (
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                gap: '1.5rem'
+              }}>
+                {discoveryHackathons
+                  .filter(h => discoveryFilter === 'all' || h.mode.toLowerCase() === discoveryFilter)
+                  .map((hackathon, index) => (
+                    <motion.div
+                      key={hackathon.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <GlassCard 
+                        variant="medium"
+                        style={{ 
+                          height: '100%',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflow: 'hidden',
+                          padding: 0
+                        }}
+                        onClick={() => window.open(hackathon.link, '_blank')}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                          e.currentTarget.style.boxShadow = '0 12px 40px rgba(136, 84, 208, 0.2)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '';
+                        }}
+                      >
+                        <div style={{
+                          padding: '1.5rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%',
+                          gap: '0.25rem'
+                        }}>
+                          {/* Header with badge */}
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'flex-start',
+                            gap: '1rem',
+                            marginBottom: '1.25rem'
+                          }}>
+                            <h3 style={{ 
+                              margin: 0, 
+                              color: 'var(--text-primary)',
+                              fontSize: '1.1rem',
+                              fontWeight: '600',
+                              lineHeight: '1.4',
+                              flex: 1,
+                              wordBreak: 'break-word',
+                              paddingRight: '0.5rem'
+                            }}>
+                              {hackathon.name}
+                            </h3>
+                            <span style={{
+                              padding: '0.4rem 0.9rem',
+                              background: hackathon.mode.toLowerCase() === 'online' 
+                                ? 'linear-gradient(135deg, rgba(26, 188, 156, 0.15), rgba(22, 160, 133, 0.15))' 
+                                : 'linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(41, 128, 185, 0.15))',
+                              color: hackathon.mode.toLowerCase() === 'online' 
+                                ? '#16a085' 
+                                : '#2980b9',
+                              borderRadius: '20px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              whiteSpace: 'nowrap',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              border: `1px solid ${hackathon.mode.toLowerCase() === 'online' ? 'rgba(26, 188, 156, 0.3)' : 'rgba(52, 152, 219, 0.3)'}`,
+                              flexShrink: 0
+                            }}>
+                              {hackathon.mode.toLowerCase() === 'online' ? 'ONLINE' : 'IN-PERSON'}
+                            </span>
+                          </div>
+
+                          {/* Info section */}
+                          <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '0.85rem',
+                            marginBottom: '1.25rem',
+                            flex: 1
+                          }}>
+                            {/* Date */}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '0.85rem'
+                            }}>
+                              <Calendar 
+                                size={18} 
+                                style={{ 
+                                  color: 'var(--primary-color)',
+                                  flexShrink: 0
+                                }} 
+                              />
+                              <span style={{
+                                color: 'var(--text-secondary)',
+                                fontSize: '0.9rem',
+                                fontWeight: '500'
+                              }}>
+                                {hackathon.date}
+                              </span>
+                            </div>
+
+                            {/* Location */}
+                            {hackathon.location && (
+                              <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '0.85rem'
+                              }}>
+                                <MapPin 
+                                  size={18} 
+                                  style={{ 
+                                    color: 'var(--primary-color)',
+                                    flexShrink: 0
+                                  }} 
+                                />
+                                <span style={{
+                                  color: 'var(--text-secondary)',
+                                  fontSize: '0.9rem',
+                                  fontWeight: '500',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  {hackathon.location}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Action Button */}
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            padding: '0.9rem 1rem',
+                            background: 'linear-gradient(135deg, rgba(136, 84, 208, 0.1), rgba(115, 103, 240, 0.1))',
+                            borderRadius: '10px',
+                            color: 'var(--primary-color)',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            border: '1px solid rgba(136, 84, 208, 0.2)',
+                            transition: 'all 0.2s ease',
+                            marginTop: 'auto'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.stopPropagation();
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(136, 84, 208, 0.2), rgba(115, 103, 240, 0.2))';
+                            e.currentTarget.style.borderColor = 'rgba(136, 84, 208, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.stopPropagation();
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(136, 84, 208, 0.1), rgba(115, 103, 240, 0.1))';
+                            e.currentTarget.style.borderColor = 'rgba(136, 84, 208, 0.2)';
+                          }}
+                          >
+                            <ExternalLink size={18} />
+                            <span>View Details & Register</span>
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  ))}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!discoveryLoading && discoveryHackathons.filter(h => 
+              discoveryFilter === 'all' || h.mode.toLowerCase() === discoveryFilter
+            ).length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '3rem',
+                color: 'var(--text-secondary)'
+              }}>
+                <Zap size={48} style={{ opacity: 0.5, marginBottom: '1rem' }} />
+                <p style={{ margin: 0, fontSize: '1.1rem' }}>
+                  No {discoveryFilter !== 'all' ? discoveryFilter : ''} hackathons found
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {activeTab === 'jobs' && (
+          <motion.div
+            key="jobs"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Notification Banner */}
+            <motion.div
+              key={`job-${currentNotificationIndex}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                padding: '1.25rem 2rem',
+                background: 'linear-gradient(135deg, rgba(52, 152, 219, 0.08) 0%, rgba(41, 128, 185, 0.08) 100%)',
+                borderRadius: '16px',
+                marginBottom: '2rem',
+                border: '1px solid rgba(52, 152, 219, 0.15)',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(52, 152, 219, 0.05)'
+              }}
+            >
+              <p style={{ 
+                margin: 0, 
+                color: 'var(--text-primary)', 
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                lineHeight: '1.6'
+              }}>
+                {jobNotificationMessages[currentNotificationIndex % jobNotificationMessages.length]}
+              </p>
+            </motion.div>
+
+            {/* Filter Buttons */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '1rem', 
+              marginBottom: '2.5rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center'
+            }}>
+              {[
+                { value: 'all', label: 'All Opportunities', icon: Sparkles },
+                { value: 'internship', label: 'Internships', icon: Award },
+                { value: 'job', label: 'Full-Time Jobs', icon: Briefcase }
+              ].map(({ value, label, icon: Icon }) => (
+                <Button
+                  key={value}
+                  variant={jobsFilter === value ? 'primary' : 'secondary'}
+                  onClick={() => setJobsFilter(value)}
+                  style={{ 
+                    flex: '1', 
+                    minWidth: '160px',
+                    maxWidth: '250px',
+                    padding: '0.75rem 1.5rem',
+                    fontWeight: '600',
+                    fontSize: '0.95rem'
+                  }}
+                >
+                  <Icon size={18} />
+                  {label}
+                </Button>
+              ))}
+            </div>
+
+            {/* Loading State */}
+            {jobsLoading && (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                padding: '3rem',
+                minHeight: '300px'
+              }}>
+                <Loader2 size={40} className="animate-spin" style={{ color: 'var(--primary-color)' }} />
+              </div>
+            )}
+
+            {/* Jobs Grid */}
+            {!jobsLoading && (
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+                gap: '1.5rem'
+              }}>
+                {jobsOpportunities
+                  .filter(job => jobsFilter === 'all' || job.type === jobsFilter)
+                  .map((job, index) => (
+                    <motion.div
+                      key={job.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <GlassCard 
+                        variant="medium"
+                        style={{ 
+                          height: '100%',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflow: 'hidden',
+                          padding: 0
+                        }}
+                        onClick={() => window.open(job.url, '_blank')}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                          e.currentTarget.style.boxShadow = '0 12px 40px rgba(52, 152, 219, 0.2)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '';
+                        }}
+                      >
+                        <div style={{
+                          padding: '1.5rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%',
+                          gap: '0.25rem'
+                        }}>
+                          {/* Header */}
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'flex-start',
+                            gap: '1rem',
+                            marginBottom: '0.75rem'
+                          }}>
+                            <div style={{ flex: 1 }}>
+                              <h3 style={{ 
+                                margin: '0 0 0.5rem 0', 
+                                color: 'var(--text-primary)',
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                lineHeight: '1.4',
+                                wordBreak: 'break-word'
+                              }}>
+                                {job.title}
+                              </h3>
+                              <p style={{
+                                margin: 0,
+                                color: 'var(--primary-color)',
+                                fontSize: '1rem',
+                                fontWeight: '600'
+                              }}>
+                                {job.company}
+                              </p>
+                            </div>
+                            <span style={{
+                              padding: '0.4rem 0.9rem',
+                              background: job.type === 'internship'
+                                ? 'linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(142, 68, 173, 0.15))' 
+                                : 'linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.15))',
+                              color: job.type === 'internship' ? '#8e44ad' : '#27ae60',
+                              borderRadius: '20px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              whiteSpace: 'nowrap',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              border: `1px solid ${job.type === 'internship' ? 'rgba(155, 89, 182, 0.3)' : 'rgba(46, 204, 113, 0.3)'}`,
+                              flexShrink: 0
+                            }}>
+                              {job.type === 'internship' ? 'INTERNSHIP' : 'FULL-TIME'}
+                            </span>
+                          </div>
+
+                          {/* Info section */}
+                          <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '0.75rem',
+                            marginBottom: '1rem',
+                            flex: 1
+                          }}>
+                            {/* Location & Mode */}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '0.85rem',
+                              flexWrap: 'wrap'
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <MapPin 
+                                  size={16} 
+                                  style={{ 
+                                    color: 'var(--primary-color)',
+                                    flexShrink: 0
+                                  }} 
+                                />
+                                <span style={{
+                                  color: 'var(--text-secondary)',
+                                  fontSize: '0.85rem',
+                                  fontWeight: '500'
+                                }}>
+                                  {job.location}
+                                </span>
+                              </div>
+                              {job.mode && (
+                                <span style={{
+                                  padding: '0.25rem 0.65rem',
+                                  background: 'rgba(52, 152, 219, 0.1)',
+                                  color: '#2980b9',
+                                  borderRadius: '12px',
+                                  fontSize: '0.7rem',
+                                  fontWeight: '600',
+                                  textTransform: 'capitalize'
+                                }}>
+                                  {job.mode}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Stipend & Duration */}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '1.5rem',
+                              flexWrap: 'wrap'
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <IndianRupee 
+                                  size={16} 
+                                  style={{ 
+                                    color: '#27ae60',
+                                    flexShrink: 0
+                                  }} 
+                                />
+                                <span style={{
+                                  color: 'var(--text-secondary)',
+                                  fontSize: '0.85rem',
+                                  fontWeight: '600'
+                                }}>
+                                  {job.stipend}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Clock 
+                                  size={16} 
+                                  style={{ 
+                                    color: 'var(--primary-color)',
+                                    flexShrink: 0
+                                  }} 
+                                />
+                                <span style={{
+                                  color: 'var(--text-secondary)',
+                                  fontSize: '0.85rem',
+                                  fontWeight: '500'
+                                }}>
+                                  {job.duration}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Description */}
+                            <p style={{
+                              margin: 0,
+                              color: 'var(--text-secondary)',
+                              fontSize: '0.85rem',
+                              lineHeight: '1.5',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden'
+                            }}>
+                              {job.description}
+                            </p>
+
+                            {/* Skills */}
+                            {job.skills && job.skills.length > 0 && (
+                              <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '0.5rem',
+                                marginTop: '0.25rem'
+                              }}>
+                                {job.skills.slice(0, 3).map((skill, idx) => (
+                                  <span
+                                    key={idx}
+                                    style={{
+                                      padding: '0.25rem 0.65rem',
+                                      background: 'rgba(136, 84, 208, 0.1)',
+                                      color: 'var(--primary-color)',
+                                      borderRadius: '12px',
+                                      fontSize: '0.7rem',
+                                      fontWeight: '500'
+                                    }}
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Action Button */}
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            padding: '0.9rem 1rem',
+                            background: 'linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1))',
+                            borderRadius: '10px',
+                            color: '#2980b9',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            border: '1px solid rgba(52, 152, 219, 0.2)',
+                            transition: 'all 0.2s ease',
+                            marginTop: 'auto'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.stopPropagation();
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.2))';
+                            e.currentTarget.style.borderColor = 'rgba(52, 152, 219, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.stopPropagation();
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1))';
+                            e.currentTarget.style.borderColor = 'rgba(52, 152, 219, 0.2)';
+                          }}
+                          >
+                            <ExternalLink size={18} />
+                            <span>View Details & Apply</span>
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  ))}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!jobsLoading && jobsOpportunities.filter(job => 
+              jobsFilter === 'all' || job.type === jobsFilter
+            ).length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '3rem',
+                color: 'var(--text-secondary)'
+              }}>
+                <Search size={48} style={{ opacity: 0.5, marginBottom: '1rem' }} />
+                <p style={{ margin: 0, fontSize: '1.1rem' }}>
+                  No {jobsFilter !== 'all' ? jobsFilter : ''} opportunities found
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
 

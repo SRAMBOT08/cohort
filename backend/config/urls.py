@@ -54,7 +54,7 @@ urlpatterns = [
     path('api/iipc/', include('apps.iipc.urls')),
     path('api/scd/', include('apps.scd.urls')),
     path('api/dashboard/', include('apps.dashboard.urls')),
-    path('api/hackathons/', include('hackathons.urls')),
+    path('api/hackathons/', include('apps.hackathons.urls')),
     
     # Mentor APIs
     path('api/mentor/', include('apps.mentor_urls')),

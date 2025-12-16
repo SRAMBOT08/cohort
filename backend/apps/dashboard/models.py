@@ -12,12 +12,20 @@ class Announcement(models.Model):
         ('deadline', 'Deadline'),
         ('important', 'Important'),
         ('reminder', 'Reminder'),
+        ('job', 'Job Opportunity'),
+        ('internship', 'Internship Opportunity'),
     ]
     
     PRIORITY_CHOICES = [
         ('low', 'Low'),
         ('medium', 'Medium'),
         ('high', 'High'),
+    ]
+    
+    JOB_MODE_CHOICES = [
+        ('on-site', 'On-site'),
+        ('remote', 'Remote'),
+        ('hybrid', 'Hybrid'),
     ]
     
     mentor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='announcements_created')
@@ -28,6 +36,16 @@ class Announcement(models.Model):
     
     # Optional deadline/event date
     event_date = models.DateField(null=True, blank=True, help_text="For deadlines or events")
+    
+    # Job/Internship specific fields
+    company_name = models.CharField(max_length=255, null=True, blank=True, help_text="Company name for job/internship postings")
+    job_location = models.CharField(max_length=255, null=True, blank=True, help_text="Job location")
+    job_mode = models.CharField(max_length=20, choices=JOB_MODE_CHOICES, null=True, blank=True, help_text="Work mode")
+    job_duration = models.CharField(max_length=100, null=True, blank=True, help_text="Duration (e.g., '6 months', 'Full-time')")
+    job_stipend = models.CharField(max_length=100, null=True, blank=True, help_text="Stipend/Salary range")
+    application_url = models.URLField(max_length=500, null=True, blank=True, help_text="Application link")
+    application_deadline = models.DateField(null=True, blank=True, help_text="Last date to apply")
+    required_skills = models.TextField(null=True, blank=True, help_text="Comma-separated skills")
     
     # Tracking
     created_at = models.DateTimeField(auto_now_add=True)

@@ -168,7 +168,9 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = [
             'id', 'mentor', 'title', 'description', 'category', 'priority',
-            'event_date', 'created_at', 'updated_at', 'time_ago', 'is_read'
+            'event_date', 'created_at', 'updated_at', 'time_ago', 'is_read',
+            'company_name', 'job_location', 'job_mode', 'job_duration', 
+            'job_stipend', 'application_url', 'application_deadline', 'required_skills'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
@@ -208,7 +210,11 @@ class AnnouncementCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Announcement
-        fields = ['title', 'description', 'category', 'priority', 'event_date']
+        fields = [
+            'title', 'description', 'category', 'priority', 'event_date',
+            'company_name', 'job_location', 'job_mode', 'job_duration',
+            'job_stipend', 'application_url', 'application_deadline', 'required_skills'
+        ]
     
     def validate_title(self, value):
         if len(value) < 3:
@@ -219,3 +225,18 @@ class AnnouncementCreateSerializer(serializers.ModelSerializer):
         if len(value) < 5:
             raise serializers.ValidationError("Description must be at least 5 characters long")
         return value
+    
+    def validate(self, data):
+        """Validate job/internship specific fields"""
+        category = data.get('category')
+        
+        # If posting a job or internship, ensure required fields are present
+        if category in ['job', 'internship']:
+            required_job_fields = ['company_name', 'job_location', 'application_url']
+            for field in required_job_fields:
+                if not data.get(field):
+                    raise serializers.ValidationError(
+                        f"{field.replace('_', ' ').title()} is required for job/internship postings"
+                    )
+        
+        return data

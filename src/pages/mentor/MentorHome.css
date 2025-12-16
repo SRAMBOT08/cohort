@@ -41,6 +41,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
+  color: #fff;
 }
 
 .profile-icon-btn:hover {
@@ -48,6 +49,20 @@
   border-color: rgba(247, 201, 72, 0.8);
   box-shadow: 0 4px 12px rgba(247, 201, 72, 0.5);
   transform: scale(1.05);
+  color: #fff;
+}
+
+/* Ensure all buttons maintain visible text on hover */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  color: inherit !important;
+}
+
+button:hover span {
+  color: inherit !important;
 }
 
 /* Profile Modal */
@@ -65,11 +80,6 @@
   z-index: 1000;
 }
 
-.profile-modal {
-  max-width: 500px;
-  width: 90%;
-}
-
 .profile-modal-content {
   text-align: center;
   padding: 2rem;
@@ -84,6 +94,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
+  color: #000000;
 }
 
 .profile-modal-content h2 {
@@ -340,7 +351,7 @@
   .mentor-home-dashboard {
     grid-template-columns: 1fr;
   }
-
+  
   .mentor-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -350,17 +361,17 @@
   .mentor-home-container {
     padding: 1rem;
   }
-
+  
   .mentor-home-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-
+  
   .mentor-stats-grid {
     grid-template-columns: 1fr;
   }
-
+  
   .mentor-home-dashboard {
     gap: 1.5rem;
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, Users, ClipboardCheck } from 'lucide-react';
+import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, Users, ClipboardCheck, Megaphone } from 'lucide-react';
 import { ThemeProvider } from './theme/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ThemeToggle from './components/ThemeToggle';
@@ -14,7 +14,6 @@ import CFC from './pages/student/CFC';
 import IIPC from './pages/student/IIPC';
 import SCD from './pages/student/SCD';
 import ProfileSettings from './pages/student/ProfileSettings';
-import Hackathons from './pages/student/Hackathons';
 import MonthlyReport from './pages/student/MonthlyReport';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -43,7 +42,6 @@ const NAV_ITEMS = [
   { path: '/cfc', label: 'CFC', icon: Trophy },
   { path: '/iipc', label: 'IIPC', icon: Linkedin },
   { path: '/scd', label: 'SCD', icon: Code },
-  { path: '/hackathons', label: 'Hackathons', icon: Zap },
 ];
 
 function Navigation() {
@@ -82,6 +80,7 @@ function Navigation() {
     { path: '/mentor-dashboard', label: 'Home', icon: Home },
     { path: '/mentor-dashboard/students', label: 'Student List', icon: Users },
     { path: '/mentor-dashboard/pillar-review', label: 'Pillar Review', icon: ClipboardCheck },
+    { path: '/mentor-dashboard/announcements', label: 'Announcements', icon: Megaphone },
   ];
 
   return (
@@ -270,7 +269,8 @@ function AppContent() {
           <Route path="/cfc" element={<ProtectedRoute><CFC /></ProtectedRoute>} />
           <Route path="/iipc" element={<ProtectedRoute><IIPC /></ProtectedRoute>} />
           <Route path="/scd" element={<ProtectedRoute><SCD /></ProtectedRoute>} />
-          <Route path="/hackathons" element={<ProtectedRoute><Hackathons /></ProtectedRoute>} />
+          {/* Redirect old hackathons route to CFC */}
+          <Route path="/hackathons" element={<Navigate to="/cfc" replace />} />
           <Route path="/monthly-report" element={<ProtectedRoute><MonthlyReport /></ProtectedRoute>} />
           <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
 
