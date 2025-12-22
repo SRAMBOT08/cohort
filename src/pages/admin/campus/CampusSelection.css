@@ -1,25 +1,26 @@
 .campus-selection-container {
-    padding: 3rem 2rem;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
+    padding: 2rem;
     min-height: calc(100vh - 80px);
 }
 
 .campus-selection-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 1;
 }
 
 .campus-selection-title {
     font-family: 'Sora', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 800;
     margin: 0 0 1rem 0;
-    background: linear-gradient(135deg, #F7C948 0%, #FFA726 100%);
+    background: linear-gradient(135deg, #F7C948 0%, #E53935 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.5px;
 }
 
 .campus-selection-subtitle {

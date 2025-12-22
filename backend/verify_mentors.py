@@ -70,9 +70,10 @@ def verify_mentors():
         print(f"   Total Mentors: {len(floor2_data.get('mentors', []))}")
         
         print("\n   Students:")
-        for student in floor2_data.get('students', [])[:5]:
-            mentor_name = student.get('mentor_name') or 'Not assigned'
-            print(f"      • {student['email']} - Mentor: {mentor_name}")
+        for student in floor2_data.get('students', [])[:10]:
+            mentor_name = student.get('mentor') or 'Not assigned'
+            mentor_id = student.get('mentor_id', 'N/A')
+            print(f"      • {student['email']} - Mentor: {mentor_name} (ID: {mentor_id})")
         
         print("\n   Mentors:")
         for mentor in floor2_data.get('mentors', []):
