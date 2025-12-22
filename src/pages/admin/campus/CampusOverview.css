@@ -1,12 +1,5 @@
 /* Campus Overview Page - Matching Mentor Dashboard Design */
-/* Theme Variables */
-:root {
-    --text-primary: #FFFFFF;
-    --text-secondary: #BDBDBD;
-    --glass-bg: rgba(18, 18, 18, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --border-color: rgba(255, 255, 255, 0.1);
-}
+/* Uses ThemeContext CSS variables: --text-primary, --text-secondary, --glass-bg, --border-primary */
 
 .campus-overview-container {
     max-width: 1600px;
