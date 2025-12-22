@@ -54,19 +54,23 @@ def setup_database(request):
     # Import CSV users
     # Try multiple possible paths
     possible_paths = [
+        os.path.join(os.path.dirname(__file__), '..', 'dummy users - Sheet1.csv'),
         os.path.join(os.path.dirname(__file__), '..', '..', 'dummy users - Sheet1.csv'),
-        os.path.join(os.path.dirname(__file__), '..', '..', '..', 'dummy users - Sheet1.csv'),
         '/app/dummy users - Sheet1.csv',
+        '/app/backend/dummy users - Sheet1.csv',
     ]
     
     csv_path = None
     for path in possible_paths:
-        if os.path.exists(path):
-            csv_path = path
+        normalized = os.path.normpath(path)
+        if os.path.exists(normalized):
+            csv_path = normalized
             break
     
     if not csv_path:
-        results['errors'].append(f'CSV not found. Tried: {possible_paths}')
+        results['errors'].append(f'CSV not found. Tried: {[os.path.normpath(p) for p in possible_paths]}')
+        results['cwd'] = os.getcwd()
+        results['files_in_app'] = os.listdir('/app') if os.path.exists('/app') else 'N/A'
         return JsonResponse(results)
     
     campus = 'TECH'
