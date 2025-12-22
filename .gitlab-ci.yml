@@ -15,9 +15,15 @@ build:
   stage: build
   image: node:20-alpine
   script:
+    - echo "Starting build..."
+    - ls -la
+    - echo "Checking for index.html..."
+    - cat index.html || echo "index.html not found in root"
     - npm ci
     - npm run build
+    - echo "Build complete. Contents of dist:"
     - ls -la dist/
+    - cat dist/index.html || echo "dist/index.html not found"
   artifacts:
     paths:
       - dist/
