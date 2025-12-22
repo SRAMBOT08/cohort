@@ -1,0 +1,43 @@
+# GitLab CI/CD Pipeline for Frontend Deployment
+# This pipeline builds the React/Vite app and deploys to GitLab Pages
+
+stages:
+  - build
+  - deploy
+
+variables:
+  # Set your Render backend URL here after deployment
+  VITE_API_URL: "https://cohort-zzbs.onrender.com/api"
+
+# Build stage - builds the Vite/React application
+build:
+  stage: build
+  image: node:20-alpine
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+  only:
+    - main
+    - master
+
+# Deploy to GitLab Pages
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    # GitLab Pages requires the files to be in a 'public' directory
+    - mv dist public
+    # Create a _redirects file for SPA routing (optional, for history mode)
+    - echo "/* /index.html 200" > public/_redirects
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+    - master
+  dependencies:
+    - build
