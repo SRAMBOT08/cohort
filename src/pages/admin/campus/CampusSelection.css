@@ -1,5 +1,5 @@
 /* Campus Selection Page - Matching Mentor Dashboard Design */
-/* Uses ThemeContext CSS variables: --text-primary, --text-secondary, --glass-bg, --border-primary */
+/* Uses ThemeContext CSS variables with fallbacks for SSR */
 
 .campus-selection-container {
     max-width: 1600px;
@@ -29,7 +29,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 1.125rem;
     margin: 0;
-    color: var(--text-secondary);
+    color: #BDBDBD;
     font-weight: 400;
 }
 
@@ -72,12 +72,12 @@
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0;
-    color: var(--text-primary);
+    color: var(--text-primary, #FFFFFF);
 }
 
 .campus-description {
     font-size: 1rem;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #BDBDBD);
     margin: 0;
     line-height: 1.5;
 }
@@ -110,7 +110,7 @@
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #BDBDBD);
     font-weight: 500;
 }
 
