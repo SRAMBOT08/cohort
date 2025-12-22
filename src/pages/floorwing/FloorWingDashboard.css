@@ -990,12 +990,6 @@
     background: rgba(247, 201, 72, 0.25);
     box-shadow: 0 0 0 3px rgba(247, 201, 72, 0.15);
 }
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
 
 .create-announcement-btn:hover {
     transform: translateY(-2px);
