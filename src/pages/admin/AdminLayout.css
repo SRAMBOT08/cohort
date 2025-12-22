@@ -4,7 +4,7 @@
 }
 
 [data-theme="dark"] {
-    --admin-bg: #0A0A0A;
+    --admin-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 
 /* Global Admin Styles */
