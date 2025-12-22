@@ -39,15 +39,12 @@ pages:
   stage: deploy
   image: alpine:latest
   script:
-    - echo "Checking downloaded artifacts..."
-    - ls -laR dist/
     - rm -rf public
     - mv dist public
-    - echo "Contents of public after move:"
-    - ls -laR public/
-    - test -f public/index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
-    - test -d public/assets && echo "✅ assets folder exists" || echo "❌ assets folder missing"
+    - touch public/.nojekyll
     - cp public/index.html public/404.html
+    - echo "Final public contents:"
+    - ls -laR public/
   artifacts:
     paths:
       - public
