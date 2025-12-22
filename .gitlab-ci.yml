@@ -40,10 +40,13 @@ pages:
   image: alpine:latest
   script:
     - echo "Checking downloaded artifacts..."
-    - ls -la dist/
+    - ls -laR dist/
     - rm -rf public
     - mv dist public
-    - ls -la public/
+    - echo "Contents of public after move:"
+    - ls -laR public/
+    - test -f public/index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
+    - test -d public/assets && echo "✅ assets folder exists" || echo "❌ assets folder missing"
     - cp public/index.html public/404.html
   artifacts:
     paths:
