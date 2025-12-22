@@ -2,6 +2,9 @@
 Django==4.2.7
 djangorestframework==3.14.0
 
+# Python 3.13 compatibility
+setuptools>=65.0.0
+
 # Authentication (handled by another team member)
 djangorestframework-simplejwt==5.3.0
 
