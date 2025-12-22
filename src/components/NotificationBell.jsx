@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, Check, CheckCheck } from 'lucide-react';
 import './NotificationBell.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -33,7 +35,7 @@ const NotificationBell = () => {
     const fetchUnreadCount = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://127.0.0.1:8000/api/profiles/notifications/unread_count/', {
+            const response = await fetch(`${API_BASE_URL}/profiles/notifications/unread_count/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
@@ -49,7 +51,7 @@ const NotificationBell = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://127.0.0.1:8000/api/profiles/notifications/', {
+            const response = await fetch(`${API_BASE_URL}/profiles/notifications/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
@@ -66,7 +68,7 @@ const NotificationBell = () => {
     const markAsRead = async (notificationId) => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetch(`http://127.0.0.1:8000/api/profiles/notifications/${notificationId}/mark_read/`, {
+            await fetch(`${API_BASE_URL}/profiles/notifications/${notificationId}/mark_read/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -86,7 +88,7 @@ const NotificationBell = () => {
     const markAllAsRead = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetch('http://127.0.0.1:8000/api/profiles/notifications/mark_all_read/', {
+            await fetch(`${API_BASE_URL}/profiles/notifications/mark_all_read/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

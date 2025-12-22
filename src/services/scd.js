@@ -7,7 +7,7 @@ import axios from 'axios';
 
 // Create dedicated axios instance for SCD
 const scdAxios = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/scd'
+  baseURL: `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'}/scd`
 });
 
 // Add request interceptor for authentication
