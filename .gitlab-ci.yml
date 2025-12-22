@@ -40,13 +40,9 @@ pages:
   image: alpine:latest
   script:
     - echo "Checking downloaded artifacts..."
-    - ls -la
-    - echo "Contents of dist folder:"
-    - ls -la dist/ || echo "dist folder not found"
-    - echo "Files in dist:"
-    - find dist -type f || echo "No files in dist"
+    - ls -la dist/
+    - rm -rf public
     - mv dist public
-    - echo "After moving to public:"
     - ls -la public/
     - cp public/index.html public/404.html
   artifacts:
