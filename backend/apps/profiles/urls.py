@@ -16,6 +16,7 @@ from .admin_views import (
 )
 from .announcement_views import FloorAnnouncementViewSet, StudentAnnouncementViewSet
 from .notification_views import NotificationViewSet
+from .views_import import import_dummy_users
 
 app_name = 'profiles'
 
@@ -40,6 +41,9 @@ urlpatterns = [
     path('admin/assign-floor-wing/', AdminAssignFloorWingView.as_view(), name='admin-assign-floor-wing'),
     path('admin/assign-mentor/', AdminAssignMentorView.as_view(), name='admin-assign-mentor'),
     path('admin/student/<int:student_id>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
+    
+    # Import users endpoint (admin only)
+    path('admin/import-users/', import_dummy_users, name='admin-import-users'),
     
     # Announcement routes (via router)
     path('', include(router.urls)),
