@@ -167,228 +167,284 @@ const FloorDetail = () => {
                 </div>
             </div>
 
-            <div className="floor-detail-content">
-                <div className="tabs">
-                    <button 
-                        className={`tab ${selectedTab === 'students' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('students')}
-                    >
-                        <Users size={18} />
-                        Students
-                    </button>
-                    <button 
-                        className={`tab ${selectedTab === 'mentors' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('mentors')}
-                    >
-                        <UserCheck size={18} />
-                        Mentors
-                    </button>
-                    <button 
-                        className={`tab ${selectedTab === 'floorwing' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('floorwing')}
-                    >
-                        <Crown size={18} />
-                        Floor Wing
-                    </button>
-                </div>
+            <div className="floor-tabs">
+                <button 
+                    className={`tab-button ${selectedTab === 'students' ? 'active' : ''}`}
+                    onClick={() => setSelectedTab('students')}
+                >
+                    <Users size={20} />
+                    Students
+                </button>
+                <button 
+                    className={`tab-button ${selectedTab === 'mentors' ? 'active' : ''}`}
+                    onClick={() => setSelectedTab('mentors')}
+                >
+                    <UserCheck size={20} />
+                    Mentors
+                </button>
+                <button 
+                    className={`tab-button ${selectedTab === 'floorwing' ? 'active' : ''}`}
+                    onClick={() => setSelectedTab('floorwing')}
+                >
+                    <Crown size={20} />
+                    Floor Wing
+                </button>
+            </div>
 
-                <div className="tab-content">
-                    {selectedTab === 'students' && (
-                        <GlassCard>
-                            <div className="section-header">
-                                <h3>Students on Floor {floor}</h3>
-                            </div>
-                            <div className="students-list">
-                                {floorData.students && floorData.students.length > 0 ? (
-                                    floorData.students.map((student) => (
-                                        <motion.div
-                                            key={student.id}
-                                            className="student-item"
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            onClick={() => handleStudentClick(student)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            <div className="student-info">
-                                                <div className="student-name">{student.name || student.user__username}</div>
-                                                <div className="student-email">{student.email || student.user__email}</div>
+            <div className="tab-content">
+                {selectedTab === 'students' && (
+                    <div className="students-grid">
+                        {floorData.students && floorData.students.length > 0 ? (
+                            floorData.students.map((student, index) => (
+                                <motion.div
+                                    key={student.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                                >
+                                    <GlassCard hoverable onClick={() => handleStudentClick(student)}>
+                                        <div className="student-card-item">
+                                            <div className="student-header">
+                                                <div className="student-info">
+                                                    <h3>{student.name || student.user__username}</h3>
+                                                    <p className="student-email">{student.email || student.user__email}</p>
+                                                </div>
+                                                <span className={`student-role ${(student.role || 'student').toLowerCase()}`}>
+                                                    {student.role || 'Student'}
+                                                </span>
                                             </div>
                                             <div className="student-details">
-                                                <span className="mentor-badge">
-                                                    {student.mentor ? `Mentor: ${student.mentor}` : 'No Mentor'}
-                                                </span>
-                                                <span className="submission-count">
-                                                    {student.submission_count || 0} submissions
-                                                </span>
+                                                <div className="detail-row">
+                                                    <span className="detail-label">Roll No:</span>
+                                                    <span className="detail-value">{student.roll_no || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-row">
+                                                    <span className="detail-label">Mentor:</span>
+                                                    <span className="detail-value">
+                                                        {student.mentor || student.assigned_mentor?.name || 'Not Assigned'}
+                                                    </span>
+                                                </div>
+                                                <div className="detail-row">
+                                                    <span className="detail-label">Submissions:</span>
+                                                    <span className="detail-value">{student.submission_count || 0}</span>
+                                                </div>
                                             </div>
-                                        </motion.div>
-                                    ))
-                                ) : (
-                                    <div className="empty-state">
-                                        <Users size={48} />
-                                        <p>No students on this floor</p>
+                                        </div>
+                                    </GlassCard>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <div className="empty-state">
+                                <Users size={64} />
+                                <h3>No Students Yet</h3>
+                                <p>No students have been assigned to this floor</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {selectedTab === 'mentors' && (
+                    <div>
+                        {assignmentMode === 'mentor' && (
+                            <GlassCard style={{ marginBottom: '2rem' }}>
+                                <div className="assignment-form">
+                                    <div className="form-group">
+                                        <label>Select a user to assign as mentor</label>
+                                        <select 
+                                            value={selectedUser}
+                                            onChange={(e) => setSelectedUser(e.target.value)}
+                                        >
+                                            <option value="">Choose a student...</option>
+                                            {getUnassignedUsers().map((user) => (
+                                                <option key={user.id} value={user.id}>
+                                                    {user.name || user.user__username} ({user.email || user.user__email})
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
-                                )}
-                            </div>
-                        </GlassCard>
-                    )}
-
-                    {selectedTab === 'mentors' && (
-                        <GlassCard>
-                            <div className="section-header">
-                                <h3>Mentors on Floor {floor}</h3>
-                                <button 
-                                    className="assign-button"
-                                    onClick={() => setAssignmentMode('mentor')}
-                                >
-                                    Assign Mentor
-                                </button>
-                            </div>
-
-                            {assignmentMode === 'mentor' && (
-                                <div className="assignment-panel">
-                                    <h4>Assign Mentor to Floor {floor}</h4>
-                                    <select 
-                                        value={selectedUser}
-                                        onChange={(e) => setSelectedUser(e.target.value)}
-                                        className="user-select"
-                                    >
-                                        <option value="">Select a user...</option>
-                                        {getUnassignedUsers().map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.name || user.user__username} ({user.email || user.user__email})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <div className="assignment-actions">
-                                        <button onClick={handleAssignMentor} disabled={!selectedUser}>
-                                            Confirm Assignment
+                                    <div className="form-actions">
+                                        <button 
+                                            className="assign-button" 
+                                            onClick={handleAssignMentor} 
+                                            disabled={!selectedUser}
+                                        >
+                                            Assign Mentor
                                         </button>
-                                        <button onClick={() => { setAssignmentMode(null); setSelectedUser(''); }}>
+                                        <button 
+                                            className="cancel-button"
+                                            onClick={() => { setAssignmentMode(null); setSelectedUser(''); }}
+                                        >
                                             Cancel
                                         </button>
                                     </div>
                                 </div>
-                            )}
+                            </GlassCard>
+                        )}
 
+                        {floorData.mentors && floorData.mentors.length > 0 ? (
                             <div className="mentors-list">
-                                {floorData.mentors && floorData.mentors.length > 0 ? (
-                                    floorData.mentors.map((mentor) => (
-                                        <motion.div
-                                            key={mentor.id}
-                                            className="mentor-item"
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                        >
-                                            <div className="mentor-info">
-                                                <div className="mentor-name">{mentor.name || mentor.user__username}</div>
-                                                <div className="mentor-email">{mentor.email || mentor.user__email}</div>
+                                {floorData.mentors.map((mentor, index) => (
+                                    <motion.div
+                                        key={mentor.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                                    >
+                                        <GlassCard hoverable>
+                                            <div className="mentor-card-item">
+                                                <div className="mentor-header">
+                                                    <div className="mentor-icon">
+                                                        <UserCheck size={24} />
+                                                    </div>
+                                                    <div className="mentor-info">
+                                                        <h3>{mentor.name || mentor.user__username}</h3>
+                                                        <p>{mentor.email || mentor.user__email}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="mentor-stats">
+                                                    <div className="mentor-stat">
+                                                        <div className="mentor-stat-value">
+                                                            {mentor.assigned_students || 0}
+                                                        </div>
+                                                        <div className="mentor-stat-label">Students</div>
+                                                    </div>
+                                                    <div className="mentor-stat">
+                                                        <div className="mentor-stat-value">
+                                                            {mentor.total_submissions || 0}
+                                                        </div>
+                                                        <div className="mentor-stat-label">Submissions</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="mentor-stats">
-                                                <span className="student-count">
-                                                    {mentor.assigned_students || 0} students
-                                                </span>
-                                            </div>
-                                        </motion.div>
-                                    ))
-                                ) : (
-                                    <div className="empty-state">
-                                        <UserCheck size={48} />
-                                        <p>No mentors assigned to this floor</p>
-                                        <button 
-                                            className="assign-button-primary"
-                                            onClick={() => setAssignmentMode('mentor')}
-                                        >
-                                            Assign First Mentor
-                                        </button>
-                                    </div>
-                                )}
+                                        </GlassCard>
+                                    </motion.div>
+                                ))}
                             </div>
-                        </GlassCard>
-                    )}
-
-                    {selectedTab === 'floorwing' && (
-                        <GlassCard>
-                            <div className="section-header">
-                                <h3>Floor Wing</h3>
-                                {!floorData.floor_wing && (
+                        ) : (
+                            <div className="empty-state">
+                                <UserCheck size={64} />
+                                <h3>No Mentors Assigned</h3>
+                                <p>Assign mentors to manage and guide students on this floor</p>
+                                {!assignmentMode && (
                                     <button 
                                         className="assign-button"
-                                        onClick={() => setAssignmentMode('floor_wing')}
+                                        onClick={() => setAssignmentMode('mentor')}
+                                        style={{ marginTop: '1.5rem' }}
                                     >
-                                        Assign Floor Wing
+                                        Assign First Mentor
                                     </button>
                                 )}
                             </div>
+                        )}
 
-                            {assignmentMode === 'floor_wing' && (
-                                <div className="assignment-panel">
-                                    <h4>Assign Floor Wing to Floor {floor}</h4>
-                                    <select 
-                                        value={selectedUser}
-                                        onChange={(e) => setSelectedUser(e.target.value)}
-                                        className="user-select"
-                                    >
-                                        <option value="">Select a user...</option>
-                                        {getUnassignedUsers().map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.name || user.user__username} ({user.email || user.user__email})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <div className="assignment-actions">
-                                        <button onClick={handleAssignFloorWing} disabled={!selectedUser}>
-                                            Confirm Assignment
-                                        </button>
-                                        <button onClick={() => { setAssignmentMode(null); setSelectedUser(''); }}>
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                        {floorData.mentors && floorData.mentors.length > 0 && !assignmentMode && (
+                            <button 
+                                className="assign-button"
+                                onClick={() => setAssignmentMode('mentor')}
+                                style={{ marginTop: '2rem', width: '100%', maxWidth: '300px', display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                            >
+                                Assign Another Mentor
+                            </button>
+                        )}
+                    </div>
+                )}
 
-                            {floorData.floor_wing ? (
-                                <motion.div
-                                    className="floor-wing-card"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                >
-                                    <div className="floor-wing-icon">
-                                        <Crown size={48} />
-                                    </div>
-                                    <div className="floor-wing-info">
-                                        <div className="floor-wing-name">{floorData.floor_wing.name}</div>
-                                        <div className="floor-wing-email">{floorData.floor_wing.email}</div>
-                                    </div>
-                                    <div className="floor-wing-stats">
-                                        <div className="stat-item">
-                                            <TrendingUp size={20} />
-                                            <span>Managing {floorData.mentors?.length || 0} mentors</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <Users size={20} />
-                                            <span>Overseeing {floorData.students?.length || 0} students</span>
+                {selectedTab === 'floorwing' && (
+                    <div className="floor-wing-section">
+                        {floorData.floor_wing ? (
+                            <GlassCard>
+                                <div className="floor-wing-card">
+                                    <div className="floor-wing-status">
+                                        <Crown size={32} />
+                                        <div className="floor-wing-status-text">
+                                            <h3>Floor Wing Assigned</h3>
+                                            <p>This floor is managed by a designated floor wing</p>
                                         </div>
                                     </div>
-                                </motion.div>
-                            ) : (
-                                <div className="empty-state">
-                                    <Crown size={48} />
-                                    <p>No floor wing assigned</p>
-                                    <p className="empty-state-hint">
-                                        Assign a floor wing to manage mentors and students on this floor
-                                    </p>
-                                    <button 
-                                        className="assign-button-primary"
-                                        onClick={() => setAssignmentMode('floor_wing')}
-                                    >
-                                        Assign Floor Wing
-                                    </button>
+                                    
+                                    <div className="student-details">
+                                        <div className="detail-row">
+                                            <span className="detail-label">Name:</span>
+                                            <span className="detail-value">{floorData.floor_wing.name}</span>
+                                        </div>
+                                        <div className="detail-row">
+                                            <span className="detail-label">Email:</span>
+                                            <span className="detail-value">{floorData.floor_wing.email}</span>
+                                        </div>
+                                        <div className="detail-row">
+                                            <span className="detail-label">Students Overseeing:</span>
+                                            <span className="detail-value">{floorData.students?.length || 0}</span>
+                                        </div>
+                                        <div className="detail-row">
+                                            <span className="detail-label">Mentors Managing:</span>
+                                            <span className="detail-value">{floorData.mentors?.length || 0}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                        </GlassCard>
-                    )}
-                </div>
+                            </GlassCard>
+                        ) : (
+                            <>
+                                {assignmentMode === 'floor_wing' ? (
+                                    <GlassCard>
+                                        <div className="assignment-form">
+                                            <div className="floor-wing-status unassigned">
+                                                <Crown size={32} />
+                                                <div className="floor-wing-status-text">
+                                                    <h3>Assign Floor Wing</h3>
+                                                    <p>Select a student to become the floor wing for Floor {floor}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="form-group">
+                                                <label>Select a student</label>
+                                                <select 
+                                                    value={selectedUser}
+                                                    onChange={(e) => setSelectedUser(e.target.value)}
+                                                >
+                                                    <option value="">Choose a student...</option>
+                                                    {getUnassignedUsers().map((user) => (
+                                                        <option key={user.id} value={user.id}>
+                                                            {user.name || user.user__username} ({user.email || user.user__email})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            
+                                            <div className="form-actions">
+                                                <button 
+                                                    className="assign-button" 
+                                                    onClick={handleAssignFloorWing} 
+                                                    disabled={!selectedUser}
+                                                >
+                                                    Assign Floor Wing
+                                                </button>
+                                                <button 
+                                                    className="cancel-button"
+                                                    onClick={() => { setAssignmentMode(null); setSelectedUser(''); }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </GlassCard>
+                                ) : (
+                                    <div className="empty-state">
+                                        <Crown size={64} />
+                                        <h3>No Floor Wing Assigned</h3>
+                                        <p>Assign a floor wing to manage mentors and students on this floor</p>
+                                        <button 
+                                            className="assign-button"
+                                            onClick={() => setAssignmentMode('floor_wing')}
+                                            style={{ marginTop: '1.5rem' }}
+                                        >
+                                            Assign Floor Wing
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Student Detail Drawer */}
@@ -409,136 +465,167 @@ const FloorDetail = () => {
 const StudentDetailDrawer = ({ student, loading, onClose }) => {
     return (
         <motion.div
-            className="drawer-overlay"
+            className="student-drawer-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
         >
             <motion.div
-                className="drawer-content"
+                className="student-drawer"
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25 }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="drawer-header">
-                    <div>
-                        <h2>{student?.name || 'Loading...'}</h2>
-                        <p>{student?.email || ''}</p>
-                    </div>
-                    <button className="close-btn" onClick={onClose}>
-                        <X size={24} />
+                    <h2>{student?.name || 'Loading...'}</h2>
+                    <button className="close-drawer-button" onClick={onClose}>
+                        <X size={20} />
                     </button>
                 </div>
 
-                <div className="drawer-body">
-                    {loading ? (
-                        <div className="drawer-loading">
-                            <div className="spinner"></div>
-                            <p>Loading student details...</p>
+                {loading ? (
+                    <div className="floor-detail-loading">
+                        <div className="spinner"></div>
+                        <p>Loading details...</p>
+                    </div>
+                ) : student ? (
+                    <div className="drawer-content">
+                        {/* Student Information */}
+                        <div className="drawer-section">
+                            <h3>Student Information</h3>
+                            <div className="detail-row">
+                                <span className="detail-label">Email:</span>
+                                <span className="detail-value">{student.email}</span>
+                            </div>
+                            <div className="detail-row">
+                                <span className="detail-label">Roll No:</span>
+                                <span className="detail-value">{student.roll_no || 'N/A'}</span>
+                            </div>
+                            <div className="detail-row">
+                                <span className="detail-label">Campus:</span>
+                                <span className="detail-value">{student.campus_name || 'N/A'}</span>
+                            </div>
+                            <div className="detail-row">
+                                <span className="detail-label">Floor:</span>
+                                <span className="detail-value">Floor {student.floor || 'N/A'}</span>
+                            </div>
+                            <div className="detail-row">
+                                <span className="detail-label">Mentor:</span>
+                                <span className="detail-value">
+                                    {student.assigned_mentor?.name || 'Not Assigned'}
+                                </span>
+                            </div>
                         </div>
-                    ) : student ? (
-                        <>
-                            {/* Student Details */}
-                            <section className="drawer-section">
-                                <h3>Student Information</h3>
-                                <div className="info-grid">
-                                    <div className="info-item">
-                                        <label>Roll No</label>
-                                        <span>{student.roll_no}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>Campus</label>
-                                        <span>{student.campus_name}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>Floor</label>
-                                        <span>Floor {student.floor}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>Current Mentor</label>
-                                        <span>{student.assigned_mentor?.name || 'Not Assigned'}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>XP Points</label>
-                                        <span className="xp-badge">{student.xp_points} XP</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>Status</label>
-                                        <span className={`status-badge status-${student.status}`}>
+
+                        {/* XP and Status */}
+                        {student.xp_points !== undefined && (
+                            <div className="drawer-section">
+                                <h3>Performance</h3>
+                                <div className="detail-row">
+                                    <span className="detail-label">XP Points:</span>
+                                    <span className="detail-value" style={{ 
+                                        background: 'linear-gradient(135deg, #F7C948, #FFA726)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent'
+                                    }}>
+                                        {student.xp_points} XP
+                                    </span>
+                                </div>
+                                {student.status && (
+                                    <div className="detail-row">
+                                        <span className="detail-label">Status:</span>
+                                        <span className={`student-role ${
+                                            student.status === 'on_track' ? 'mentor' :
+                                            student.status === 'at_risk' ? 'student' : 'floor-wing'
+                                        }`}>
                                             {student.status === 'on_track' ? 'On Track' : 
                                              student.status === 'at_risk' ? 'At Risk' : 'Behind'}
                                         </span>
                                     </div>
-                                </div>
-                            </section>
+                                )}
+                            </div>
+                        )}
 
-                            {/* Overall Progress */}
-                            <section className="drawer-section">
+                        {/* Overall Progress */}
+                        {student.pillar_progress !== undefined && (
+                            <div className="drawer-section">
                                 <h3>Overall Progress</h3>
-                                <div className="progress-container">
-                                    <div className="progress-bar-large">
-                                        <div
-                                            className="progress-fill-large"
-                                            style={{ width: `${student.pillar_progress}%` }}
-                                        />
-                                    </div>
-                                    <span className="progress-percentage">{student.pillar_progress}%</span>
+                                <div className="progress-bar">
+                                    <div
+                                        className="progress-fill"
+                                        style={{ 
+                                            width: `${student.pillar_progress}%`,
+                                            background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
+                                        }}
+                                    />
                                 </div>
-                            </section>
+                                <div style={{ textAlign: 'right', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
+                                    {student.pillar_progress}%
+                                </div>
+                            </div>
+                        )}
 
-                            {/* Pillar Progress */}
-                            {student.pillar_details && Object.keys(student.pillar_details).length > 0 && (
-                                <section className="drawer-section">
-                                    <h3>Pillar Progress</h3>
-                                    {Object.entries(student.pillar_details).map(([pillar, progress]) => (
-                                        <div key={pillar} className="pillar-progress-item">
-                                            <span className="pillar-name">{pillar}</span>
-                                            <div className="progress-bar-small">
-                                                <div
-                                                    className="progress-fill-small"
-                                                    style={{ width: `${progress}%` }}
-                                                />
-                                            </div>
-                                            <span className="pillar-percentage">{progress}%</span>
+                        {/* Pillar Details */}
+                        {student.pillar_details && Object.keys(student.pillar_details).length > 0 && (
+                            <div className="drawer-section">
+                                <h3>Pillar Progress</h3>
+                                {Object.entries(student.pillar_details).map(([pillar, progress]) => (
+                                    <div key={pillar} style={{ marginBottom: '1rem' }}>
+                                        <div className="detail-row" style={{ marginBottom: '0.5rem' }}>
+                                            <span className="detail-label">{pillar}:</span>
+                                            <span className="detail-value">{progress}%</span>
                                         </div>
-                                    ))}
-                                </section>
-                            )}
-
-                            {/* Submission Stats */}
-                            {student.submission_stats && (
-                                <section className="drawer-section">
-                                    <h3>Submission Statistics</h3>
-                                    <div className="stats-grid">
-                                        <div className="stat-card">
-                                            <label>Total</label>
-                                            <span className="stat-value">{student.submission_stats.total}</span>
-                                        </div>
-                                        <div className="stat-card">
-                                            <label>Approved</label>
-                                            <span className="stat-value stat-approved">{student.submission_stats.approved}</span>
-                                        </div>
-                                        <div className="stat-card">
-                                            <label>Pending</label>
-                                            <span className="stat-value stat-pending">{student.submission_stats.pending}</span>
-                                        </div>
-                                        <div className="stat-card">
-                                            <label>Rejected</label>
-                                            <span className="stat-value stat-rejected">{student.submission_stats.rejected}</span>
+                                        <div className="progress-bar">
+                                            <div
+                                                className="progress-fill"
+                                                style={{ 
+                                                    width: `${progress}%`,
+                                                    background: 'linear-gradient(90deg, #2196F3, #64B5F6)'
+                                                }}
+                                            />
                                         </div>
                                     </div>
-                                </section>
-                            )}
-                        </>
-                    ) : (
-                        <div className="drawer-error">
-                            <p>Failed to load student details</p>
-                        </div>
-                    )}
-                </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Submission Stats */}
+                        {student.submission_stats && (
+                            <div className="drawer-section">
+                                <h3>Submission Statistics</h3>
+                                <div className="detail-row">
+                                    <span className="detail-label">Total:</span>
+                                    <span className="detail-value">{student.submission_stats.total || 0}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="detail-label">Approved:</span>
+                                    <span className="detail-value" style={{ color: '#4CAF50' }}>
+                                        {student.submission_stats.approved || 0}
+                                    </span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="detail-label">Pending:</span>
+                                    <span className="detail-value" style={{ color: '#FFA726' }}>
+                                        {student.submission_stats.pending || 0}
+                                    </span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="detail-label">Rejected:</span>
+                                    <span className="detail-value" style={{ color: '#E53935' }}>
+                                        {student.submission_stats.rejected || 0}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="floor-detail-error">
+                        <p>Failed to load student details</p>
+                    </div>
+                )}
             </motion.div>
         </motion.div>
     );

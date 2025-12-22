@@ -1,19 +1,21 @@
+/* Campus Overview Page - Matching Mentor Dashboard Design */
 .campus-overview-container {
     max-width: 1600px;
     margin: 0 auto;
     padding: 2rem;
-    min-height: calc(100vh - 80px);
 }
 
 .campus-overview-header {
+    position: relative;
     margin-bottom: 3rem;
+    z-index: 1;
 }
 
 .campus-overview-title {
     font-family: 'Sora', sans-serif;
     font-size: 2.5rem;
     font-weight: 800;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     background: linear-gradient(135deg, #F7C948 0%, #E53935 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -25,12 +27,14 @@
     font-size: 1.125rem;
     margin: 0;
     color: var(--text-secondary);
+    font-weight: 400;
 }
 
 .floors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
     gap: 2rem;
+    margin-top: 2rem;
 }
 
 .floor-card {
@@ -38,36 +42,34 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .floor-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--glass-border);
 }
 
 .floor-title {
     font-family: 'Sora', sans-serif;
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0;
     color: var(--text-primary);
 }
 
 .floor-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
-    margin: 0.5rem 0 0 0;
-    font-weight: 500;
+    margin: 0.25rem 0 0 0;
 }
 
 .floor-stats {
     display: flex;
     gap: 2rem;
     padding: 1.5rem 0;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
 }
 
 .floor-stat {
@@ -79,55 +81,54 @@
 }
 
 .stat-number {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
-    line-height: 1;
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.75px;
-    font-weight: 600;
-}
-
-.floor-wing-info {
-    padding: 1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-}
-
-.floor-wing-assigned {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fw-label {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+.floor-wing-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.floor-wing-assigned {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.fw-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
 .fw-name {
-    font-size: 1rem;
-    color: #F7C948;
+    font-size: 0.95rem;
     font-weight: 600;
+    color: #4CAF50;
 }
 
 .floor-wing-unassigned {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #FF9800;
-    font-size: 0.875rem;
-    justify-content: center;
-    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 .submission-stats {
@@ -147,18 +148,18 @@
 .progress-fill {
     height: 100%;
     transition: width 0.3s ease;
+    border-radius: 4px;
 }
 
 .submission-details {
     display: flex;
-    justify-content: space-around;
-    font-size: 0.85rem;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .detail-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .detail-item.approved {
@@ -166,11 +167,18 @@
 }
 
 .detail-item.pending {
-    color: #FF9800;
+    color: #FFA726;
 }
 
 .detail-item.rejected {
-    color: #F44336;
+    color: #E53935;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .floors-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
@@ -178,7 +186,13 @@
         font-size: 2rem;
     }
     
-    .floors-grid {
-        grid-template-columns: 1fr;
+    .floor-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .submission-details {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }

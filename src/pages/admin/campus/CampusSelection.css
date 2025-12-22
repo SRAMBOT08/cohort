@@ -1,14 +1,14 @@
+/* Campus Selection Page - Matching Mentor Dashboard Design */
 .campus-selection-container {
     max-width: 1600px;
     margin: 0 auto;
     padding: 2rem;
-    min-height: calc(100vh - 80px);
 }
 
 .campus-selection-header {
+    position: relative;
     text-align: center;
     margin-bottom: 3rem;
-    position: relative;
     z-index: 1;
 }
 
@@ -24,75 +24,66 @@
 }
 
 .campus-selection-subtitle {
+    font-family: 'Inter', sans-serif;
     font-size: 1.125rem;
-    color: var(--text-secondary);
     margin: 0;
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
 .campus-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
     margin-top: 2rem;
-    justify-items: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .campus-card {
-    padding: 3rem 2.5rem;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    padding: 3rem 2rem;
     gap: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100%;
-    max-width: 450px;
-}
-
-.campus-card:hover {
-    transform: translateY(-4px);
+    transition: all 0.3s ease;
 }
 
 .campus-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 0.5rem;
+    width: 120px;
+    height: 120px;
+    border-radius: 24px;
+    transition: all 0.3s ease;
 }
 
 .campus-card:hover .campus-icon {
-    transform: scale(1.05);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05) translateY(-5px);
 }
 
 .campus-name {
     font-family: 'Sora', sans-serif;
-    font-size: 1.625rem;
-    font-weight: 600;
+    font-size: 1.75rem;
+    font-weight: 700;
     margin: 0;
     color: var(--text-primary);
-    line-height: 1.3;
 }
 
 .campus-description {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     margin: 0;
-    font-weight: 500;
-    opacity: 0.9;
+    line-height: 1.5;
 }
 
 .campus-stats {
     display: flex;
     gap: 2rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--glass-border);
+    margin-top: 1rem;
     width: 100%;
     justify-content: center;
 }
@@ -105,29 +96,41 @@
 }
 
 .stat-value {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #F7C948 0%, #FFA726 100%);
+    background: linear-gradient(135deg, #F7C948, #FFA726);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1;
 }
 
 .stat-label {
     font-size: 0.875rem;
-    color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .campus-cards-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
 }
 
 @media (max-width: 768px) {
     .campus-selection-title {
-        font-size: 2rem;
+        font-size: 2.5rem;
     }
     
-    .campus-cards-grid {
-        grid-template-columns: 1fr;
+    .campus-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .campus-icon {
+        width: 100px;
+        height: 100px;
     }
 }
