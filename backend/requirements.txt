@@ -24,6 +24,9 @@ python-magic==0.4.27
 # Data Validation
 validators==0.22.0
 
+# HTTP Requests
+requests==2.31.0
+
 # Security
 cryptography==41.0.7
 argon2-cffi==23.1.0
