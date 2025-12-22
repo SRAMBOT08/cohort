@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.views import TokenObtainPairView as BaseTokenObtainPairView
@@ -9,6 +11,12 @@ from apps.jwt_serializers import EmailTokenObtainPairSerializer
 from apps.users_views import UserProfileView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+
+# Health check endpoint for Render
+@csrf_exempt
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'message': 'Cohort Backend is running'})
 
 
 # Custom Token View using email authentication
@@ -30,6 +38,11 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Health check for Render (both root and /api/health/)
+    path('', health_check, name='health_check_root'),
+    path('health/', health_check, name='health_check'),
+    path('api/health/', health_check, name='health_check_api'),
+    
     # Admin
     path('admin/', admin.site.urls),
     
