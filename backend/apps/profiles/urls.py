@@ -17,6 +17,7 @@ from .admin_views import (
 from .announcement_views import FloorAnnouncementViewSet, StudentAnnouncementViewSet
 from .notification_views import NotificationViewSet
 from .views_import import import_dummy_users
+from .views_mentors import setup_mentors
 
 app_name = 'profiles'
 
@@ -44,6 +45,9 @@ urlpatterns = [
     
     # Import users endpoint (admin only)
     path('admin/import-users/', import_dummy_users, name='admin-import-users'),
+    
+    # Setup mentors endpoint (admin only)
+    path('admin/setup-mentors/', setup_mentors, name='admin-setup-mentors'),
     
     # Announcement routes (via router)
     path('', include(router.urls)),
