@@ -14,7 +14,10 @@ from apps.profiles.models import UserProfile
 import csv
 
 def main():
-    print("Starting import...")
+    print("="*60)
+    print("RAILWAY DEPLOYMENT - USER IMPORT")
+    print("="*60)
+    print("\nStarting import...")
     
     # First, create admin if doesn't exist
     admin_email = "admin@test.com"
@@ -22,23 +25,37 @@ def main():
         admin = User.objects.create_superuser(
             username='admin',
             email=admin_email,
-            password='admin123'
+            password='admin123',
+            first_name='Admin',
+            last_name='User'
         )
         print(f"✅ Created admin user: {admin_email}")
+        print(f"   Username: admin")
+        print(f"   Password: admin123")
     else:
-        print(f"✅ Admin user already exists: {admin_email}")
+        # Update password in case it changed
+        admin = User.objects.get(email=admin_email)
+        admin.set_password('admin123')
+        admin.save()
+        print(f"✅ Admin user exists and password updated: {admin_email}")
     
     # Import CSV users
     csv_path = os.path.join(os.path.dirname(__file__), '..', 'dummy users - Sheet1.csv')
     
     if not os.path.exists(csv_path):
-        print(f"❌ CSV not found: {csv_path}")
+        print(f"⚠️  CSV not found: {csv_path}")
+        print(f"   Skipping dummy user import")
         return
     
     campus = 'TECH'
     floor = 2
     created = 0
     updated = 0
+    
+    print(f"\nImporting students from CSV...")
+    print(f"Campus: SNS College of Technology")
+    print(f"Floor: 2nd Year")
+    print("-"*60)
     
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -72,10 +89,18 @@ def main():
             else:
                 updated += 1
             
-            print(f"{'✅ Created' if is_new else '🔄 Updated'}: {username} ({email})")
+            print(f"{'✅ Created' if is_new else '🔄 Updated'}: {username[:30]:<30} | {email}")
     
-    print(f"\n✅ Import complete!")
-    print(f"Created: {created}, Updated: {updated}, Total: {created + updated}")
+    print("-"*60)
+    print(f"\n✅ IMPORT COMPLETE!")
+    print(f"   Admin created: 1")
+    print(f"   Students created: {created}")
+    print(f"   Students updated: {updated}")
+    print(f"   Total students: {created + updated}")
+    print("\n📋 LOGIN CREDENTIALS:")
+    print(f"   Admin: admin@test.com / admin123")
+    print(f"   Students: <email> / pass123#")
+    print("="*60)
 
 if __name__ == '__main__':
     main()
