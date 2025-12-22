@@ -12,6 +12,8 @@ import gamificationAPI from '../../services/gamification';
 import StudentMonthlyReport from './StudentMonthlyReport';
 import './SubmissionReview.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 const PILLARS = [
     { id: 'all', label: 'All Pillars', icon: Filter, color: '#F7C948' },
     { id: 'clt', label: 'CLT', icon: Lightbulb, color: '#F7C948' },
@@ -233,7 +235,7 @@ function SubmissionReview({ selectedStudent }) {
             const token = localStorage.getItem('accessToken');
             console.log('🔑 Token exists:', !!token);
             
-            const response = await fetch('http://127.0.0.1:8000/api/mentor/review/', {
+            const response = await fetch(`${API_BASE_URL}/mentor/review/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

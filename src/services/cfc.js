@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/cfc';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -9,7 +9,7 @@ const getAuthToken = () => {
 
 // Create axios instance with auth header
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_BASE_URL}/cfc`,
   headers: {
     'Content-Type': 'application/json',
   },
