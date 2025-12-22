@@ -139,6 +139,12 @@ def setup_database(request):
     except Exception as e:
         results['errors'].append(f'Gamification setup error: {str(e)}')
     
+    # Create mentors and assign students
+    try:
+        results['mentor_setup'] = setup_mentors_and_assignments()
+    except Exception as e:
+        results['errors'].append(f'Mentor setup error: {str(e)}')
+    
     results['success'] = True
     results['total_users'] = User.objects.count()
     
@@ -186,3 +192,71 @@ def setup_gamification():
     gamif_results['total_titles'] = Title.objects.count()
     
     return gamif_results
+
+def setup_mentors_and_assignments():
+    """Create 2 mentors and assign 5 students to each"""
+    mentor_results = {}
+    
+    # Create mentor 1
+    mentor1, created1 = User.objects.get_or_create(
+        email='mentor1@snsce.ac.in',
+        defaults={
+            'username': 'mentor1',
+            'first_name': 'Mentor',
+            'last_name': 'One'
+        }
+    )
+    mentor1.set_password('mentor123')
+    mentor1.save()
+    
+    profile1, _ = UserProfile.objects.get_or_create(
+        user=mentor1,
+        defaults={'role': 'MENTOR', 'campus': 'TECH', 'floor': 2}
+    )
+    profile1.role = 'MENTOR'
+    profile1.campus = 'TECH'
+    profile1.floor = 2
+    profile1.save()
+    
+    # Create mentor 2
+    mentor2, created2 = User.objects.get_or_create(
+        email='mentor2@snsce.ac.in',
+        defaults={
+            'username': 'mentor2',
+            'first_name': 'Mentor',
+            'last_name': 'Two'
+        }
+    )
+    mentor2.set_password('mentor123')
+    mentor2.save()
+    
+    profile2, _ = UserProfile.objects.get_or_create(
+        user=mentor2,
+        defaults={'role': 'MENTOR', 'campus': 'TECH', 'floor': 2}
+    )
+    profile2.role = 'MENTOR'
+    profile2.campus = 'TECH'
+    profile2.floor = 2
+    profile2.save()
+    
+    mentor_results['mentor1_created'] = created1
+    mentor_results['mentor2_created'] = created2
+    
+    # Get students (excluding admin and mentors)
+    students = UserProfile.objects.filter(role='STUDENT').select_related('user')[:10]
+    
+    assignments = []
+    for i, student_profile in enumerate(students):
+        # Assign first 5 to mentor1, next 5 to mentor2
+        if i < 5:
+            student_profile.mentor = mentor1
+            assignments.append(f"{student_profile.user.email} → Mentor One")
+        else:
+            student_profile.mentor = mentor2
+            assignments.append(f"{student_profile.user.email} → Mentor Two")
+        student_profile.save()
+    
+    mentor_results['assignments'] = assignments
+    mentor_results['total_assigned'] = len(assignments)
+    
+    return mentor_results
