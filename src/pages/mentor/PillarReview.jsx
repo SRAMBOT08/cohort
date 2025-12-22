@@ -597,10 +597,10 @@ function PillarReview() {
                 )}
             </div>
 
-            {/* Review Drawer */}
+            {/* Review Drawer - Rendered at component level to avoid parent blur effects */}
             {console.log('🎨 Rendering check - selectedSubmission:', selectedSubmission)}
             {selectedSubmission && (
-                <>
+                <div className="drawer-portal">
                     <div className="drawer-overlay" onClick={closeReviewDrawer} />
                     <div className="review-drawer">
                         {/* Action Animation Overlay */}
@@ -803,7 +803,7 @@ function PillarReview() {
                             </div>
                         </div>
                     </div>
-                </>
+                </div>
             )}
         </div>
     );
