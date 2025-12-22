@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, UserCheck, Crown, TrendingUp, FileText, X } from 'lucide-react';
+import { ArrowLeft, Users, UserCheck, Crown, TrendingUp, FileText, X, Building2, Target, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 import { getFloorDetail, assignFloorWing, assignMentor, getStudentDetail } from '../../../services/admin';
+import { getCampusFullName } from '../../../utils/campusNames';
 import GlassCard from '../../../components/GlassCard';
+import Button from '../../../components/Button';
 import './FloorDetail.css';
 
 const FloorDetail = () => {
@@ -99,92 +101,165 @@ const FloorDetail = () => {
 
     if (loading) {
         return (
-            <div className="floor-detail-loading">
-                <div className="spinner"></div>
-                <p>Loading floor details...</p>
+            <div className="floor-detail-container">
+                <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading floor details...</p>
+                </div>
             </div>
         );
     }
 
     if (!floorData) {
         return (
-            <div className="floor-detail-error">
-                <p>Failed to load floor data</p>
-                <button onClick={() => navigate(`/admin/campus/${campus}`)}>
-                    Back to Campus
-                </button>
+            <div className="floor-detail-container">
+                <GlassCard>
+                    <div className="error-state">
+                        <AlertCircle size={48} color="#E53935" />
+                        <h3>Failed to load floor data</h3>
+                        <Button onClick={() => navigate(`/admin/campus/${campus}`)}>
+                            Back to Campus
+                        </Button>
+                    </div>
+                </GlassCard>
             </div>
         );
     }
 
-    const campusName = campus === 'TECH' ? 'Technology' : 'Arts & Science';
-
     return (
-        <div className="floor-detail">
-            <div className="floor-detail-header">
-                <button 
-                    className="back-button"
+        <div className="floor-detail-container">
+            {/* Header */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="floor-detail-header"
+            >
+                <Button
+                    variant="secondary"
+                    size="small"
                     onClick={() => navigate(`/admin/campus/${campus}`)}
+                    className="back-button"
                 >
-                    <ArrowLeft size={20} />
-                    Back to {campusName} Campus
-                </button>
+                    <ArrowLeft size={16} />
+                    Back
+                </Button>
                 
-                <div className="floor-title">
-                    <h1>{campusName} Campus - Floor {floor}</h1>
-                    <p className="floor-subtitle">Manage students, mentors, and floor wing</p>
+                <h1 className="floor-detail-title">
+                    {getCampusFullName(campus)} - Floor {floor}
+                </h1>
+                <p className="floor-detail-subtitle">
+                    Manage students, mentors, and floor wing assignments
+                </p>
+            </motion.div>
+
+            {/* Summary Cards */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="floor-summary"
+            >
+                <div className="summary-left">
+                    <GlassCard className="summary-card">
+                        <div className="summary-icon" style={{ background: 'linear-gradient(135deg, #2196F3, #03A9F4)' }}>
+                            <Users size={24} />
+                        </div>
+                        <div className="summary-content">
+                            <div className="summary-value">{floorData.students?.length || 0}</div>
+                            <div className="summary-label">Students</div>
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard className="summary-card">
+                        <div className="summary-icon" style={{ background: 'linear-gradient(135deg, #FF9800, #FF5722)' }}>
+                            <UserCheck size={24} />
+                        </div>
+                        <div className="summary-content">
+                            <div className="summary-value">{floorData.mentors?.length || 0}</div>
+                            <div className="summary-label">Mentors</div>
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard className="summary-card">
+                        <div className="summary-icon" style={{ background: 'linear-gradient(135deg, #9C27B0, #E91E63)' }}>
+                            <Building2 size={24} />
+                        </div>
+                        <div className="summary-content">
+                            <div className="summary-value">{floorData.floor_wing ? '1' : '0'}</div>
+                            <div className="summary-label">Floor Wing</div>
+                        </div>
+                    </GlassCard>
                 </div>
 
-                <div className="floor-stats-row">
-                    <div className="stat-card">
-                        <Users size={24} />
-                        <div>
-                            <div className="stat-value">{floorData.students?.length || 0}</div>
-                            <div className="stat-label">Students</div>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <UserCheck size={24} />
-                        <div>
-                            <div className="stat-value">{floorData.mentors?.length || 0}</div>
-                            <div className="stat-label">Mentors</div>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <Crown size={24} />
-                        <div>
-                            <div className="stat-value">{floorData.floor_wing ? '1' : '0'}</div>
-                            <div className="stat-label">Floor Wing</div>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <FileText size={24} />
-                        <div>
-                            <div className="stat-value">{floorData.total_submissions || 0}</div>
-                            <div className="stat-label">Submissions</div>
-                        </div>
-                    </div>
+                <div className="summary-right">
+                    {floorData.submissions && (
+                        <GlassCard className="submission-summary-card">
+                            <h3 className="submission-title">
+                                <FileText size={20} />
+                                Submission Overview
+                            </h3>
+                            <div className="submission-stats-grid">
+                                <div className="submission-stat">
+                                    <CheckCircle size={20} color="#4CAF50" />
+                                    <div>
+                                        <div className="stat-value">{floorData.submissions.approved || 0}</div>
+                                        <div className="stat-label">Approved</div>
+                                    </div>
+                                </div>
+                                <div className="submission-stat">
+                                    <Clock size={20} color="#FF9800" />
+                                    <div>
+                                        <div className="stat-value">{floorData.submissions.pending || 0}</div>
+                                        <div className="stat-label">Pending</div>
+                                    </div>
+                                </div>
+                                <div className="submission-stat">
+                                    <XCircle size={20} color="#E53935" />
+                                    <div>
+                                        <div className="stat-value">{floorData.submissions.rejected || 0}</div>
+                                        <div className="stat-label">Rejected</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="submission-progress-bar">
+                                <div 
+                                    className="progress-fill"
+                                    style={{ width: `${floorData.submissions.progress_percentage || 0}%` }}
+                                />
+                            </div>
+                            <div className="progress-text">
+                                {floorData.submissions.progress_percentage || 0}% Complete
+                            </div>
+                        </GlassCard>
+                    )}
                 </div>
-            </div>
+            </motion.div>
 
-            <div className="floor-detail-content">
-                <div className="tabs">
+            {/* Tabs Section */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="floor-tabs-container"
+            >
+                <div className="tabs-header">
                     <button 
-                        className={`tab ${selectedTab === 'students' ? 'active' : ''}`}
+                        className={`tab-button ${selectedTab === 'students' ? 'active' : ''}`}
                         onClick={() => setSelectedTab('students')}
                     >
                         <Users size={18} />
                         Students
                     </button>
                     <button 
-                        className={`tab ${selectedTab === 'mentors' ? 'active' : ''}`}
+                        className={`tab-button ${selectedTab === 'mentors' ? 'active' : ''}`}
                         onClick={() => setSelectedTab('mentors')}
                     >
                         <UserCheck size={18} />
                         Mentors
                     </button>
                     <button 
-                        className={`tab ${selectedTab === 'floorwing' ? 'active' : ''}`}
+                        className={`tab-button ${selectedTab === 'floorwing' ? 'active' : ''}`}
                         onClick={() => setSelectedTab('floorwing')}
                     >
                         <Crown size={18} />
@@ -192,44 +267,61 @@ const FloorDetail = () => {
                     </button>
                 </div>
 
-                <div className="tab-content">
-                    {selectedTab === 'students' && (
-                        <GlassCard>
-                            <div className="section-header">
+                <div className="tab-content">{selectedTab === 'students' && (
+                        <GlassCard className="tab-panel">
+                            <div className="panel-header">
                                 <h3>Students on Floor {floor}</h3>
+                                <span className="count-badge">{floorData.students?.length || 0} students</span>
                             </div>
-                            <div className="students-list">
-                                {floorData.students && floorData.students.length > 0 ? (
-                                    floorData.students.map((student) => (
+                            
+                            {floorData.students && floorData.students.length > 0 ? (
+                                <div className="students-grid">
+                                    {floorData.students.map((student) => (
                                         <motion.div
                                             key={student.id}
-                                            className="student-item"
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            onClick={() => handleStudentClick(student)}
-                                            style={{ cursor: 'pointer' }}
+                                            whileHover={{ y: -4 }}
+                                            transition={{ duration: 0.2 }}
                                         >
-                                            <div className="student-info">
-                                                <div className="student-name">{student.name || student.user__username}</div>
-                                                <div className="student-email">{student.email || student.user__email}</div>
-                                            </div>
-                                            <div className="student-details">
-                                                <span className="mentor-badge">
-                                                    {student.mentor ? `Mentor: ${student.mentor}` : 'No Mentor'}
-                                                </span>
-                                                <span className="submission-count">
-                                                    {student.submission_count || 0} submissions
-                                                </span>
-                                            </div>
+                                            <GlassCard 
+                                                hoverable
+                                                className="student-card"
+                                                onClick={() => handleStudentClick(student)}
+                                            >
+                                                <div className="student-header">
+                                                    <div className="student-avatar">
+                                                        {(student.name || student.user__username || '?').charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="student-basic-info">
+                                                        <div className="student-name">{student.name || student.user__username}</div>
+                                                        <div className="student-email">{student.email || student.user__email}</div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="student-meta">
+                                                    {student.mentor && (
+                                                        <div className="meta-item">
+                                                            <UserCheck size={14} />
+                                                            <span>Mentor: {student.mentor}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="meta-item">
+                                                        <FileText size={14} />
+                                                        <span>{student.submission_count || 0} submissions</span>
+                                                    </div>
+                                                </div>
+                                            </GlassCard>
                                         </motion.div>
-                                    ))
-                                ) : (
-                                    <div className="empty-state">
-                                        <Users size={48} />
-                                        <p>No students on this floor</p>
-                                    </div>
-                                )}
-                            </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <Users size={48} color="rgba(255, 255, 255, 0.3)" />
+                                    <h3>No Students Found</h3>
+                                    <p>There are no students assigned to this floor yet.</p>
+                                </div>
+                            )}
                         </GlassCard>
                     )}
 
