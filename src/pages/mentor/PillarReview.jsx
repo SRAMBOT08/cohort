@@ -166,6 +166,13 @@ function PillarReview() {
             
             const submissionType = getSubmissionType(selectedSubmission.pillar, selectedSubmission);
             
+            console.log('🚀 Approving submission:', {
+                pillar: selectedSubmission.pillar,
+                submission_id: selectedSubmission.dbId,
+                submission_type: submissionType,
+                modelType: selectedSubmission.modelType,
+            });
+            
             await reviewSubmission({
                 pillar: selectedSubmission.pillar,
                 submission_id: selectedSubmission.dbId,
@@ -598,7 +605,6 @@ function PillarReview() {
             </div>
 
             {/* Review Drawer */}
-            {console.log('🎨 Rendering check - selectedSubmission:', selectedSubmission)}
             {selectedSubmission && (
                 <>
                     <div className="drawer-overlay" onClick={closeReviewDrawer} />

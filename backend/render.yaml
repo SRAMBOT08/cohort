@@ -2,11 +2,12 @@ services:
   - type: web
     name: cohort-backend
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn config.wsgi:application
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/health/
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.0
+        value: 3.11.0
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
@@ -21,7 +22,6 @@ services:
           property: connectionString
       - key: JWT_SECRET_KEY
         generateValue: true
-    healthCheckPath: /admin/login/
 
 databases:
   - name: cohort-db

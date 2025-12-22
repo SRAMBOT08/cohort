@@ -130,7 +130,10 @@ export const getSubmissionDetail = async (pillar, submissionType, submissionId) 
  * Helper to determine the submission type for API calls
  */
 export const getSubmissionType = (pillar, submission) => {
-    // Check if submission has a type field from backend
+    // Check if submission has a type field from backend (modelType is returned by API)
+    if (submission.modelType) {
+        return submission.modelType;
+    }
     if (submission.submissionType) {
         return submission.submissionType;
     }

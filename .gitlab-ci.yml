@@ -31,8 +31,8 @@ pages:
   script:
     # GitLab Pages requires the files to be in a 'public' directory
     - mv dist public
-    # Create a _redirects file for SPA routing (optional, for history mode)
-    - echo "/* /index.html 200" > public/_redirects
+    # Copy index.html to 404.html for SPA routing (GitLab Pages uses this for client-side routing)
+    - cp public/index.html public/404.html
   artifacts:
     paths:
       - public

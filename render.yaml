@@ -5,8 +5,10 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "cd backend && chmod +x build.sh && ./build.sh"
-    startCommand: "cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    rootDir: backend
+    buildCommand: "chmod +x build.sh && ./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    healthCheckPath: /api/health/
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.0"
@@ -17,7 +19,13 @@ services:
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
       - key: CORS_ALLOWED_ORIGINS
-        sync: false
+        sync: false  # Set this to your GitLab Pages URL after deployment
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cohort-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
     autoDeploy: true
 
 databases:
