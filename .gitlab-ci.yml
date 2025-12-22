@@ -45,12 +45,10 @@ pages:
     - ls -la dist/ || echo "dist folder not found"
     - echo "Files in dist:"
     - find dist -type f || echo "No files in dist"
-    # GitLab Pages requires the files to be in a 'public' directory
     - mv dist public
     - echo "After moving to public:"
     - ls -la public/
-    # Copy index.html to 404.html for SPA routing (GitLab Pages uses this for client-side routing)
-    - cp public/index.html public/404.html || (echo "ERROR: index.html not found in public folder"; exit 1)
+    - cp public/index.html public/404.html
   artifacts:
     paths:
       - public
