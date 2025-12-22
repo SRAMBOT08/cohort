@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Lightbulb, Heart, Trophy, Linkedin, Code, Filter, Search,
     CheckCircle, XCircle, Clock, AlertCircle, Eye, FileText,
-    Calendar, ExternalLink, User, MessageSquare, Send, ChevronDown
+    Calendar, ExternalLink, User, MessageSquare, Send, ChevronDown, Award, Coins
 } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import { getPillarSubmissions } from '../../services/mentorApi';
+import gamificationAPI from '../../services/gamification';
 import StudentMonthlyReport from './StudentMonthlyReport';
 import './SubmissionReview.css';
 
@@ -39,13 +40,43 @@ function SubmissionReview({ selectedStudent }) {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showMonthlyReport, setShowMonthlyReport] = useState(false);
+    
+    // Gamification scoring state
+    const [gamificationScore, setGamificationScore] = useState(0);
+    const [currentEpisode, setCurrentEpisode] = useState(null);
+    const [seasonProgress, setSeasonProgress] = useState(null);
+    const [showScoreInput, setShowScoreInput] = useState(false);
+    const [loadingGamification, setLoadingGamification] = useState(false);
 
     // Fetch real submissions from API
     useEffect(() => {
         if (selectedStudent) {
             fetchSubmissions();
+            fetchStudentGamification();
         }
     }, [selectedStudent, selectedPillar]);
+
+    const fetchStudentGamification = async () => {
+        if (!selectedStudent?.id) return;
+        
+        try {
+            setLoadingGamification(true);
+            const response = await gamificationAPI.mentor.getStudentProgress(selectedStudent.id);
+            console.log('📊 Student gamification data:', response.data);
+            
+            setSeasonProgress(response.data);
+            
+            // Find current episode
+            const currentEp = response.data.episode_progress?.find(ep => 
+                ep.status === 'in_progress' || ep.status === 'locked'
+            );
+            setCurrentEpisode(currentEp || response.data.episode_progress?.[0]);
+        } catch (error) {
+            console.error('Failed to fetch gamification data:', error);
+        } finally {
+            setLoadingGamification(false);
+        }
+    };
 
     const fetchSubmissions = async () => {
         if (!selectedStudent) {
@@ -143,14 +174,34 @@ function SubmissionReview({ selectedStudent }) {
         );
     };
 
+    // Map pillar to gamification task type
+    const mapPillarToTaskType = (pillar) => {
+        const taskMap = {
+            'clt': 'clt',
+            'cfc': 'cfc_task1', // or cfc_task2, cfc_task3 depending on submission
+            'iipc': 'iipc_task1', // or iipc_task2
+            'sri': 'sri',
+            'scd': 'scd_streak'
+        };
+        return taskMap[pillar];
+    };
+
     const handleReview = async (submission, action) => {
         console.log('🔵 handleReview called!');
         console.log('  Submission:', submission);
         console.log('  Action:', action);
         console.log('  Comment:', reviewComment);
+        console.log('  Gamification Score:', gamificationScore);
         
         if (!reviewComment.trim() && action !== 'Approved') {
             setReviewMessage('Please add a comment for your review');
+            setTimeout(() => setReviewMessage(''), 3000);
+            return;
+        }
+        
+        // Validate score input for approval
+        if (action === 'Approved' && showScoreInput && (!gamificationScore || gamificationScore <= 0)) {
+            setReviewMessage('Please enter a valid score for this submission');
             setTimeout(() => setReviewMessage(''), 3000);
             return;
         }
@@ -203,9 +254,32 @@ function SubmissionReview({ selectedStudent }) {
             console.log(`✅ ${action} submission:`, submission.id, 'Response:', result);
             console.log('🔄 Status changed from', submission.status, 'to', result.status);
             
-            setReviewStatus('success');
-            setReviewMessage(`Submission ${action.toLowerCase()} successfully!`);
+            // If approved and score provided, update gamification
+            if (action === 'Approved' && showScoreInput && gamificationScore > 0) {
+                try {
+                    console.log('🎯 Updating gamification score...');
+                    const taskType = mapPillarToTaskType(submission.pillar);
+                    if (taskType && currentEpisode) {
+                        await gamificationAPI.mentor.approveTask(
+                            selectedStudent.id,
+                            currentEpisode.id,
+                            taskType
+                        );
+                        console.log('✅ Gamification score updated!');
+                        setReviewMessage(`Submission approved and ${gamificationScore} points awarded!`);
+                    } else {
+                        setReviewMessage(`Submission ${action.toLowerCase()} successfully!`);
+                    }
+                } catch (gamError) {
+                    console.error('Failed to update gamification:', gamError);
+                    // Don't fail the review if gamification fails
+                    setReviewMessage(`Submission approved (gamification update pending)`);
+                }
+            } else {
+                setReviewMessage(`Submission ${action.toLowerCase()} successfully!`);
+            }
             
+            setReviewStatus('success');
             console.log('🔃 Refreshing submissions...');
             console.log('Current submissions count:', submissions.length);
             
@@ -499,6 +573,115 @@ function SubmissionReview({ selectedStudent }) {
                                 <p className="review-hint">
                                     Your feedback will be sent to the student along with your decision.
                                 </p>
+                            </div>
+
+                            {/* Gamification Score Allotment */}
+                            <div className="review-section gamification-scoring">
+                                <div className="scoring-header">
+                                    <h3 className="review-section-title">
+                                        <Award size={18} />
+                                        Gamification Score Allotment
+                                    </h3>
+                                    <label className="toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={showScoreInput}
+                                            onChange={(e) => setShowScoreInput(e.target.checked)}
+                                            disabled={reviewStatus === 'loading'}
+                                        />
+                                        <span className="toggle-slider"></span>
+                                        <span className="toggle-label">Enable Scoring</span>
+                                    </label>
+                                </div>
+
+                                {/* Season Progress Info */}
+                                {seasonProgress && (
+                                    <div className="season-progress-info">
+                                        <div className="progress-stat">
+                                            <span className="progress-label">Current Episode</span>
+                                            <span className="progress-value">
+                                                Episode {currentEpisode?.episode_number || 1} of 4
+                                            </span>
+                                        </div>
+                                        <div className="progress-stat">
+                                            <span className="progress-label">Episode Progress</span>
+                                            <span className="progress-value">
+                                                {currentEpisode?.completion_percentage || 0}%
+                                            </span>
+                                        </div>
+                                        <div className="progress-stat highlight">
+                                            <span className="progress-label">Season Score (Cumulative)</span>
+                                            <span className="progress-value">
+                                                {seasonProgress.season_score?.total_score || 0} / 1500
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {showScoreInput && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="score-input-container"
+                                    >
+                                        <div className="score-info-banner">
+                                            <Award size={16} />
+                                            <p>
+                                                Approving this <strong>{selectedSubmission.pillar.toUpperCase()}</strong> task 
+                                                will mark it complete in <strong>Episode {currentEpisode?.episode_number || 1}</strong> and 
+                                                add points to the <strong>cumulative season score</strong> (max 1500 points).
+                                            </p>
+                                        </div>
+
+                                        <div className="score-input-group">
+                                            <div className="score-input-wrapper">
+                                                <Coins size={20} className="score-icon" />
+                                                <input
+                                                    type="number"
+                                                    className="score-input"
+                                                    placeholder="Auto-calculated"
+                                                    value={gamificationScore}
+                                                    onChange={(e) => setGamificationScore(Number(e.target.value))}
+                                                    min="0"
+                                                    max="1500"
+                                                    disabled={reviewStatus === 'loading'}
+                                                />
+                                                <span className="score-suffix">points</span>
+                                            </div>
+                                            <div className="score-helper-buttons">
+                                                <button
+                                                    type="button"
+                                                    className="score-preset-btn"
+                                                    onClick={() => setGamificationScore(50)}
+                                                    disabled={reviewStatus === 'loading'}
+                                                >
+                                                    50
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="score-preset-btn"
+                                                    onClick={() => setGamificationScore(100)}
+                                                    disabled={reviewStatus === 'loading'}
+                                                >
+                                                    100
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="score-preset-btn"
+                                                    onClick={() => setGamificationScore(200)}
+                                                    disabled={reviewStatus === 'loading'}
+                                                >
+                                                    200
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p className="score-hint">
+                                            <Award size={14} />
+                                            Task completion is tracked per episode. All episode scores contribute to the season total.
+                                        </p>
+                                    </motion.div>
+                                )}
                             </div>
 
                             {/* Action Buttons */}

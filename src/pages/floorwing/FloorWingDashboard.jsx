@@ -7,6 +7,7 @@ import {
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
 import NotificationBell from '../../components/NotificationBell';
+import FloorWingGamificationPanel from '../../components/FloorWingGamificationPanel';
 import floorWingService from '../../services/floorWing';
 import { floorWingAnnouncementService } from '../../services/announcement';
 import {
@@ -266,6 +267,15 @@ function FloorWingDashboard() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
+                        {/* Gamification Panel */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                        >
+                            <FloorWingGamificationPanel />
+                        </motion.div>
+
                         {/* Stats Cards */}
                         <div className="stats-grid">
                             {enhancedStats.map((stat, index) => {

@@ -138,14 +138,21 @@ class SCDStreakSerializer(serializers.ModelSerializer):
 
 
 class LeaderboardEntrySerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student.username', read_only=True)
+    student_name = serializers.SerializerMethodField()
+    student_username = serializers.CharField(source='student.username', read_only=True)
     student_email = serializers.CharField(source='student.email', read_only=True)
     equipped_title = serializers.SerializerMethodField()
     
     class Meta:
         model = LeaderboardEntry
-        fields = ['id', 'rank', 'student', 'student_name', 'student_email',
+        fields = ['id', 'rank', 'student', 'student_name', 'student_username', 'student_email',
                   'season_score', 'rank_title', 'equipped_title', 'created_at']
+    
+    def get_student_name(self, obj):
+        profile = getattr(obj.student, 'profile', None)
+        if profile:
+            return profile.full_name or obj.student.username
+        return obj.student.username
     
     def get_equipped_title(self, obj):
         user_title = UserTitle.objects.filter(student=obj.student, is_equipped=True).first()
@@ -188,11 +195,19 @@ class UserTitleSerializer(serializers.ModelSerializer):
 
 class PercentileBracketSerializer(serializers.ModelSerializer):
     season_name = serializers.CharField(source='season.name', read_only=True)
+    student_name = serializers.SerializerMethodField()
+    student_username = serializers.CharField(source='student.username', read_only=True)
     
     class Meta:
         model = PercentileBracket
-        fields = ['id', 'student', 'season', 'season_name', 'percentile',
-                  'season_score', 'created_at']
+        fields = ['id', 'student', 'student_name', 'student_username', 'season', 
+                  'season_name', 'percentile', 'season_score', 'created_at']
+    
+    def get_student_name(self, obj):
+        profile = getattr(obj.student, 'profile', None)
+        if profile:
+            return profile.full_name or obj.student.username
+        return obj.student.username
 
 
 class StudentDashboardSerializer(serializers.Serializer):

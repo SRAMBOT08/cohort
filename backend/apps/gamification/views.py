@@ -60,15 +60,18 @@ class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 
-class EpisodeProgressViewSet(viewsets.ReadOnlyModelViewSet):
+class EpisodeProgressViewSet(viewsets.ModelViewSet):
     """
-    Student can view their episode progress
+    Student can view and update their episode progress
     """
     serializer_class = EpisodeProgressSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return EpisodeProgress.objects.filter(student=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
     
     @action(detail=False, methods=['get'])
     def current(self, request):
@@ -213,7 +216,7 @@ class LeaderboardViewSet(viewsets.ReadOnlyModelViewSet):
     
     @action(detail=False, methods=['get'])
     def current_season(self, request):
-        """Get current season's top 3"""
+        """Get current season's top 3 (for students)"""
         current_season = Season.objects.filter(is_active=True).first()
         if not current_season:
             return Response({'detail': 'No active season'}, status=status.HTTP_404_NOT_FOUND)
@@ -221,6 +224,31 @@ class LeaderboardViewSet(viewsets.ReadOnlyModelViewSet):
         top_3 = LeaderboardEntry.objects.filter(season=current_season).order_by('rank')
         serializer = self.get_serializer(top_3, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def full_leaderboard(self, request):
+        """Get full leaderboard (for mentors and floor wings)"""
+        current_season = Season.objects.filter(is_active=True).first()
+        if not current_season:
+            return Response({'detail': 'No active season'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get all leaderboard entries for current season
+        all_entries = LeaderboardEntry.objects.filter(season=current_season).order_by('rank')
+        
+        # Get all percentile brackets
+        percentiles = PercentileBracket.objects.filter(season=current_season).order_by('-season_score')
+        
+        leaderboard_data = self.get_serializer(all_entries, many=True).data
+        
+        # Add percentile data
+        from .serializers import PercentileBracketSerializer
+        percentile_data = PercentileBracketSerializer(percentiles, many=True).data
+        
+        return Response({
+            'top_ranks': leaderboard_data,
+            'percentiles': percentile_data,
+            'total_students': len(leaderboard_data) + len(percentile_data)
+        })
     
     @action(detail=False, methods=['get'])
     def my_position(self, request):
@@ -294,15 +322,30 @@ class TitleViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserTitleViewSet(viewsets.ReadOnlyModelViewSet):
+class UserTitleViewSet(viewsets.ModelViewSet):
     """
-    View owned titles
+    View and equip owned titles
     """
     serializer_class = UserTitleSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return UserTitle.objects.filter(student=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def equip(self, request, pk=None):
+        """Equip a title"""
+        user_title = self.get_object()
+        # Unequip all other titles
+        UserTitle.objects.filter(student=request.user, is_equipped=True).update(is_equipped=False)
+        # Equip this title
+        user_title.is_equipped = True
+        user_title.save()
+        serializer = self.get_serializer(user_title)
+        return Response(serializer.data)
 
 
 class DashboardViewSet(viewsets.ViewSet):

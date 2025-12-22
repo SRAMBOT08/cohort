@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, CheckCircle, Clock, XCircle, Lightbulb, Heart, Trophy, Linkedin, Code, Search, MessageCircle, Send, X as CloseIcon, RefreshCw } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import Button from '../../components/Button';
+import MentorGamificationPanel from '../../components/MentorGamificationPanel';
 import messageService from '../../services/messageService';
 import { getMentorStudents } from '../../services/mentor';
 import SubmissionReview from './SubmissionReview';
@@ -115,6 +116,15 @@ function MentorDashboard() {
             {/* Main Content */}
             {!loading && !error && (
                 <>
+                    {/* Gamification Panel */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                    >
+                        <MentorGamificationPanel />
+                    </motion.div>
+
                     {/* Two Column Layout */}
                     <div className="mentor-content">
                 {/* Left Side - Student List */}
