@@ -1,5 +1,6 @@
 # GitLab CI/CD Pipeline for Frontend Deployment
 # This pipeline builds the React/Vite app and deploys to GitLab Pages
+# Updated: Dec 22, 2025
 
 stages:
   - build
@@ -16,6 +17,7 @@ build:
   script:
     - npm ci
     - npm run build
+    - ls -la dist/
   artifacts:
     paths:
       - dist/
