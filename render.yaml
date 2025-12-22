@@ -27,9 +27,9 @@ services:
         value: config.settings
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: cohort-frontend
-    runtime: node
+    runtime: static
     region: oregon
     plan: free
     branch: main
