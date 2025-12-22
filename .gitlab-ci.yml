@@ -22,12 +22,14 @@ build:
     - npm ci
     - npm run build
     - echo "Build complete. Contents of dist:"
-    - ls -la dist/
+    - ls -laR dist/
+    - test -f dist/index.html && echo "✅ dist/index.html exists" || echo "❌ dist/index.html missing"
     - cat dist/index.html || echo "dist/index.html not found"
   artifacts:
     paths:
       - dist/
     expire_in: 1 week
+    when: always
   only:
     - main
     - master
