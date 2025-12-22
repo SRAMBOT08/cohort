@@ -5,7 +5,10 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 from apps.profiles.models import UserProfile
+from apps.gamification.models import Season, Title
 import csv
 import os
 
@@ -130,7 +133,56 @@ def setup_database(request):
     except Exception as e:
         results['errors'].append(f'CSV reading error: {str(e)}')
     
+    # Initialize gamification system
+    try:
+        results['gamification_setup'] = setup_gamification()
+    except Exception as e:
+        results['errors'].append(f'Gamification setup error: {str(e)}')
+    
     results['success'] = True
     results['total_users'] = User.objects.count()
     
     return JsonResponse(results)
+
+def setup_gamification():
+    """Initialize gamification system with first season and titles"""
+    gamif_results = {}
+    
+    # Create first season if doesn't exist
+    if not Season.objects.exists():
+        today = timezone.now().date()
+        start_date = today.replace(day=1)
+        end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        
+        Season.objects.create(
+            name=f"Season 1 - {start_date.strftime('%B %Y')}",
+            season_number=1,
+            start_date=start_date,
+            end_date=end_date,
+            is_active=True
+        )
+        gamif_results['season_created'] = True
+    else:
+        gamif_results['season_exists'] = True
+    
+    # Create titles
+    titles_data = [
+        {'name': 'The Consistent', 'description': 'Completed all episodes without breaking streak', 'vault_credit_cost': 50, 'icon': '🔥', 'rarity': 'rare'},
+        {'name': 'The Ascender', 'description': 'Achieved Ascension Bonus in 3 consecutive seasons', 'vault_credit_cost': 100, 'icon': '📈', 'rarity': 'epic'},
+        {'name': 'The Finisher', 'description': 'Completed first season with 100% episode completion', 'vault_credit_cost': 30, 'icon': '✅', 'rarity': 'common'},
+        {'name': 'Code Warrior', 'description': 'Maintained perfect LeetCode streak for entire season', 'vault_credit_cost': 80, 'icon': '⚔️', 'rarity': 'epic'},
+    ]
+    
+    created_count = 0
+    for title_data in titles_data:
+        _, created = Title.objects.get_or_create(
+            name=title_data['name'],
+            defaults=title_data
+        )
+        if created:
+            created_count += 1
+    
+    gamif_results['titles_created'] = created_count
+    gamif_results['total_titles'] = Title.objects.count()
+    
+    return gamif_results
