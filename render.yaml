@@ -30,7 +30,6 @@ services:
   - type: web
     name: cohort-frontend
     runtime: static
-    region: oregon
     plan: free
     branch: main
     buildCommand: npm install && npm run build
