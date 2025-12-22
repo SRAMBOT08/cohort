@@ -11,4 +11,7 @@ python manage.py collectstatic --no-input
 echo "🔄 Running migrations..."
 python manage.py migrate
 
+echo "👤 Setting up mentor and importing users..."
+python setup_users.py
+
 echo "✅ Build complete!"
