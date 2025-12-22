@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Setup script to create mentor and import users from CSV
+Setup script to create admin, mentor, floor wing and import students from CSV
 """
 import os
 import sys
@@ -16,11 +16,29 @@ import csv
 
 User = get_user_model()
 
+def create_admin():
+    """Create an admin user"""
+    username = 'admin'
+    email = 'admin@snsce.ac.in'
+    password = 'admin123'
+    
+    if not User.objects.filter(username=username).exists():
+        user = User.objects.create_superuser(username=username, email=email, password=password)
+        
+        # Create or update profile
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.role = 'ADMIN'
+        profile.save()
+        
+        print(f'✅ Admin "{username}" created successfully!')
+    else:
+        print(f'ℹ️  Admin "{username}" already exists.')
+
 def create_mentor():
     """Create a mentor user"""
-    username = os.getenv('MENTOR_USERNAME', 'mentor')
-    email = os.getenv('MENTOR_EMAIL', 'mentor@snsce.ac.in')
-    password = os.getenv('MENTOR_PASSWORD', 'mentor123')
+    username = 'mentor'
+    email = 'mentor@snsce.ac.in'
+    password = 'mentor123'
     
     if not User.objects.filter(username=username).exists():
         user = User.objects.create_user(username=username, email=email, password=password)
@@ -29,19 +47,56 @@ def create_mentor():
         
         # Create or update profile
         profile, created = UserProfile.objects.get_or_create(user=user)
-        profile.role = 'mentor'
+        profile.role = 'MENTOR'
+        profile.campus = 'TECH'
+        profile.floor = 1
         profile.save()
         
         print(f'✅ Mentor "{username}" created successfully!')
     else:
         print(f'ℹ️  Mentor "{username}" already exists.')
 
+def create_floorwing():
+    """Create a floor wing user"""
+    username = 'floorwing'
+    email = 'floorwing@snsce.ac.in'
+    password = 'floorwing123'
+    
+    if not User.objects.filter(username=username).exists():
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.is_staff = True
+        user.save()
+        
+        # Create or update profile
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.role = 'FLOOR_WING'
+        profile.campus = 'TECH'
+        profile.floor = 1
+        profile.save()
+        
+        print(f'✅ Floor Wing "{username}" created successfully!')
+    else:
+        print(f'ℹ️  Floor Wing "{username}" already exists.')
+
 def import_users_from_csv():
     """Import users from dummy CSV file"""
-    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dummy users - Sheet1.csv')
+    # Check multiple possible paths
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), 'dummy users - Sheet1.csv'),
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dummy users - Sheet1.csv'),
+        '/opt/render/project/src/dummy users - Sheet1.csv',
+        '/opt/render/project/src/backend/dummy users - Sheet1.csv',
+    ]
     
-    if not os.path.exists(csv_path):
-        print(f'⚠️  CSV file not found at {csv_path}')
+    csv_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            csv_path = path
+            break
+    
+    if not csv_path:
+        print(f'⚠️  CSV file not found. Creating demo students instead...')
+        create_demo_students()
         return
     
     created_count = 0
@@ -54,7 +109,7 @@ def import_users_from_csv():
             username = row['username'].strip()
             password = row['password'].strip()
             
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(email=email).exists() or User.objects.filter(username=username).exists():
                 skipped_count += 1
                 continue
             
@@ -67,15 +122,42 @@ def import_users_from_csv():
             
             # Create profile as student
             profile, created = UserProfile.objects.get_or_create(user=user)
-            profile.role = 'student'
+            profile.role = 'STUDENT'
+            profile.campus = 'TECH'
+            profile.floor = 1
             profile.save()
             
             created_count += 1
     
     print(f'✅ Imported {created_count} users from CSV (skipped {skipped_count} existing)')
 
+def create_demo_students():
+    """Create demo students if CSV not available"""
+    students = [
+        ('student1', 'student1@snsce.ac.in', 'student123'),
+        ('student2', 'student2@snsce.ac.in', 'student123'),
+        ('student3', 'student3@snsce.ac.in', 'student123'),
+        ('student4', 'student4@snsce.ac.in', 'student123'),
+        ('student5', 'student5@snsce.ac.in', 'student123'),
+    ]
+    
+    created_count = 0
+    for username, email, password in students:
+        if not User.objects.filter(username=username).exists():
+            user = User.objects.create_user(username=username, email=email, password=password)
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.role = 'STUDENT'
+            profile.campus = 'TECH'
+            profile.floor = 1
+            profile.save()
+            created_count += 1
+    
+    print(f'✅ Created {created_count} demo students')
+
 if __name__ == '__main__':
     print('👤 Setting up users...')
+    create_admin()
     create_mentor()
+    create_floorwing()
     import_users_from_csv()
     print('✅ User setup complete!')
