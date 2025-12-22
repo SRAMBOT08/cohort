@@ -109,25 +109,30 @@ def import_users_from_csv():
             username = row['username'].strip()
             password = row['password'].strip()
             
+            user = None
             if User.objects.filter(email=email).exists() or User.objects.filter(username=username).exists():
+                # Ensure we fetch the user and reset password/role to keep creds in sync with CSV
+                user = User.objects.filter(email=email).first() or User.objects.filter(username=username).first()
                 skipped_count += 1
-                continue
+                user.set_password(password)
+                user.username = username  # ensure username matches CSV
+                user.email = email
+                user.save()
+            else:
+                # Create user
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password
+                )
+                created_count += 1
             
-            # Create user
-            user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
-            )
-            
-            # Create profile as student
+            # Create/update profile as student
             profile, created = UserProfile.objects.get_or_create(user=user)
             profile.role = 'STUDENT'
             profile.campus = 'TECH'
             profile.floor = 1
             profile.save()
-            
-            created_count += 1
     
     print(f'✅ Imported {created_count} users from CSV (skipped {skipped_count} existing)')
 
