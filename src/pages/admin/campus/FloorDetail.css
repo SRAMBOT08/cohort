@@ -1,18 +1,10 @@
 /* Theme Variables */
-[data-theme="dark"] {
+:root {
     --text-primary: #FFFFFF;
     --text-secondary: #BDBDBD;
     --glass-bg: rgba(18, 18, 18, 0.7);
     --glass-border: rgba(255, 255, 255, 0.08);
     --border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] {
-    --text-primary: #000000;
-    --text-secondary: #616161;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --border-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Floor Detail Page - Matching Mentor Dashboard Design */
