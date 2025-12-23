@@ -85,8 +85,8 @@ function CampusOverview() {
                             <div className="floor-card">
                                 <div className="floor-header">
                                     <div>
-                                        <h2 className="floor-title">Floor {floor.floor}</h2>
-                                        <p className="floor-subtitle">{floor.floor_name}</p>
+                                        <h2 className="floor-title">{campus === 'ARTS' ? `Floor ${floor.floor}` : floor.floor_name}</h2>
+                                        <p className="floor-subtitle">{campus === 'ARTS' ? floor.floor_name : ''}</p>
                                     </div>
                                     <ChevronRight size={24} color="var(--primary-color)" />
                                 </div>

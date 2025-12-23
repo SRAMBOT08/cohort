@@ -16,8 +16,8 @@ class UserProfile(models.Model):
     ]
     
     CAMPUS_CHOICES = [
-        ('TECH', 'SNS College of Technology'),
-        ('ARTS', 'SNS College of Arts & Science'),
+        ('TECH', 'Dr. SNS Rajalakshmi College of Arts and Science'),
+        ('ARTS', 'SNS College of Technology'),
     ]
     
     FLOOR_CHOICES = [

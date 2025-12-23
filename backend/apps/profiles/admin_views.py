@@ -20,11 +20,11 @@ class AdminCampusOverviewView(APIView):
         
         # Determine floor range based on campus
         if campus == 'TECH':
+            floors = [1, 2, 3]
+            campus_name = 'Dr. SNS Rajalakshmi College of Arts and Science'
+        else:
             floors = [1, 2, 3, 4]
             campus_name = 'SNS College of Technology'
-        else:
-            floors = [1, 2, 3]
-            campus_name = 'SNS College of Arts & Science'
         
         floor_data = []
         for floor_num in floors:
@@ -93,11 +93,11 @@ class AdminFloorDetailView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Validate floor range
-        if campus == 'TECH' and floor not in [1, 2, 3, 4]:
+        if campus == 'TECH' and floor not in [1, 2, 3]:
             return Response({
-                'error': 'Tech campus only has floors 1-4'
+                'error': 'Arts campus only has floors 1-3'
             }, status=status.HTTP_400_BAD_REQUEST)
-        if campus == 'ARTS' and floor not in [1, 2, 3]:
+        if campus == 'ARTS' and floor not in [1, 2, 3, 4]:
             return Response({
                 'error': 'Arts campus only has floors 1-3'
             }, status=status.HTTP_400_BAD_REQUEST)
@@ -294,7 +294,7 @@ class AdminStudentDetailView(APIView):
             # Get campus name safely
             campus_name = 'N/A'
             if profile.campus:
-                campus_name = 'SNS College of Technology' if profile.campus == 'TECH' else 'SNS College of Arts & Science'
+                campus_name = 'Dr. SNS Rajalakshmi College of Arts and Science' if profile.campus == 'TECH' else 'SNS College of Technology'
             
             return Response({
                 'id': user.id,
