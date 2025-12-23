@@ -149,18 +149,39 @@ def get_pillar_submissions(request, pillar):
             title = f"LeetCode Profile - {sub.leetcode_username}"
             description = f"Total solved: {sub.total_solved}"
         
-        # Count evidence
+        # Count evidence and get primary evidence URL
         evidence_count = {'images': 0, 'links': 0}
+        evidence_url = None
+        
+        # Determine primary evidence URL based on submission type
         if hasattr(sub, 'certificate_link') and sub.certificate_link:
             evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.certificate_link
+        if hasattr(sub, 'drive_link') and sub.drive_link:
+            evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.drive_link
         if hasattr(sub, 'github_repo') and sub.github_repo:
             evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.github_repo
         if hasattr(sub, 'video_url') and sub.video_url:
             evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.video_url
         if hasattr(sub, 'post_url') and sub.post_url:
             evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.post_url
         if hasattr(sub, 'screenshot_url') and sub.screenshot_url:
             evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.screenshot_url
+        if hasattr(sub, 'profile_url') and sub.profile_url:
+            evidence_count['links'] += 1
+            if not evidence_url:
+                evidence_url = sub.profile_url
         
         return {
             'id': f"{pillar_type}_{model_type}_{sub.id}",  # Unique composite key
@@ -173,6 +194,7 @@ def get_pillar_submissions(request, pillar):
             'status': frontend_status,
             'pillar': pillar_type,
             'evidenceLinks': evidence_count,
+            'evidence': evidence_url,  # Add the actual evidence URL
             'reviewerComments': getattr(sub, 'reviewer_comments', None) or getattr(sub, 'review_comments', '') or '',
             'reviewedAt': getattr(sub, 'reviewed_at', None),
         }

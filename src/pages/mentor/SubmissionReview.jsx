@@ -547,15 +547,23 @@ function SubmissionReview({ selectedStudent }) {
                                     <span className="detail-label">Description</span>
                                     <p className="detail-value">{selectedSubmission.description}</p>
                                 </div>
-                                <a
-                                    href={selectedSubmission.evidence}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="evidence-link"
-                                >
-                                    <ExternalLink size={16} />
-                                    <span>View Evidence / Certificate</span>
-                                </a>
+                                {selectedSubmission.evidence && (
+                                    <a
+                                        href={selectedSubmission.evidence}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="evidence-link"
+                                    >
+                                        <ExternalLink size={16} />
+                                        <span>View Evidence / Certificate</span>
+                                    </a>
+                                )}
+                                {!selectedSubmission.evidence && (
+                                    <div className="evidence-link disabled" style={{ cursor: 'not-allowed', opacity: 0.5 }}>
+                                        <ExternalLink size={16} />
+                                        <span>No Evidence Available</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Review Actions */}
