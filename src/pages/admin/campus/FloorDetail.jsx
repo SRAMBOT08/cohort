@@ -484,9 +484,12 @@ const StudentDetailDrawer = ({ student, loading, onClose }) => {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="drawer-header">
-                    <h2>{student?.name || 'Loading...'}</h2>
+                    <div>
+                        <h2>{student?.name || 'Loading...'}</h2>
+                        {student?.email && <p className="drawer-subtitle">{student.email}</p>}
+                    </div>
                     <button className="close-drawer-button" onClick={onClose}>
-                        <X size={20} />
+                        <X size={24} />
                     </button>
                 </div>
 
@@ -497,130 +500,110 @@ const StudentDetailDrawer = ({ student, loading, onClose }) => {
                     </div>
                 ) : student ? (
                     <div className="drawer-content">
-                        {/* Student Information */}
-                        <div className="drawer-section">
-                            <h3>Student Information</h3>
-                            <div className="detail-row">
-                                <span className="detail-label">Email:</span>
-                                <span className="detail-value">{student.email}</span>
+                        {/* Quick Info Cards */}
+                        <div className="info-cards-grid">
+                            <div className="info-card">
+                                <div className="info-card-label">Roll Number</div>
+                                <div className="info-card-value">{student.roll_no || 'N/A'}</div>
                             </div>
-                            <div className="detail-row">
-                                <span className="detail-label">Roll No:</span>
-                                <span className="detail-value">{student.roll_no || 'N/A'}</span>
-                            </div>
-                            <div className="detail-row">
-                                <span className="detail-label">Campus:</span>
-                                <span className="detail-value">{student.campus_name || 'N/A'}</span>
-                            </div>
-                            <div className="detail-row">
-                                <span className="detail-label">Floor:</span>
-                                <span className="detail-value">Floor {student.floor || 'N/A'}</span>
-                            </div>
-                            <div className="detail-row">
-                                <span className="detail-label">Mentor:</span>
-                                <span className="detail-value">
-                                    {student.assigned_mentor?.name || 'Not Assigned'}
-                                </span>
+                            <div className="info-card">
+                                <div className="info-card-label">Floor</div>
+                                <div className="info-card-value">{student.floor || 'N/A'}</div>
                             </div>
                         </div>
 
-                        {/* XP and Status */}
-                        {student.xp_points !== undefined && (
-                            <div className="drawer-section">
-                                <h3>Performance</h3>
-                                <div className="detail-row">
-                                    <span className="detail-label">XP Points:</span>
-                                    <span className="detail-value" style={{ 
-                                        background: 'linear-gradient(135deg, #F7C948, #FFA726)',
-                                        WebkitBackgroundClip: 'text',
-                                        WebkitTextFillColor: 'transparent'
-                                    }}>
-                                        {student.xp_points} XP
+                        {/* Campus & Mentor */}
+                        <div className="drawer-section">
+                            <div className="info-item">
+                                <div className="info-item-label">Campus</div>
+                                <div className="info-item-value">{student.campus_name || 'N/A'}</div>
+                            </div>
+                            <div className="info-item">
+                                <div className="info-item-label">Mentor</div>
+                                <div className="info-item-value">
+                                    {student.assigned_mentor?.name || 'Not Assigned'}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Performance Overview */}
+                        <div className="drawer-section">
+                            <h3>Performance Overview</h3>
+                            <div className="performance-grid">
+                                <div className="performance-card">
+                                    <div className="performance-label">XP Points</div>
+                                    <div className="performance-value xp-value">{student.xp_points || 0}</div>
+                                </div>
+                                <div className="performance-card">
+                                    <div className="performance-label">Status</div>
+                                    <span className={`status-badge status-${student.status || 'behind'}`}>
+                                        {student.status === 'on_track' ? 'On Track' : 
+                                         student.status === 'at_risk' ? 'At Risk' : 'Behind'}
                                     </span>
                                 </div>
-                                {student.status && (
-                                    <div className="detail-row">
-                                        <span className="detail-label">Status:</span>
-                                        <span className={`student-role ${
-                                            student.status === 'on_track' ? 'mentor' :
-                                            student.status === 'at_risk' ? 'student' : 'floor-wing'
-                                        }`}>
-                                            {student.status === 'on_track' ? 'On Track' : 
-                                             student.status === 'at_risk' ? 'At Risk' : 'Behind'}
-                                        </span>
-                                    </div>
-                                )}
                             </div>
-                        )}
+                        </div>
 
                         {/* Overall Progress */}
                         {student.pillar_progress !== undefined && (
                             <div className="drawer-section">
-                                <h3>Overall Progress</h3>
-                                <div className="progress-bar">
-                                    <div
-                                        className="progress-fill"
-                                        style={{ 
-                                            width: `${student.pillar_progress}%`,
-                                            background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
-                                        }}
-                                    />
+                                <div className="section-header">
+                                    <h3>Overall Progress</h3>
+                                    <span className="progress-percentage">{student.pillar_progress}%</span>
                                 </div>
-                                <div style={{ textAlign: 'right', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
-                                    {student.pillar_progress}%
+                                <div className="progress-bar-modern">
+                                    <div
+                                        className="progress-fill-modern"
+                                        style={{ width: `${student.pillar_progress}%` }}
+                                    />
                                 </div>
                             </div>
                         )}
 
-                        {/* Pillar Details */}
+                        {/* Pillar Progress */}
                         {student.pillar_details && Object.keys(student.pillar_details).length > 0 && (
                             <div className="drawer-section">
                                 <h3>Pillar Progress</h3>
-                                {Object.entries(student.pillar_details).map(([pillar, progress]) => (
-                                    <div key={pillar} style={{ marginBottom: '1rem' }}>
-                                        <div className="detail-row" style={{ marginBottom: '0.5rem' }}>
-                                            <span className="detail-label">{pillar}:</span>
-                                            <span className="detail-value">{progress}%</span>
+                                <div className="pillars-grid">
+                                    {Object.entries(student.pillar_details).map(([pillar, progress]) => (
+                                        <div key={pillar} className="pillar-card">
+                                            <div className="pillar-header">
+                                                <span className="pillar-name">{pillar}</span>
+                                                <span className="pillar-percentage">{progress}%</span>
+                                            </div>
+                                            <div className="progress-bar-small">
+                                                <div
+                                                    className="progress-fill-small"
+                                                    style={{ width: `${progress}%` }}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="progress-bar">
-                                            <div
-                                                className="progress-fill"
-                                                style={{ 
-                                                    width: `${progress}%`,
-                                                    background: 'linear-gradient(90deg, #2196F3, #64B5F6)'
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
 
-                        {/* Submission Stats */}
+                        {/* Submission Statistics */}
                         {student.submission_stats && (
                             <div className="drawer-section">
                                 <h3>Submission Statistics</h3>
-                                <div className="detail-row">
-                                    <span className="detail-label">Total:</span>
-                                    <span className="detail-value">{student.submission_stats.total || 0}</span>
-                                </div>
-                                <div className="detail-row">
-                                    <span className="detail-label">Approved:</span>
-                                    <span className="detail-value" style={{ color: '#4CAF50' }}>
-                                        {student.submission_stats.approved || 0}
-                                    </span>
-                                </div>
-                                <div className="detail-row">
-                                    <span className="detail-label">Pending:</span>
-                                    <span className="detail-value" style={{ color: '#FFA726' }}>
-                                        {student.submission_stats.pending || 0}
-                                    </span>
-                                </div>
-                                <div className="detail-row">
-                                    <span className="detail-label">Rejected:</span>
-                                    <span className="detail-value" style={{ color: '#E53935' }}>
-                                        {student.submission_stats.rejected || 0}
-                                    </span>
+                                <div className="stats-grid">
+                                    <div className="stat-card">
+                                        <div className="stat-value">{student.submission_stats.total || 0}</div>
+                                        <div className="stat-label">Total</div>
+                                    </div>
+                                    <div className="stat-card stat-approved">
+                                        <div className="stat-value">{student.submission_stats.approved || 0}</div>
+                                        <div className="stat-label">Approved</div>
+                                    </div>
+                                    <div className="stat-card stat-pending">
+                                        <div className="stat-value">{student.submission_stats.pending || 0}</div>
+                                        <div className="stat-label">Pending</div>
+                                    </div>
+                                    <div className="stat-card stat-rejected">
+                                        <div className="stat-value">{student.submission_stats.rejected || 0}</div>
+                                        <div className="stat-label">Rejected</div>
+                                    </div>
                                 </div>
                             </div>
                         )}
