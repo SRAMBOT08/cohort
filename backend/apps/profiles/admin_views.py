@@ -456,6 +456,13 @@ class AdminStudentDetailView(APIView):
             if profile.campus:
                 campus_name = 'SNS College of Technology' if profile.campus == 'TECH' else 'Dr. SNS Rajalakshmi College of Arts and Science'
             
+            # Get XP points safely (may not exist in profile)
+            xp_points = 0
+            try:
+                xp_points = profile.xp_points if hasattr(profile, 'xp_points') else 0
+            except Exception:
+                xp_points = 0
+            
             return Response({
                 'id': user.id,
                 'name': f"{user.first_name} {user.last_name}",
@@ -470,7 +477,7 @@ class AdminStudentDetailView(APIView):
                 'pillar_progress': pillar_details.get('overall', 0),
                 'pillar_details': pillar_details.get('pillars', {}),
                 'submission_stats': submission_stats,
-                'xp_points': profile.xp_points or 0,
+                'xp_points': xp_points,
                 'status': self._get_student_status(pillar_details.get('overall', 0))
             }, status=status.HTTP_200_OK)
             
