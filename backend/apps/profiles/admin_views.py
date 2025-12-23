@@ -313,7 +313,7 @@ class AdminStudentDetailView(APIView):
             # Get campus name safely
             campus_name = 'N/A'
             if profile.campus:
-                campus_name = 'Dr. SNS Rajalakshmi College of Arts and Science' if profile.campus == 'TECH' else 'SNS College of Technology'
+                campus_name = 'SNS College of Technology' if profile.campus == 'TECH' else 'Dr. SNS Rajalakshmi College of Arts and Science'
             
             return Response({
                 'id': user.id,
@@ -339,27 +339,146 @@ class AdminStudentDetailView(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
     
     def _get_pillar_progress(self, profile):
-        """Calculate pillar progress - placeholder implementation"""
-        # TODO: Implement based on your submission models (CFC, CLT, SRI, IIPC, SCD)
+        """Calculate pillar progress - real implementation"""
+        user = profile.user
+        pillar_stats = {
+            'CFC': {'completed': 0, 'total': 4, 'percentage': 0},
+            'CLT': {'completed': 0, 'total': 1, 'percentage': 0},
+            'SRI': {'completed': 0, 'total': 0, 'percentage': 0},
+            'IIPC': {'completed': 0, 'total': 2, 'percentage': 0},
+            'SCD': {'completed': 0, 'total': 1, 'percentage': 0}
+        }
+        
+        # CFC - 4 tasks (hackathon, BMC, internship, GenAI)
+        try:
+            cfc_completed = (
+                HackathonSubmission.objects.filter(user=user, status='approved').count() +
+                BMCVideoSubmission.objects.filter(user=user, status='approved').count() +
+                InternshipSubmission.objects.filter(user=user, status='approved').count() +
+                GenAIProjectSubmission.objects.filter(user=user, status='approved').count()
+            )
+            pillar_stats['CFC']['completed'] = cfc_completed
+            pillar_stats['CFC']['percentage'] = min(100, int((cfc_completed / 4) * 100))
+        except Exception:
+            pass
+        
+        # CLT - 1 certificate
+        try:
+            clt_completed = CLTSubmission.objects.filter(user=user, status='approved').count()
+            pillar_stats['CLT']['completed'] = min(1, clt_completed)
+            pillar_stats['CLT']['percentage'] = min(100, clt_completed * 100)
+        except Exception:
+            pass
+        
+        # IIPC - 2 tasks (LinkedIn post + connection)
+        try:
+            iipc_completed = (
+                LinkedInPostVerification.objects.filter(user=user, status='approved').count() +
+                LinkedInConnectionVerification.objects.filter(user=user, status='approved').count()
+            )
+            pillar_stats['IIPC']['completed'] = iipc_completed
+            pillar_stats['IIPC']['percentage'] = min(100, int((iipc_completed / 2) * 100))
+        except Exception:
+            pass
+        
+        # SCD - 1 LeetCode profile with 10+ problems
+        try:
+            scd_profile = LeetCodeProfile.objects.filter(user=user, total_solved__gte=10).exists()
+            pillar_stats['SCD']['completed'] = 1 if scd_profile else 0
+            pillar_stats['SCD']['percentage'] = 100 if scd_profile else 0
+        except Exception:
+            pass
+        
+        # Calculate overall progress
+        total_completed = sum(p['completed'] for p in pillar_stats.values())
+        total_tasks = sum(p['total'] for p in pillar_stats.values())
+        overall = int((total_completed / total_tasks) * 100) if total_tasks > 0 else 0
+        
         return {
-            'overall': 0,
-            'pillars': {
-                'CFC': 0,
-                'CLT': 0,
-                'SRI': 0,
-                'IIPC': 0,
-                'SCD': 0
-            }
+            'overall': overall,
+            'pillars': pillar_stats
         }
     
     def _get_submission_stats(self, profile):
-        """Get submission statistics - placeholder implementation"""
-        # TODO: Implement based on your submission models
+        """Get submission statistics - real implementation"""
+        user = profile.user
+        total = approved = pending = rejected = 0
+        
+        try:
+            # CLT
+            clt_qs = CLTSubmission.objects.filter(user=user)
+            total += clt_qs.count()
+            approved += clt_qs.filter(status='approved').count()
+            pending += clt_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += clt_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # CFC - Hackathon
+            hack_qs = HackathonSubmission.objects.filter(user=user)
+            total += hack_qs.count()
+            approved += hack_qs.filter(status='approved').count()
+            pending += hack_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += hack_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # CFC - BMC
+            bmc_qs = BMCVideoSubmission.objects.filter(user=user)
+            total += bmc_qs.count()
+            approved += bmc_qs.filter(status='approved').count()
+            pending += bmc_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += bmc_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # CFC - Internship
+            intern_qs = InternshipSubmission.objects.filter(user=user)
+            total += intern_qs.count()
+            approved += intern_qs.filter(status='approved').count()
+            pending += intern_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += intern_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # CFC - GenAI
+            genai_qs = GenAIProjectSubmission.objects.filter(user=user)
+            total += genai_qs.count()
+            approved += genai_qs.filter(status='approved').count()
+            pending += genai_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += genai_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # IIPC - LinkedIn Post
+            post_qs = LinkedInPostVerification.objects.filter(user=user)
+            total += post_qs.count()
+            approved += post_qs.filter(status='approved').count()
+            pending += post_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += post_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        try:
+            # IIPC - LinkedIn Connection
+            conn_qs = LinkedInConnectionVerification.objects.filter(user=user)
+            total += conn_qs.count()
+            approved += conn_qs.filter(status='approved').count()
+            pending += conn_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            rejected += conn_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
         return {
-            'total': 0,
-            'approved': 0,
-            'pending': 0,
-            'rejected': 0
+            'total': total,
+            'approved': approved,
+            'pending': pending,
+            'rejected': rejected
         }
     
     def _get_student_status(self, progress):
