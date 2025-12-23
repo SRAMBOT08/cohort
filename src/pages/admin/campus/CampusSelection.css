@@ -46,16 +46,19 @@
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+    align-items: stretch;
 }
 
 .campus-card {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     text-align: center;
     padding: 3rem 2rem;
     gap: 1.5rem;
     transition: all 0.3s ease;
+    min-height: 450px;
 }
 
 .campus-icon {
@@ -98,6 +101,9 @@
     color: var(--text-secondary, #616161);
     margin: 0;
     line-height: 1.5;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
 }
 
 [data-theme='dark'] .campus-description {
@@ -107,9 +113,10 @@
 .campus-stats {
     display: flex;
     gap: 2rem;
-    margin-top: 1rem;
+    margin-top: auto;
     width: 100%;
     justify-content: center;
+    padding-top: 1rem;
 }
 
 .stat-item {
