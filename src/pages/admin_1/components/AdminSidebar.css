@@ -51,6 +51,42 @@
     gap: 1rem;
 }
 
+.admin-college-logos {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+}
+
+.admin-college-logo {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.admin-college-logo:hover {
+    transform: scale(1.05);
+}
+
+.admin-sidebar-logo-collapsed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-college-logo-small {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
 .admin-sidebar-logo h2 {
     font-size: 1.25rem;
     font-weight: 700;
@@ -60,6 +96,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: -0.01em;
+    text-align: center;
 }
 
 .admin-sidebar-toggle {

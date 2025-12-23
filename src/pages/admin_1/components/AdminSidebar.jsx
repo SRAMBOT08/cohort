@@ -5,6 +5,8 @@ import {
     LayoutDashboard, Users, UserCheck, Trophy, Bell, Shield, Settings,
     ChevronLeft, ChevronRight, UserCog
 } from 'lucide-react';
+import snsctLogo from '../../../assets/snsct.jpeg';
+import snscasLogo from '../../../assets/snscas.jpeg';
 import './AdminSidebar.css';
 
 const ADMIN_NAV_ITEMS = [
@@ -36,7 +38,21 @@ const AdminSidebar = ({ isCollapsed, setIsCollapsed }) => {
                         exit={{ opacity: 0 }}
                         className="admin-sidebar-logo"
                     >
+                        <div className="admin-college-logos">
+                            <img src={snsctLogo} alt="SNS College of Technology" className="admin-college-logo" />
+                            <img src={snscasLogo} alt="SNS College of Arts & Science" className="admin-college-logo" />
+                        </div>
                         <h2>Admin Panel</h2>
+                    </motion.div>
+                )}
+                {isCollapsed && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="admin-sidebar-logo-collapsed"
+                    >
+                        <img src={snsctLogo} alt="SNSCT" className="admin-college-logo-small" />
                     </motion.div>
                 )}
                 <button
