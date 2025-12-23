@@ -409,8 +409,6 @@
 
 .requirement-pillar {
   font-weight: 700;
-.requirement-pillar {
-  font-weight: 700;
   color: var(--primary-color, #3b82f6);
   min-width: 60px;
   flex-shrink: 0;
