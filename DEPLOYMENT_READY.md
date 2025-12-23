@@ -9,7 +9,7 @@
   - Admin (admin@cohort.edu / admin123)
   - Mentor (mentor@cohort.edu / mentor123)
   - Student (student@cohort.edu / student123)
-  - Floor Wing (floorwing@cohort.edu / floorwing123)
+  - Floor Wing (floorwing1@cohort.edu / floorwing123)
 - **Status**: ✅ Tested locally and working
 
 ### 2. ✅ Render Build Script
@@ -104,7 +104,7 @@ CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app,http://localhost:5173
 | Admin      | admin       | admin@cohort.edu       | admin123     |
 | Mentor     | mentor1     | mentor@cohort.edu      | mentor123    |
 | Student    | student1    | student@cohort.edu     | student123   |
-| Floor Wing | floorwing1  | floorwing@cohort.edu   | floorwing123 |
+| Floor Wing | floorwing1  | floorwing1@cohort.edu  | floorwing123 |
 
 ⚠️ **Change all passwords after first login!**
 

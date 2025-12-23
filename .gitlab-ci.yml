@@ -5,6 +5,7 @@
 stages:
   - build
   - deploy
+  - render_deploy
 
 variables:
   # Set your Render backend URL here after deployment
@@ -53,3 +54,16 @@ pages:
     - master
   dependencies:
     - build
+
+# Trigger Render backend deploy via deploy hook
+render_deploy:
+  stage: render_deploy
+  image: curlimages/curl:8.11.0
+  script:
+    - echo "Triggering Render deploy for backend..."
+    - curl -fsS "https://api.render.com/deploy/srv-d54lne6uk2gs73be8p20?key=4YT16VWgh8A" || echo "Render deploy hook call failed"
+  only:
+    - main
+    - master
+  dependencies:
+    - pages

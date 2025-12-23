@@ -48,7 +48,7 @@ def create_users():
         },
         {
             'username': 'floorwing1',
-            'email': 'floorwing@cohort.edu',
+            'email': 'floorwing1@cohort.edu',
             'password': 'floorwing123',
             'role': 'FLOOR_WING',
             'first_name': 'Floor',

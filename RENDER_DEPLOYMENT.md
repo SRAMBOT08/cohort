@@ -20,7 +20,7 @@ This creates users for all roles:
 - **Admin**: admin@cohort.edu / admin123
 - **Mentor**: mentor@cohort.edu / mentor123  
 - **Student**: student@cohort.edu / student123
-- **Floor Wing**: floorwing@cohort.edu / floorwing123
+- **Floor Wing**: floorwing1@cohort.edu / floorwing123
 
 ⚠️ **Change these passwords after deployment!**
 
