@@ -81,12 +81,16 @@ const FloorDetail = () => {
     const handleStudentClick = async (student) => {
         setSelectedStudent(student);
         setLoadingStudent(true);
+        setStudentDetail(null); // Clear previous data
         try {
             const details = await getStudentDetail(student.id);
             setStudentDetail(details);
         } catch (error) {
             console.error('Error loading student details:', error);
             alert('Failed to load student details');
+            // Close drawer on error
+            setSelectedStudent(null);
+            setStudentDetail(null);
         } finally {
             setLoadingStudent(false);
         }
