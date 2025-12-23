@@ -29,8 +29,13 @@
     font-family: 'Inter', sans-serif;
     font-size: 1.125rem;
     margin: 0;
-    color: #BDBDBD;
+    color: var(--text-secondary, #616161);
     font-weight: 400;
+}
+
+/* Theme-specific overrides */
+[data-theme='dark'] .campus-selection-subtitle {
+    color: var(--text-secondary, #BDBDBD);
 }
 
 .campus-cards-grid {
@@ -72,14 +77,22 @@
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0;
+    color: var(--text-primary, #000000);
+}
+
+[data-theme='dark'] .campus-name {
     color: var(--text-primary, #FFFFFF);
 }
 
 .campus-description {
     font-size: 1rem;
-    color: var(--text-secondary, #BDBDBD);
+    color: var(--text-secondary, #616161);
     margin: 0;
     line-height: 1.5;
+}
+
+[data-theme='dark'] .campus-description {
+    color: var(--text-secondary, #BDBDBD);
 }
 
 .campus-stats {
@@ -110,8 +123,12 @@
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--text-secondary, #BDBDBD);
+    color: var(--text-secondary, #616161);
     font-weight: 500;
+}
+
+[data-theme='dark'] .stat-label {
+    color: var(--text-secondary, #BDBDBD);
 }
 
 /* Responsive Design */
