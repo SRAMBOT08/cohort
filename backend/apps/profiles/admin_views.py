@@ -90,14 +90,99 @@ class AdminCampusOverviewView(APIView):
         }, status=status.HTTP_200_OK)
     
     def _get_floor_submission_stats(self, campus, floor):
-        """Get submission statistics for a floor"""
-        # Placeholder - implement based on your actual submission models
+        """Get submission statistics for a floor - real implementation"""
+        # Get all students on this floor
+        students = UserProfile.objects.filter(
+            role='STUDENT',
+            campus=campus,
+            floor=floor
+        ).select_related('user')
+        
+        user_ids = [s.user.id for s in students]
+        
+        total = pending = approved = rejected = 0
+        
+        # CLT
+        try:
+            clt_qs = CLTSubmission.objects.filter(user_id__in=user_ids)
+            total += clt_qs.count()
+            pending += clt_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += clt_qs.filter(status='approved').count()
+            rejected += clt_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # CFC - Hackathon
+        try:
+            hack_qs = HackathonSubmission.objects.filter(user_id__in=user_ids)
+            total += hack_qs.count()
+            pending += hack_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += hack_qs.filter(status='approved').count()
+            rejected += hack_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # CFC - BMC
+        try:
+            bmc_qs = BMCVideoSubmission.objects.filter(user_id__in=user_ids)
+            total += bmc_qs.count()
+            pending += bmc_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += bmc_qs.filter(status='approved').count()
+            rejected += bmc_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # CFC - Internship
+        try:
+            intern_qs = InternshipSubmission.objects.filter(user_id__in=user_ids)
+            total += intern_qs.count()
+            pending += intern_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += intern_qs.filter(status='approved').count()
+            rejected += intern_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # CFC - GenAI
+        try:
+            genai_qs = GenAIProjectSubmission.objects.filter(user_id__in=user_ids)
+            total += genai_qs.count()
+            pending += genai_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += genai_qs.filter(status='approved').count()
+            rejected += genai_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # IIPC - LinkedIn Post
+        try:
+            post_qs = LinkedInPostVerification.objects.filter(user_id__in=user_ids)
+            total += post_qs.count()
+            pending += post_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += post_qs.filter(status='approved').count()
+            rejected += post_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # IIPC - LinkedIn Connection
+        try:
+            conn_qs = LinkedInConnectionVerification.objects.filter(user_id__in=user_ids)
+            total += conn_qs.count()
+            pending += conn_qs.filter(status__in=['draft', 'submitted', 'under_review']).count()
+            approved += conn_qs.filter(status='approved').count()
+            rejected += conn_qs.filter(status='rejected').count()
+        except Exception:
+            pass
+        
+        # Calculate progress percentage
+        progress_percentage = 0
+        if total > 0:
+            progress_percentage = int((approved / total) * 100)
+        
         return {
-            'total': 0,
-            'pending': 0,
-            'approved': 0,
-            'rejected': 0,
-            'progress_percentage': 0
+            'total': total,
+            'pending': pending,
+            'approved': approved,
+            'rejected': rejected,
+            'progress_percentage': progress_percentage
         }
 
 
@@ -166,12 +251,16 @@ class AdminFloorDetailView(APIView):
                 mentor = student_profile.assigned_mentor
                 mentor_name = f"{mentor.first_name} {mentor.last_name}"
             
+            # Get real submission count for this student
+            submission_count = self._get_student_submission_count(student_profile.user)
+            
             student_data.append({
                 'id': student_profile.user.id,
                 'name': f"{student_profile.user.first_name} {student_profile.user.last_name}",
                 'email': student_profile.user.email,
                 'mentor': mentor_name,
-                'mentor_id': student_profile.assigned_mentor.id if student_profile.assigned_mentor else None
+                'mentor_id': student_profile.assigned_mentor.id if student_profile.assigned_mentor else None,
+                'submissions': submission_count
             })
         
         floor_wing_data = None
@@ -194,6 +283,47 @@ class AdminFloorDetailView(APIView):
                 'unassigned_students': sum(1 for s in student_data if not s['mentor_id'])
             }
         }, status=status.HTTP_200_OK)
+    
+    def _get_student_submission_count(self, user):
+        """Get total submission count for a student across all pillars"""
+        count = 0
+        
+        try:
+            count += CLTSubmission.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += HackathonSubmission.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += BMCVideoSubmission.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += InternshipSubmission.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += GenAIProjectSubmission.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += LinkedInPostVerification.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        try:
+            count += LinkedInConnectionVerification.objects.filter(user=user).count()
+        except Exception:
+            pass
+        
+        return count
 
 
 class AdminAssignFloorWingView(APIView):
