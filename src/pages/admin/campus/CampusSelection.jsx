@@ -76,12 +76,6 @@ function CampusSelection() {
                                 </div>
                                 <h2 className="campus-name">{campus.name}</h2>
                                 <p className="campus-description">{campus.description}</p>
-                                <div className="campus-stats">
-                                    <div className="stat-item">
-                                        <span className="stat-value">{campus.floors}</span>
-                                        <span className="stat-label">Floors</span>
-                                    </div>
-                                </div>
                             </div>
                         </GlassCard>
                     </motion.div>
