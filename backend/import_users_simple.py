@@ -39,11 +39,24 @@ def main():
         admin.save()
         print(f"✅ Admin user exists and password updated: {admin_email}")
     
-    # Import CSV users
-    csv_path = os.path.join(os.path.dirname(__file__), '..', 'dummy users - Sheet1.csv')
+    # Import CSV users - try multiple locations
+    csv_paths = [
+        os.path.join(os.path.dirname(__file__), 'dummy users - Sheet1.csv'),  # backend/
+        os.path.join(os.path.dirname(__file__), '..', 'dummy users - Sheet1.csv'),  # project root
+        '/app/dummy users - Sheet1.csv',  # Railway root
+        '/app/backend/dummy users - Sheet1.csv',  # Railway backend
+    ]
     
-    if not os.path.exists(csv_path):
-        print(f"⚠️  CSV not found: {csv_path}")
+    csv_path = None
+    for path in csv_paths:
+        if os.path.exists(path):
+            csv_path = path
+            break
+    
+    if not csv_path:
+        print(f"⚠️  CSV not found in any of these locations:")
+        for path in csv_paths:
+            print(f"   - {path}")
         print(f"   Skipping dummy user import")
         return
     
