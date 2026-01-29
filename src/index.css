@@ -71,6 +71,65 @@
   --glass-border: rgba(0, 0, 0, 0.1);
 }
 
+/* Enhanced Input Visibility for Light Mode */
+[data-theme='light'] input,
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #BDBDBD;
+  color: #000000;
+}
+
+[data-theme='light'] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+  border: 1px solid #BDBDBD;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] input:hover,
+[data-theme='light'] textarea:hover,
+[data-theme='light'] select:hover {
+  border-color: #9E9E9E;
+}
+
+[data-theme='light'] input:focus,
+[data-theme='light'] textarea:focus,
+[data-theme='light'] select:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+}
+
+/* Dark Mode Input Styles */
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: #424242;
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  border: 1px solid #424242;
+}
+
+/* Glass Card Enhancement for Light Mode */
+[data-theme='light'] .glass,
+[data-theme='light'] .glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .glass,
+[data-theme='dark'] .glass-card {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 /* CSS Reset */
 *,
 *::before,

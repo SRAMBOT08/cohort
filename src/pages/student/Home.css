@@ -1227,3 +1227,97 @@
     order: 3;
   }
 }
+
+/* Enhanced Light Mode Visibility */
+[data-theme='light'] .progress-card,
+[data-theme='light'] .upcoming-events-card,
+[data-theme='light'] .notifications-card,
+[data-theme='light'] .season-champions-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .batch-progress-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .progress-ring-container {
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .monthly-report-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .monthly-report-btn:hover {
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.2);
+}
+
+[data-theme='light'] .event-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .event-card:hover {
+  border-color: rgba(255, 204, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .notification-item {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .notification-item:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 204, 0, 0.2);
+}
+
+[data-theme='light'] .notification-item.unread {
+  background: rgba(255, 204, 0, 0.08);
+  border-color: rgba(255, 204, 0, 0.3);
+}
+
+[data-theme='light'] .profile-modal {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .hackathon-notif-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .hackathon-notif-btn:hover {
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.2);
+}
+
+/* Podium enhancements for light mode */
+[data-theme='light'] .podium-position {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .rank-1 {
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+[data-theme='light'] .rank-2 {
+  border-color: rgba(192, 192, 192, 0.4);
+}
+
+[data-theme='light'] .rank-3 {
+  border-color: rgba(205, 127, 50, 0.4);
+}

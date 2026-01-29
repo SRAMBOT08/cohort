@@ -17,6 +17,35 @@
     --input-border: rgba(255, 255, 255, 0.1);
 }
 
+/* Enhanced Light Mode for Inputs and Fields */
+[data-theme='light'] .input-field {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #BDBDBD;
+    color: #000000;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .input-field:hover {
+    border-color: #9E9E9E;
+}
+
+[data-theme='light'] .input-field:focus {
+    border-color: #ffcc00;
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
+}
+
+[data-theme='light'] .settings-section {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .settings-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 .settings-page {
     max-width: 1600px;
     margin: 0 auto;
