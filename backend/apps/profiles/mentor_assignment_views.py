@@ -187,6 +187,109 @@ def assign_student_to_self(request):
         )
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reassign_student_to_mentor(request):
+    """
+    Allow mentor to reassign any student on their floor to another mentor on the same floor
+    This enables mentors to transfer students between themselves
+    
+    Request body:
+    {
+        "student_id": 123,
+        "new_mentor_id": 456  // Must be a mentor on the same floor
+    }
+    """
+    try:
+        current_mentor_profile = UserProfile.objects.get(user=request.user)
+        
+        if current_mentor_profile.role != 'MENTOR':
+            return Response(
+                {'error': 'Only mentors can reassign students'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        student_id = request.data.get('student_id')
+        new_mentor_id = request.data.get('new_mentor_id')
+        
+        if not student_id or not new_mentor_id:
+            return Response(
+                {'error': 'student_id and new_mentor_id are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get the student
+        try:
+            student_user = User.objects.get(id=student_id)
+            student_profile = UserProfile.objects.get(user=student_user)
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+            return Response(
+                {'error': 'Student not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Verify student is on the same floor as current mentor
+        if (student_profile.role != 'STUDENT' or 
+            student_profile.campus != current_mentor_profile.campus or 
+            student_profile.floor != current_mentor_profile.floor):
+            return Response(
+                {'error': 'Can only reassign students from your own floor'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get the new mentor
+        try:
+            new_mentor_user = User.objects.get(id=new_mentor_id)
+            new_mentor_profile = UserProfile.objects.get(user=new_mentor_user)
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+            return Response(
+                {'error': 'New mentor not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Verify new mentor is a mentor on the same floor
+        if (new_mentor_profile.role != 'MENTOR' or
+            new_mentor_profile.campus != current_mentor_profile.campus or
+            new_mentor_profile.floor != current_mentor_profile.floor):
+            return Response(
+                {'error': 'Can only reassign to mentors on your own floor'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Store old mentor for response
+        old_mentor = student_profile.assigned_mentor
+        
+        # Reassign student to new mentor
+        student_profile.assigned_mentor = new_mentor_user
+        student_profile.save()
+        
+        return Response({
+            'success': True,
+            'message': f'Successfully reassigned {student_user.email} to {new_mentor_user.email}',
+            'student': {
+                'id': student_user.id,
+                'email': student_user.email,
+                'name': student_user.get_full_name()
+            },
+            'old_mentor': {
+                'id': old_mentor.id if old_mentor else None,
+                'email': old_mentor.email if old_mentor else None,
+                'name': old_mentor.get_full_name() if old_mentor else None
+            },
+            'new_mentor': {
+                'id': new_mentor_user.id,
+                'email': new_mentor_user.email,
+                'name': new_mentor_user.get_full_name()
+            }
+        })
+    
+    except UserProfile.DoesNotExist:
+        return Response(
+            {'error': 'User profile not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def admin_get_all_assignments(request):

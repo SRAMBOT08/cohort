@@ -24,6 +24,7 @@ from .mentor_assignment_views import (
     get_mentor_students,
     get_available_students,
     assign_student_to_self,
+    reassign_student_to_mentor,
     admin_get_all_assignments,
     admin_reassign_student,
     get_floor_mentors
@@ -67,6 +68,7 @@ urlpatterns = [
     path('mentor/my-students/', get_mentor_students, name='mentor-my-students'),
     path('mentor/available-students/', get_available_students, name='mentor-available-students'),
     path('mentor/assign-student/', assign_student_to_self, name='mentor-assign-student'),
+    path('mentor/reassign-student/', reassign_student_to_mentor, name='mentor-reassign-student'),
     path('mentor/floor-mentors/', get_floor_mentors, name='get-floor-mentors'),
     
     # Admin mentor assignment routes (admins can modify all assignments)
