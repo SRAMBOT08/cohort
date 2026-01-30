@@ -40,6 +40,45 @@ def is_mentor(user):
     return False
 
 
+def get_assigned_students(user, return_profiles=False):
+    """
+    Get students based on user role.
+    - ADMIN: All students
+    - FLOOR_WING: All students on their floor
+    - MENTOR: Only assigned students
+    
+    Args:
+        user: The request user
+        return_profiles: If True, return UserProfile queryset; if False, return list of user_ids
+    
+    Returns:
+        QuerySet of UserProfile objects if return_profiles=True, else list of user IDs
+    """
+    from apps.profiles.models import UserProfile
+    
+    user_profile = getattr(user, 'profile', None)
+    user_role = user_profile.role if user_profile else None
+    
+    if user_role == 'ADMIN' or user.is_superuser:
+        # Admin can see ALL students
+        qs = UserProfile.objects.filter(role='STUDENT')
+    elif user_role == 'FLOOR_WING' and user_profile and user_profile.floor:
+        # Floor Wing sees all students on their floor
+        qs = UserProfile.objects.filter(
+            role='STUDENT',
+            floor=user_profile.floor,
+            campus=user_profile.campus
+        )
+    else:
+        # Regular mentor sees only assigned students
+        qs = user.mentored_students.all()
+    
+    if return_profiles:
+        return qs.select_related('user')
+    else:
+        return list(qs.values_list('user_id', flat=True))
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_mentor_dashboard(request):
@@ -53,8 +92,8 @@ def get_mentor_dashboard(request):
             status=status.HTTP_403_FORBIDDEN
         )
     
-    # Get mentor's assigned students
-    assigned_students = request.user.mentored_students.all().values_list('user_id', flat=True)
+    # Get students based on user role (Admin sees all, Floor Wing sees floor, Mentor sees assigned)
+    assigned_students = get_assigned_students(request.user)
     
     if not assigned_students:
         return Response({
@@ -196,10 +235,15 @@ def get_pillar_submissions(request, pillar):
     
     print(f"\n=== BACKEND: Fetching submissions for pillar='{pillar}', status='{status_filter}', student_id='{student_id}' ===")
     
-    # Get mentor's assigned students
-    assigned_students = request.user.mentored_students.all().values_list('user_id', flat=True)
+    # Get students based on user role (Admin sees all, Floor Wing sees floor, Mentor sees assigned)
+    assigned_students = get_assigned_students(request.user)
+    
+    user_profile = getattr(request.user, 'profile', None)
+    user_role = user_profile.role if user_profile else None
+    print(f"👤 User role: {user_role} - found {len(assigned_students)} students")
+    
     if not assigned_students:
-        print(f"⚠️ Mentor {request.user.username} has no assigned students")
+        print(f"⚠️ No students found for {request.user.username} (role: {user_role})")
         return Response({'submissions': [], 'total': 0})
     
     # If student_id is provided, only show that student's submissions
@@ -207,7 +251,7 @@ def get_pillar_submissions(request, pillar):
         try:
             student_id = int(student_id)
             if student_id not in assigned_students:
-                print(f"⚠️ Student {student_id} is not assigned to mentor {request.user.username}")
+                print(f"⚠️ Student {student_id} is not accessible for {request.user.username}")
                 return Response({'submissions': [], 'total': 0})
             assigned_students = [student_id]
             print(f"🎯 Filtering for specific student: {student_id}")
@@ -434,8 +478,8 @@ def get_pillar_stats(request, pillar):
             status=status.HTTP_403_FORBIDDEN
         )
     
-    # Get mentor's assigned students
-    assigned_students = request.user.mentored_students.all().values_list('user_id', flat=True)
+    # Get students based on user role
+    assigned_students = get_assigned_students(request.user)
     if not assigned_students:
         return Response({'total': 0, 'pending': 0, 'approved': 0, 'rejected': 0})
     
@@ -687,8 +731,8 @@ def get_mentor_students(request):
             status=status.HTTP_403_FORBIDDEN
         )
     
-    # Get mentor's assigned students
-    assigned_students = request.user.mentored_students.all().select_related('user')
+    # Get students based on user role (Admin sees all, Floor Wing sees floor, Mentor sees assigned)
+    assigned_students = get_assigned_students(request.user, return_profiles=True)
     
     students_data = []
     for profile in assigned_students:
