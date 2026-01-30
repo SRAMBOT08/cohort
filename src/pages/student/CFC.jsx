@@ -647,7 +647,7 @@ export const CFC = () => {
                 placeholder="e.g., Smart India Hackathon 2025"
                 value={hackathonName}
                 onChange={(e) => setHackathonName(e.target.value)}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-input-group">
@@ -685,7 +685,7 @@ export const CFC = () => {
                 type="date"
                 value={registrationDate}
                 onChange={(e) => setRegistrationDate(e.target.value)}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -693,7 +693,7 @@ export const CFC = () => {
                 type="date"
                 value={participationDate}
                 onChange={(e) => setParticipationDate(e.target.value)}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -702,7 +702,7 @@ export const CFC = () => {
                 value={hackathonGithubRepo}
                 onChange={handleHackathonGithubUrlChange}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               {/* Repository Validation Status */}
@@ -801,7 +801,7 @@ export const CFC = () => {
                 value={certificateLink}
                 onChange={(e) => setCertificateLink(e.target.value)}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-actions">
@@ -1483,7 +1483,7 @@ export const CFC = () => {
                 value={videoUrl}
                 onChange={handleVideoUrlChange}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1491,7 +1491,7 @@ export const CFC = () => {
                 placeholder="Describe your Business Model Canvas..."
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
-                floatingLabel
+                floatingLabel={false}
               />
 
               {videoId && (
@@ -1606,7 +1606,7 @@ export const CFC = () => {
                 placeholder="Enter company name"
                 value={internshipData.company}
                 onChange={(e) => setInternshipData({ ...internshipData, company: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-input-group">
@@ -1656,7 +1656,7 @@ export const CFC = () => {
                 placeholder="e.g., Software Development Intern"
                 value={internshipData.role}
                 onChange={(e) => setInternshipData({ ...internshipData, role: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1664,7 +1664,7 @@ export const CFC = () => {
                 placeholder="e.g., 3 months or 01/2025 - 04/2025"
                 value={internshipData.duration}
                 onChange={(e) => setInternshipData({ ...internshipData, duration: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-input-group">
@@ -1727,7 +1727,7 @@ export const CFC = () => {
                 value={internshipData.completionCertificateLink}
                 onChange={(e) => setInternshipData({ ...internshipData, completionCertificateLink: e.target.value })}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1736,7 +1736,7 @@ export const CFC = () => {
                 value={internshipData.lorLink}
                 onChange={(e) => setInternshipData({ ...internshipData, lorLink: e.target.value })}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-actions">
@@ -1794,7 +1794,7 @@ export const CFC = () => {
                 placeholder="e.g., Website, Web App, Mobile App, Desktop App"
                 value={genAIData.solutionType}
                 onChange={(e) => setGenAIData({ ...genAIData, solutionType: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1802,7 +1802,7 @@ export const CFC = () => {
                 placeholder="e.g., Machine Learning, NLP, Computer Vision"
                 value={genAIData.innovationTechnology}
                 onChange={(e) => setGenAIData({ ...genAIData, innovationTechnology: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1810,7 +1810,7 @@ export const CFC = () => {
                 placeholder="e.g., Healthcare, Finance, Education, E-commerce"
                 value={genAIData.innovationIndustry}
                 onChange={(e) => setGenAIData({ ...genAIData, innovationIndustry: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -1819,7 +1819,7 @@ export const CFC = () => {
                 value={genAIData.githubRepo}
                 onChange={handleGithubUrlChange}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               {/* Repository Validation Status */}
@@ -1918,7 +1918,7 @@ export const CFC = () => {
                 value={genAIData.demoLink}
                 onChange={(e) => setGenAIData({ ...genAIData, demoLink: e.target.value })}
                 icon={<ExternalLink size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="cfc-actions">

@@ -138,6 +138,11 @@
   border-radius: 12px;
 }
 
+[data-theme='light'] .profile-detail-item {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .profile-detail-item svg {
   flex-shrink: 0;
   opacity: 0.7;
@@ -470,6 +475,10 @@
   stroke-width: 8;
 }
 
+[data-theme='light'] .progress-bg {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
 .progress-fill {
   fill: none;
   stroke: url(#progressGradient);
@@ -491,10 +500,21 @@
   -webkit-text-fill-color: transparent;
 }
 
+[data-theme='light'] .progress-text {
+  background: linear-gradient(135deg, #000000, #333333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .progress-label {
   font-size: 1rem;
   opacity: 0.7;
   margin-bottom: 1rem;
+}
+
+[data-theme='light'] .progress-label {
+  color: #666666;
+  opacity: 1;
 }
 
 .monthly-report-link {

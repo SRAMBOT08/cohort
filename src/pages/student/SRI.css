@@ -101,7 +101,7 @@
   border: 2px solid transparent;
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1;
 }
@@ -109,13 +109,22 @@
 [data-theme='light'] .sri-input {
   background: #FFFFFF;
   color: #000000;
-  border-color: #E0E0E0;
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] .sri-input {
   background: #121212;
   color: #FFFFFF;
   border-color: #424242;
+}
+
+[data-theme='light'] .sri-input:hover {
+  border-color: #666666;
+}
+
+[data-theme='dark'] .sri-input:hover {
+  border-color: #757575;
 }
 
 .sri-input:focus {
@@ -285,7 +294,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   resize: vertical;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1;
 }
@@ -293,13 +302,22 @@
 [data-theme='light'] .sri-textarea {
   background: #FFFFFF;
   color: #000000;
-  border-color: #E0E0E0;
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] .sri-textarea {
   background: #121212;
   color: #FFFFFF;
   border-color: #424242;
+}
+
+[data-theme='light'] .sri-textarea:hover {
+  border-color: #666666;
+}
+
+[data-theme='dark'] .sri-textarea:hover {
+  border-color: #757575;
 }
 
 .sri-textarea:focus {

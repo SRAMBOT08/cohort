@@ -401,7 +401,7 @@ export const IIPC = () => {
                     setPostError('');
                   }}
                   icon={<Linkedin size={20} />}
-                  floatingLabel
+                  floatingLabel={false}
                 />
                 
                 <Input
@@ -413,7 +413,7 @@ export const IIPC = () => {
                     setPostError('');
                   }}
                   icon={<Calendar size={20} />}
-                  floatingLabel
+                  floatingLabel={false}
                 />
                 
                 <div className="iipc-form-row">
@@ -427,7 +427,7 @@ export const IIPC = () => {
                       setPostError('');
                     }}
                     icon={<Hash size={20} />}
-                    floatingLabel
+                    floatingLabel={false}
                   />
                   
                   <Input
@@ -440,7 +440,7 @@ export const IIPC = () => {
                       setPostError('');
                     }}
                     icon={<Hash size={20} />}
-                    floatingLabel
+                    floatingLabel={false}
                   />
                 </div>
                 
@@ -637,7 +637,7 @@ export const IIPC = () => {
                             value={link}
                             onChange={(e) => updateScreenshotLink(index, e.target.value)}
                             icon={<Upload size={20} />}
-                            floatingLabel
+                            floatingLabel={false}
                           />
                           {screenshotLinks.length > 1 && (
                             <Button
@@ -783,7 +783,7 @@ export const IIPC = () => {
                           setProfileError('');
                         }}
                         icon={<Linkedin size={20} />}
-                        floatingLabel
+                        floatingLabel={false}
                       />
                       
                       {profileError && (

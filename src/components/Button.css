@@ -121,11 +121,12 @@
 
 /* Glass Variant */
 [data-theme='light'] .btn--glass {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   color: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 [data-theme='dark'] .btn--glass {
@@ -138,6 +139,7 @@
 
 .btn--glass:hover:not(:disabled) {
   border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(247, 201, 72, 0.3);
 }
 
 /* Success Variant */

@@ -848,15 +848,6 @@ export const HomePage = () => {
           >
             <ShoppingBag size={22} style={{ color: '#FFC107' }} />
           </motion.button>
-
-          <motion.button
-            className="profile-icon-btn"
-            onClick={() => setShowProfile(true)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <User size={24} />
-          </motion.button>
         </div>
       </div>
 

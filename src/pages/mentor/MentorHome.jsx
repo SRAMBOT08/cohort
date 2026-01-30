@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, TrendingUp, Award, Calendar, Bell, User, Mail, Phone, Hash, CheckCircle, X } from 'lucide-react';
+import { BookOpen, Users, TrendingUp, Award, Calendar, Bell, CheckCircle, X } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import { useAuth } from '../../context/AuthContext';
 import { getNotifications, markNotificationRead, deleteNotification } from '../../services/notifications';
 import { getMentorStudents } from '../../services/mentor';
 import { getAnnouncements } from '../../services/announcements';
+import { getUserProfile } from '../../services/profile';
 import './MentorHome.css';
 
 function MentorHome() {
     const { user } = useAuth();
-    const [showProfile, setShowProfile] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [loadingNotifications, setLoadingNotifications] = useState(true);
     const [students, setStudents] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
+    const [userProfile, setUserProfile] = useState(null);
     const [stats, setStats] = useState({
         totalStudents: 0,
         activeSubmissions: 0,
@@ -27,6 +28,7 @@ function MentorHome() {
         loadNotifications();
         loadStudents();
         loadAnnouncements();
+        loadUserProfile();
     }, []);
 
     const loadAnnouncements = async () => {
@@ -35,6 +37,15 @@ function MentorHome() {
             setAnnouncements(data.announcements || []);
         } catch (error) {
             console.error('Error loading announcements:', error);
+        }
+    };
+
+    const loadUserProfile = async () => {
+        try {
+            const profile = await getUserProfile();
+            setUserProfile(profile);
+        } catch (error) {
+            console.error('Error loading user profile:', error);
         }
     };
 
@@ -190,10 +201,20 @@ function MentorHome() {
         }
     };
 
-    // Mock mentor data
+    // Mentor info from user profile
+    const getMentorName = () => {
+        if (userProfile) {
+            const firstName = userProfile.first_name || '';
+            const lastName = userProfile.last_name || '';
+            const fullName = `${firstName} ${lastName}`.trim();
+            return fullName || userProfile.username || 'Mentor';
+        }
+        return user?.username || 'Mentor';
+    };
+
     const mentorInfo = {
-        name: user?.name || 'Dr. Sarah Johnson',
-        email: user?.email || 'mentor@test.com',
+        name: getMentorName(),
+        email: userProfile?.email || user?.email || 'mentor@cohort.edu',
         phone: '+91 9876543210',
         mentorId: 'MNT-001',
         studentsHandling: stats.totalStudents,
@@ -201,64 +222,12 @@ function MentorHome() {
 
     return (
         <div className="mentor-home-container">
-            {/* Profile Modal */}
-            {showProfile && (
-                <motion.div
-                    className="profile-modal-overlay"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    onClick={() => setShowProfile(false)}
-                >
-                    <motion.div
-                        className="profile-modal"
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <GlassCard>
-                            <div className="profile-modal-content">
-                                <div className="profile-avatar">
-                                    <User size={48} />
-                                </div>
-                                <h2>{mentorInfo.name}</h2>
-                                <div className="profile-details">
-                                    <div className="profile-detail-item">
-                                        <Mail size={18} />
-                                        <span>{mentorInfo.email}</span>
-                                    </div>
-                                    <div className="profile-detail-item">
-                                        <Phone size={18} />
-                                        <span>{mentorInfo.phone}</span>
-                                    </div>
-                                    <div className="profile-detail-item">
-                                        <Hash size={18} />
-                                        <span>Mentor ID: {mentorInfo.mentorId}</span>
-                                    </div>
-                                    <div className="profile-detail-item">
-                                        <Users size={18} />
-                                        <span>Students Handling: {mentorInfo.studentsHandling}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </GlassCard>
-                    </motion.div>
-                </motion.div>
-            )}
-
             {/* Header */}
             <div className="mentor-home-header">
                 <div className="home-welcome">
                     <h1>Welcome back, {mentorInfo.name.split(' ')[0]}!</h1>
                     <p>Track your progress and stay updated with your learning journey</p>
                 </div>
-                <motion.button
-                    className="profile-icon-btn"
-                    onClick={() => setShowProfile(true)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    <User size={24} />
-                </motion.button>
             </div>
 
             {/* Stats Grid - Full Width Row */}

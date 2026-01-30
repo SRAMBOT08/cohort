@@ -200,7 +200,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   resize: vertical;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: auto;
   user-select: text;
   position: relative;
@@ -210,13 +210,22 @@
 [data-theme='light'] .clt-textarea {
   background: #FFFFFF;
   color: #000000;
-  border-color: #E0E0E0;
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] .clt-textarea {
   background: #121212;
   color: #FFFFFF;
   border-color: #424242;
+}
+
+[data-theme='light'] .clt-textarea:hover {
+  border-color: #666666;
+}
+
+[data-theme='dark'] .clt-textarea:hover {
+  border-color: #757575;
 }
 
 .clt-textarea:focus {
@@ -321,12 +330,12 @@
 
 [data-theme='light'] .clt-file-card {
   background: rgba(0, 0, 0, 0.02);
-  border: 1px solid #E0E0E0;
+  border: 2px solid #9e9e9e;
 }
 
 [data-theme='dark'] .clt-file-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #424242;
+  border: 2px solid #424242;
 }
 
 .clt-file-card:hover {

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, Users, ClipboardCheck, Megaphone, Gamepad2 } from 'lucide-react';
+import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, Users, ClipboardCheck, Megaphone, Gamepad2, User, Mail, Phone, FileText, Settings as SettingsIcon } from 'lucide-react';
 import { ThemeProvider } from './theme/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ThemeToggle from './components/ThemeToggle';
@@ -53,6 +53,34 @@ function Navigation() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showProfile, setShowProfile] = React.useState(false);
+  const [dashboardData, setDashboardData] = React.useState(null);
+  const [userProfile, setUserProfile] = React.useState(null);
+
+  // Fetch dashboard data for profile modal (students and mentors)
+  React.useEffect(() => {
+    const userRole = user?.role || user?.profile?.role;
+    if (user && (userRole === 'STUDENT' || userRole === 'student')) {
+      import('./services/dashboard').then(module => {
+        module.default.getStats().then(data => {
+          setDashboardData(data);
+        }).catch(err => {
+          console.error('Failed to load profile data:', err);
+        });
+      });
+    }
+    
+    // Fetch user profile for mentors
+    if (user && (userRole === 'MENTOR' || userRole === 'mentor')) {
+      import('./services/profile').then(module => {
+        module.getUserProfile().then(data => {
+          setUserProfile(data);
+        }).catch(err => {
+          console.error('Failed to load user profile:', err);
+        });
+      });
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -199,10 +227,16 @@ function Navigation() {
 
         {/* Theme Toggle & Mobile Menu */}
         <div className="nav-actions">
-          {user && (
-            <div className="nav-user-info">
-              <span className="nav-user-role">{user.first_name || user.username || user.role}</span>
-            </div>
+          {(showNavItems || showMentorNavItems) && (
+            <motion.button
+              className="profile-icon-btn"
+              onClick={() => setShowProfile(true)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              title="View Profile"
+            >
+              <User size={24} />
+            </motion.button>
           )}
           <ThemeToggle />
           {user && (
@@ -223,7 +257,93 @@ function Navigation() {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
-      </div>      {/* Mobile Menu - Student */}
+      </div>
+
+      {/* Profile Modal */}
+      {showProfile && (showNavItems || showMentorNavItems) && (
+        <motion.div
+          className="profile-modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setShowProfile(false)}
+        >
+          <motion.div
+            className="profile-modal"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="glass-card" style={{ padding: '2rem' }}>
+              <div className="profile-modal-content">
+                <div className="profile-avatar">
+                  <User size={48} />
+                </div>
+                
+                {/* Student Profile */}
+                {showNavItems && (
+                  <>
+                    <h2>{dashboardData?.student_info?.name || user?.username || 'Student'}</h2>
+                    <div className="profile-details">
+                      <div className="profile-detail-item">
+                        <Mail size={18} />
+                        <span>{dashboardData?.student_info?.email || user?.email || 'student@test.com'}</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <FileText size={18} />
+                        <span>Roll No: {dashboardData?.student_info?.roll_number || user?.roll_number || 'N/A'}</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <Phone size={18} />
+                        <span>{dashboardData?.student_info?.phone || user?.phone || 'N/A'}</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <Users size={18} />
+                        <span>Mentor: {dashboardData?.student_info?.mentor_name || user?.mentor_name || 'Not Assigned'}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {/* Mentor Profile */}
+                {showMentorNavItems && (
+                  <>
+                    <h2>
+                      {userProfile ? 
+                        `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || userProfile.username 
+                        : user?.username || 'Mentor'}
+                    </h2>
+                    <div className="profile-details">
+                      <div className="profile-detail-item">
+                        <Mail size={18} />
+                        <span>{userProfile?.email || user?.email || 'mentor@cohort.edu'}</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <Phone size={18} />
+                        <span>+91 9876543210</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <FileText size={18} />
+                        <span>Mentor ID: MNT-001</span>
+                      </div>
+                      <div className="profile-detail-item">
+                        <Users size={18} />
+                        <span>Students Handling: {userProfile?.students_count || 0}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                <Link to="/profile-settings" className="profile-settings-button" onClick={() => setShowProfile(false)}>
+                  <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'center' }}>
+                    <SettingsIcon size={18} />
+                    Profile Settings
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}      {/* Mobile Menu - Student */}
       <AnimatePresence>
         {isMenuOpen && showNavItems && (
           <motion.div

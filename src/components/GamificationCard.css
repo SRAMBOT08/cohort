@@ -9,11 +9,22 @@
   transition: all 0.3s ease;
 }
 
+[data-theme='light'] .achievement-banner {
+  background: rgba(255, 255, 255, 1);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
 .achievement-banner:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .achievement-banner:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .achievement-row {
@@ -99,6 +110,12 @@
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+}
+
+[data-theme='light'] .progress-summary-card {
+  background: rgba(255, 255, 255, 1);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .progress-header {

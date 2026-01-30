@@ -21,6 +21,10 @@ export const Input = ({
 
   return (
     <div className={`input-wrapper ${className}`}>
+      {!floatingLabel && label && (
+        <label className="input-label-static">{label}</label>
+      )}
+      
       <div className={`input-container ${isFocused ? 'input-container--focused' : ''} ${error ? 'input-container--error' : ''}`}>
         {icon && <span className="input-icon">{icon}</span>}
         
@@ -49,10 +53,6 @@ export const Input = ({
           >
             {label}
           </motion.label>
-        )}
-        
-        {!floatingLabel && label && (
-          <label className="input-label-static">{label}</label>
         )}
       </div>
       

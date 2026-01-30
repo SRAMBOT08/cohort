@@ -287,7 +287,7 @@ export const CLT = () => {
                 placeholder="Enter course title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="clt-textarea-wrapper">
@@ -306,7 +306,7 @@ export const CLT = () => {
                 placeholder="e.g., Coursera, Udemy, edX"
                 value={formData.platform}
                 onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -314,7 +314,7 @@ export const CLT = () => {
                 type="date"
                 value={formData.completionDate}
                 onChange={(e) => setFormData({ ...formData, completionDate: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -324,7 +324,7 @@ export const CLT = () => {
                 min="10"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <div className="clt-form-actions">

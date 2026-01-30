@@ -785,3 +785,186 @@
         width: 100%;
     }
 }
+
+/* Light Mode Styles */
+[data-theme="light"] .student-name {
+    color: #1a1a1a !important;
+}
+
+[data-theme="light"] .student-roll {
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+[data-theme="light"] .student-email {
+    color: #666666 !important;
+}
+
+[data-theme="light"] .student-card {
+    background: rgba(0, 0, 0, 0.04);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .student-card:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(247, 201, 72, 0.5);
+}
+
+[data-theme="light"] .student-card.active {
+    background: rgba(247, 201, 72, 0.15);
+    border-color: rgba(247, 201, 72, 0.6);
+}
+
+[data-theme="light"] .students-header .section-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-box {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .search-input {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-input::placeholder {
+    color: #666666;
+    opacity: 0.7;
+}
+
+[data-theme="light"] .pending-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #E65100;
+    border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+[data-theme="light"] .details-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .details-subtitle {
+    color: #666666;
+}
+
+/* Light Mode Styles */
+[data-theme="light"] .student-name {
+    color: #1a1a1a !important;
+}
+
+[data-theme="light"] .student-roll {
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+[data-theme="light"] .student-email {
+    color: #666666 !important;
+}
+
+[data-theme="light"] .student-card {
+    background: rgba(0, 0, 0, 0.04);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .student-card:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(247, 201, 72, 0.5);
+}
+
+[data-theme="light"] .student-card.active {
+    background: rgba(247, 201, 72, 0.15);
+    border-color: rgba(247, 201, 72, 0.6);
+}
+
+[data-theme="light"] .students-header .section-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-box {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .search-input {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-input::placeholder {
+    color: #666666;
+    opacity: 0.7;
+}
+
+[data-theme="light"] .pending-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #E65100;
+    border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+[data-theme="light"] .details-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .details-subtitle {
+    color: #666666;
+}
+
+/* Light Mode Styles */
+[data-theme="light"] .student-name {
+    color: #1a1a1a !important;
+}
+
+[data-theme="light"] .student-roll {
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+[data-theme="light"] .student-email {
+    color: #666666 !important;
+}
+
+[data-theme="light"] .student-card {
+    background: rgba(0, 0, 0, 0.04);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .student-card:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(247, 201, 72, 0.5);
+}
+
+[data-theme="light"] .student-card.active {
+    background: rgba(247, 201, 72, 0.15);
+    border-color: rgba(247, 201, 72, 0.6);
+}
+
+[data-theme="light"] .students-header .section-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-box {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .search-input {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .search-input::placeholder {
+    color: #666666;
+    opacity: 0.7;
+}
+
+[data-theme="light"] .pending-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #E65100;
+    border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+[data-theme="light"] .details-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .details-subtitle {
+    color: #666666;
+}

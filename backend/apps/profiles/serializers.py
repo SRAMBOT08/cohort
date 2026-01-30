@@ -13,6 +13,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     role_display = serializers.CharField(source='get_role_display', read_only=True)
     campus_display = serializers.CharField(source='get_campus_display', read_only=True)
     floor_display = serializers.CharField(source='get_floor_display', read_only=True)
+    students_count = serializers.SerializerMethodField()
+    
+    def get_students_count(self, obj):
+        """Get count of students assigned to this mentor"""
+        if obj.role == 'MENTOR':
+            return UserProfile.objects.filter(assigned_mentor=obj.user, role='STUDENT').count()
+        return 0
     
     class Meta:
         model = UserProfile
@@ -20,7 +27,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'id', 'user', 'username', 'email', 'first_name', 'last_name',
             'role', 'role_display', 'campus', 'campus_display', 'floor', 'floor_display',
             'leetcode_id', 'github_id', 'linkedin_id',
-            'assigned_mentor', 'created_at', 'updated_at'
+            'assigned_mentor', 'students_count', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 

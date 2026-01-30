@@ -11,25 +11,28 @@
 
 .input-field {
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 1rem;
   border-radius: 1rem;
-  border: 2px solid #E0E0E0;
+  border: 2px solid transparent;
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   position: relative;
-  z-index: 1;
+  z-index: 10;
+  min-height: 56px;
+  box-sizing: border-box;
 }
 
 [data-theme='light'] .input-field {
-  background: rgba(255, 255, 255, 0.8);
+  background: #FFFFFF;
   color: #000000;
-  border-color: #E0E0E0;
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] .input-field {
-  background: rgba(30, 30, 30, 0.8);
+  background: #121212;
   color: #FFFFFF;
   border-color: #424242;
 }
@@ -63,20 +66,30 @@
   cursor: pointer;
 }
 
-.input-field:hover {
-  border-color: rgba(247, 201, 72, 0.5);
+[data-theme='light'] .input-field:hover {
+  border-color: #666666;
+}
+
+[data-theme='dark'] .input-field:hover {
+  border-color: #757575;
 }
 
 .input-field:focus {
   border-color: #ffcc00;
-  box-shadow: none;
-  background: transparent !important;
+}
+
+[data-theme='light'] .input-field:focus {
+  background: #FFFFFF;
+}
+
+[data-theme='dark'] .input-field:focus {
+  background: #121212;
 }
 
 /* Floating Label */
 .input-field--floating {
-  padding-top: 1.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 1.75rem !important;
+  padding-bottom: 0.75rem !important;
 }
 
 .input-label {
@@ -108,8 +121,14 @@
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.125rem 0.25rem;
-  background: transparent !important;
-  box-shadow: none !important;
+}
+
+[data-theme='light'] .input-label--active {
+  background: #FFFFFF;
+}
+
+[data-theme='dark'] .input-label--active {
+  background: rgba(18, 18, 18, 1);
 }
 
 /* Static Label */

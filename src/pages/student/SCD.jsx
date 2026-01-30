@@ -648,27 +648,16 @@ export const SCD = () => {
                                         height: '18px',
                                         aspectRatio: '1',
                                         background: getColor(day.count),
-                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        border: '1px solid rgba(255, 255, 255, 0.2)',
                                         borderRadius: '3px',
                                         cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontSize: '0.55rem',
-                                        color: day.count > 0 ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.3)',
-                                        fontWeight: '600',
+                                        fontSize: '0.6rem',
+                                        color: day.count > 0 ? '#FFFFFF' : 'var(--text-primary)',
+                                        fontWeight: '700',
                                         position: 'relative'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'scale(1.2)';
-                                        e.currentTarget.style.border = '2px solid var(--primary-color)';
-                                        e.currentTarget.style.zIndex = '10';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'scale(1)';
-                                        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                                        e.currentTarget.style.zIndex = '1';
                                       }}
                                     >
                                       {day.day}
