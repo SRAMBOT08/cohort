@@ -2,10 +2,30 @@
 
 A comprehensive platform connecting students, mentors, and institutions in a structured journey of academic and personal excellence through five pillars of holistic development.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)
 ![Django](https://img.shields.io/badge/Django-4.2.7-092E20?logo=django)
 ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
+
+## 📁 Project Structure
+
+```
+cohort/
+├── backend/                 # Django backend application
+├── src/                    # React frontend application
+├── docker/                 # Docker configuration
+│   ├── compose/           # Docker Compose files
+│   ├── configs/           # Nginx, database configs
+│   ├── dockerfiles/       # Dockerfile definitions
+│   └── scripts/           # Deployment scripts (unix/windows)
+├── config/                 # Application configuration files
+├── docs/                   # All documentation (*.md files)
+├── scripts/                # Utility & test scripts
+├── tests/                  # Frontend tests
+└── public/                 # Public static assets
+```
+
+See full structure details in [Project Structure](#-detailed-project-structure) section below.
 
 ## 📋 Table of Contents
 
@@ -551,5 +571,6 @@ For support, please contact:
 **Built with ❤️ by the Cohort Team**
 
 *Last Updated: January 2025*
-#   F o r c e   r e b u i l d   1 2 / 2 3 / 2 0 2 5   0 0 : 5 6 : 1 6  
+#   F o r c e   r e b u i l d   1 2 / 2 3 / 2 0 2 5   0 0 : 5 6 : 1 6 
+ 
  

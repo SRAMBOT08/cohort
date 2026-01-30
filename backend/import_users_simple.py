@@ -11,6 +11,7 @@ django.setup()
 
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password, get_test_email
 import csv
 
 def main():
@@ -20,18 +21,20 @@ def main():
     print("\nStarting import...")
     
     # First, create admin if doesn't exist
-    admin_email = "admin@test.com"
+    admin_email = get_test_email('admin', 'test.com')
+    admin_password = get_test_password('admin')
+    
     if not User.objects.filter(email=admin_email).exists():
         admin = User.objects.create_superuser(
             username='admin',
             email=admin_email,
-            password='admin123',
+            password=admin_password,
             first_name='Admin',
             last_name='User'
         )
         print(f"✅ Created admin user: {admin_email}")
         print(f"   Username: admin")
-        print(f"   Password: admin123")
+        print(f"   Password: {admin_password}")
     else:
         # Update password in case it changed
         admin = User.objects.get(email=admin_email)

@@ -13,6 +13,7 @@ django.setup()
 
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password
 
 def import_users():
     """Import users from CSV file"""

@@ -8,7 +8,9 @@ from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
 
 # Set a common password for all floor wing users
-TEST_PASSWORD = 'floorwing123'
+from test_config import get_test_password
+
+TEST_PASSWORD = get_test_password('floorwing')
 
 print("=" * 80)
 print("SETTING PASSWORDS FOR ALL FLOOR WING USERS")

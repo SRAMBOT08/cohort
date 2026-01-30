@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'}/profiles`;
+const API_BASE_URL = `${API_CONFIG.BASE_URL}/profiles`;
 
 // Create axios instance with interceptors
 const profileAxios = axios.create({

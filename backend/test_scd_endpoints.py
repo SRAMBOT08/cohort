@@ -6,12 +6,18 @@ Tests LeetCode profile integration and submission workflow
 import requests
 import json
 from datetime import datetime
+import os
+import sys
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_config import get_test_password, get_test_email
 
 BASE_URL = "http://127.0.0.1:8000/api"
 
 # Test credentials
-TEST_EMAIL = "admin@example.com"
-TEST_PASSWORD = "admin123"
+TEST_EMAIL = get_test_email('admin', 'example.com')
+TEST_PASSWORD = get_test_password('admin')
 
 def print_section(title):
     print("\n" + "="*60)

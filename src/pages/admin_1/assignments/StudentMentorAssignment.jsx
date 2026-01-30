@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserCheck, RefreshCw, Search, AlertCircle, CheckCircle } from 'lucide-react';
+import { API_CONFIG } from '../../../config';
+
+const API_BASE_URL = API_CONFIG.BASE_URL;import { Users, UserCheck, RefreshCw, Search, AlertCircle, CheckCircle } from 'lucide-react';
 import './StudentMentorAssignment.css';
 
 const StudentMentorAssignment = () => {
@@ -26,7 +28,7 @@ const StudentMentorAssignment = () => {
             console.log('Fetching users with token:', token ? 'Present' : 'Missing');
             
             // Fetch all users
-            const usersResponse = await fetch('http://localhost:8000/api/admin/users/', {
+            const usersResponse = await fetch(`${API_BASE_URL}/admin/users/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -63,7 +65,7 @@ const StudentMentorAssignment = () => {
     const assignMentorToStudent = async (studentId, mentorId) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:8000/api/admin/assign-mentor/', {
+            const response = await fetch(`${API_BASE_URL}/admin/assign-mentor/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -96,7 +98,7 @@ const StudentMentorAssignment = () => {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:8000/api/admin/bulk-assign-mentor/', {
+            const response = await fetch(`${API_BASE_URL}/admin/bulk-assign-mentor/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -126,7 +128,7 @@ const StudentMentorAssignment = () => {
     const autoAssign = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:8000/api/admin/auto-assign-mentors/', {
+            const response = await fetch(`${API_BASE_URL}/admin/auto-assign-mentors/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

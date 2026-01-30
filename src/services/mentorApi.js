@@ -3,7 +3,9 @@
  * Handles all API calls for mentor-related operations
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+import { API_CONFIG } from '../config';
+
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

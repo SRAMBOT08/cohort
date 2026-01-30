@@ -7,6 +7,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+import sys
+import os
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from test_config import get_test_password
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -37,7 +43,7 @@ def setup_floorwings(request):
     ]
     
     # Default password for all floor wings
-    DEFAULT_PASSWORD = 'floorwing123'
+    DEFAULT_PASSWORD = get_test_password('floorwing')
     
     result = {
         'floorwings_created': [],

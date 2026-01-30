@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q
+from django.core.cache import cache
+from django.conf import settings
 from apps.dashboard.models import Notification as DashboardNotification
 from .notification_models import Notification as ProfileNotification
 from apps.dashboard.serializers import NotificationSerializer
@@ -56,7 +58,25 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     
     @action(detail=False, methods=['get'])
     def unread_count(self, request):
-        """Get count of unread notifications from both sources"""
+        """
+        Get count of unread notifications from both sources
+        
+        OPTIMIZED: Uses caching when USE_NOTIFICATION_CACHE=True
+        Cache TTL: 30 seconds (good balance between freshness and performance)
+        """
+        user_id = request.user.id
+        cache_key = f'notification_count_{user_id}'
+        
+        # Try cache first if enabled
+        if settings.USE_NOTIFICATION_CACHE:
+            cached_count = cache.get(cache_key)
+            if cached_count is not None:
+                return Response({
+                    'unread_count': cached_count,
+                    'cached': True
+                })
+        
+        # Compute from database (existing logic preserved)
         dashboard_count = DashboardNotification.objects.filter(
             recipient=request.user,
             is_read=False
@@ -69,14 +89,30 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         
         total_count = dashboard_count + profile_count
         
-        return Response({'unread_count': total_count})
+        # Cache for 30 seconds if caching enabled
+        if settings.USE_NOTIFICATION_CACHE:
+            cache.set(cache_key, total_count, 30)
+        
+        return Response({
+            'unread_count': total_count,
+            'cached': False
+        })
     
     @action(detail=True, methods=['post'])
     def mark_read(self, request, pk=None):
-        """Mark a single notification as read"""
+        """
+        Mark a single notification as read
+        
+        OPTIMIZED: Invalidates cache when notifications change
+        """
         notification = self.get_object()
         notification.is_read = True
         notification.save()
+        
+        # Invalidate cache for this user
+        if settings.USE_NOTIFICATION_CACHE:
+            cache_key = f'notification_count_{request.user.id}'
+            cache.delete(cache_key)
         
         return Response({
             'status': 'success',
@@ -85,7 +121,11 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     
     @action(detail=False, methods=['post'])
     def mark_all_read(self, request):
-        """Mark all user's notifications as read"""
+        """
+        Mark all user's notifications as read
+        
+        OPTIMIZED: Invalidates cache after bulk update
+        """
         dashboard_updated = DashboardNotification.objects.filter(
             recipient=request.user,
             is_read=False
@@ -97,6 +137,11 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         ).update(is_read=True)
         
         total_updated = dashboard_updated + profile_updated
+        
+        # Invalidate cache for this user
+        if settings.USE_NOTIFICATION_CACHE:
+            cache_key = f'notification_count_{request.user.id}'
+            cache.delete(cache_key)
         
         return Response({
             'status': 'success',

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, Check, CheckCheck } from 'lucide-react';
+import { API_CONFIG } from '../config';
 import './NotificationBell.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);

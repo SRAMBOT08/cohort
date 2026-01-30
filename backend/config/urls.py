@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView as BaseTokenObtai
 from apps.jwt_serializers import EmailTokenObtainPairSerializer
 from apps.users_views import UserProfileView
 from apps.setup_view import setup_database
+from apps.health_check_views import health_check, readiness_check, liveness_check
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -33,6 +34,11 @@ schema_view = get_schema_view(
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
+    
+    # Health Check Endpoints (NEW - for monitoring and scaling)
+    path('health/', health_check, name='health_check'),
+    path('health/ready/', readiness_check, name='readiness_check'),
+    path('health/live/', liveness_check, name='liveness_check'),
     
     # One-time database setup endpoint
     path('api/setup-database/', setup_database, name='setup_database'),

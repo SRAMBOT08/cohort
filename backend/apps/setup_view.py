@@ -8,6 +8,12 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from apps.profiles.models import UserProfile
+import sys
+import os
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from test_config import get_test_password, get_test_email
 from apps.gamification.models import Season, Title
 import csv
 import os
@@ -33,20 +39,22 @@ def setup_database(request):
     }
     
     # Create admin user
-    admin_email = "admin@test.com"
+    admin_email = get_test_email('admin', 'test.com')
+    admin_password = get_test_password('admin')
+    
     try:
         if not User.objects.filter(email=admin_email).exists():
             admin = User.objects.create_superuser(
                 username='admin',
                 email=admin_email,
-                password='admin123',
+                password=admin_password,
                 first_name='Admin',
                 last_name='User'
             )
             results['admin_created'] = True
         else:
             admin = User.objects.get(email=admin_email)
-            admin.set_password('admin123')
+            admin.set_password(admin_password)
             admin.is_superuser = True
             admin.is_staff = True
             admin.save()

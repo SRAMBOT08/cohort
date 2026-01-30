@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'}/iipc`;
+const API_BASE_URL = `${API_CONFIG.BASE_URL}/iipc`;
 
 // Create a dedicated axios instance for IIPC
 const iipcAxios = axios.create({

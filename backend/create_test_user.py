@@ -12,7 +12,9 @@ from django.contrib.auth.models import User
 # Create test user
 username = 'testuser'
 email = 'test@example.com'
-password = 'testpass123'
+from test_config import get_test_password
+
+password = get_test_password('testuser')
 
 if User.objects.filter(username=username).exists():
     print(f"✓ User '{username}' already exists")

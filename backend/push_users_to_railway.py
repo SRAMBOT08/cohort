@@ -5,9 +5,20 @@ import csv
 import os
 from hashlib import pbkdf2_hmac
 import base64
+import sys
 
-# Railway PostgreSQL connection
-DATABASE_URL = 'postgresql://postgres:wUOcgZIVskopAQbBSwtzaxrqqySwHhwe@nozomi.proxy.rlwy.net:46837/railway'
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_config import RAILWAY_DB_URL, validate_railway_db
+
+# Railway PostgreSQL connection - MUST be set via environment variable
+if not validate_railway_db():
+    print("\nSet the RAILWAY_DATABASE_URL environment variable:")
+    print("  export RAILWAY_DATABASE_URL='postgresql://user:pass@host:port/db'")
+    print("\nFor security reasons, database credentials should never be hardcoded!")
+    sys.exit(1)
+
+DATABASE_URL = RAILWAY_DB_URL
 
 def make_password(password):
     """Create Django-compatible PBKDF2 password hash"""

@@ -22,7 +22,9 @@ mentors = [
     'mentor2@cohort.com'
 ]
 
-password = 'mentor123'
+from test_config import get_test_password
+
+password = get_test_password('mentor')
 hashed_password = make_password(password)
 
 print(f"New password hash: {hashed_password[:60]}...\n")

@@ -15,7 +15,9 @@ User = get_user_model()
 # Create test student
 email = 'student@test.com'
 username = 'student'
-password = 'test123'
+from test_config import get_test_password
+
+password = get_test_password('student')
 
 # Check if user exists
 if User.objects.filter(email=email).exists():

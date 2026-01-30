@@ -7,12 +7,13 @@ django.setup()
 
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password
 
 # Configuration
 EXCEL_FILE = os.path.join(os.path.dirname(__file__), '..', 'Book1.xlsx')
 CAMPUS = 'TECH'
 FLOOR = 2
-DEFAULT_PASSWORD = 'pass123#'
+DEFAULT_PASSWORD = get_test_password('student')
 
 # Accepted column name variants (case-insensitive)
 COL_MAP = {

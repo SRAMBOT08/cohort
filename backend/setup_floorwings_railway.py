@@ -36,7 +36,9 @@ FLOORWINGS = [
 ]
 
 # Default password for all floor wings
-DEFAULT_PASSWORD = 'floorwing123'
+from test_config import get_test_password
+
+DEFAULT_PASSWORD = get_test_password('floorwing')
 
 print(f"Creating {len(FLOORWINGS)} Floor Wing users...")
 print(f"Default Password: {DEFAULT_PASSWORD}")

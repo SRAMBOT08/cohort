@@ -13,7 +13,9 @@ from apps.profiles.models import UserProfile
 # Create or update mentor user
 email = 'mentor_tech_f2_m3@sns.edu'
 username = 'mentor_tech_f2_m3'
-password = 'mentor123'
+from test_config import get_test_password
+
+password = get_test_password('mentor')
 
 try:
     user = User.objects.get(email=email)

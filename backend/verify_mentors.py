@@ -3,14 +3,20 @@ Verify mentor assignments in production database
 """
 import requests
 import json
+import os
+import sys
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_config import get_test_password, get_test_email
 
 # API endpoints
 BASE_URL = "https://wholesome-cat-production.up.railway.app/api"
 LOGIN_URL = f"{BASE_URL}/auth/token/"
 
 # Admin credentials
-ADMIN_EMAIL = "admin@test.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = get_test_email('admin', 'test.com')
+ADMIN_PASSWORD = get_test_password('admin')
 
 def verify_mentors():
     print("\n" + "="*60)

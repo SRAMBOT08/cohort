@@ -3,6 +3,12 @@ Call the setup mentors endpoint on Railway production
 """
 import requests
 import json
+import os
+import sys
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_config import get_test_password
 
 # API endpoints
 BASE_URL = "https://wholesome-cat-production.up.railway.app/api"
@@ -11,7 +17,7 @@ SETUP_MENTORS_URL = f"{BASE_URL}/profiles/admin/setup-mentors/"
 
 # Admin credentials
 ADMIN_EMAIL = "admin@test.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = get_test_password('admin')
 
 def setup_mentors():
     print("\n" + "="*60)

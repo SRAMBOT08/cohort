@@ -5,10 +5,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from django.contrib.auth.models import User
+from test_config import get_test_password, get_test_email
 
 username = 'admin'
-email = 'admin@example.com'
-password = 'admin123'
+email = get_test_email('admin', 'example.com')
+password = get_test_password('admin')
 
 if User.objects.filter(username=username).exists():
     print(f'Superuser "{username}" already exists!')

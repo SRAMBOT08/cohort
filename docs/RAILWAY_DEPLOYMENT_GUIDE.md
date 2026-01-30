@@ -81,7 +81,6 @@ EMAIL_HOST_PASSWORD=your-app-specific-password
 ### Step 5: Add Railway Configuration Files
 
 Create `railway.json` in your `backend/` directory:
-
 ```json
 {
   "$schema": "https://railway.app/railway.schema.json",

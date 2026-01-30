@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config';
 
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'}/cfc`;
+const API_URL = `${API_CONFIG.BASE_URL}/cfc`;
 
 // Get auth token from localStorage
 const getAuthToken = () => {

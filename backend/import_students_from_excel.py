@@ -7,12 +7,13 @@ django.setup()
 
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password
 
 # Configuration
 EXCEL_FILE = '../DTPB Cohort Session Name List of IInd Years to Circulate.xlsx'
 CAMPUS = 'TECH'
 FLOOR = 2
-DEFAULT_PASSWORD = 'pass123#'
+DEFAULT_PASSWORD = get_test_password('student')
 
 def get_existing_mentors():
     """Get existing mentors for TECH floor 2"""

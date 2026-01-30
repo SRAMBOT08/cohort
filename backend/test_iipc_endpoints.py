@@ -6,10 +6,16 @@ Tests all LinkedIn Post and Connection Verification endpoints
 import requests
 import json
 from datetime import date, timedelta
+import os
+import sys
+
+# Add backend directory to path for test_config import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_config import get_test_password, get_test_email
 
 BASE_URL = "http://127.0.0.1:8000"
-EMAIL = "admin@example.com"
-PASSWORD = "admin123"
+EMAIL = get_test_email('admin', 'example.com')
+PASSWORD = get_test_password('admin')
 
 def test_authentication():
     """Test authentication and get access token"""

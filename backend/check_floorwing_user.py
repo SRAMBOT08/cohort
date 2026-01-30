@@ -29,7 +29,9 @@ try:
             print(f"Is Staff: {user.is_staff}")
             
             # Test password
-            test_password = 'floorwing123'
+from test_config import get_test_password
+
+            test_password = get_test_password('floorwing')
             password_valid = user.check_password(test_password)
             print(f"Password Check ({test_password}): {password_valid}")
             

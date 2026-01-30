@@ -10,6 +10,7 @@ django.setup()
 
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password
 
 def import_users():
     # Use campus and floor from UserProfile choices
@@ -32,7 +33,7 @@ def import_users():
         for row in reader:
             email = row['email'].strip()
             username = row['username'].strip()
-            password = 'pass123#'  # Using specified password
+            password = get_test_password('student')  # Using configured test password
             
             # Create or update user
             user, created = User.objects.get_or_create(

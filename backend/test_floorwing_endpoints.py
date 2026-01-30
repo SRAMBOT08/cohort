@@ -16,6 +16,7 @@ import requests
 import json
 from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
+from test_config import get_test_password
 
 # API Configuration
 BASE_URL = 'http://127.0.0.1:8000/api'
@@ -28,7 +29,7 @@ def get_or_create_floor_wing():
         user = User.objects.create_user(
             username='floorwing_test',
             email='floorwing_test@test.com',
-            password='test123',
+            password=get_test_password('floorwing'),
             first_name='Test',
             last_name='FloorWing'
         )
