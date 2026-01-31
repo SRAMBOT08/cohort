@@ -17,13 +17,31 @@ from apps.profiles.models import UserProfile
 def import_users():
     """Import users from CSV file"""
     
-    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dummy users - Sheet1.csv')
+    # Try multiple possible paths for CSV file
+    possible_paths = [
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dummy users - Sheet1.csv'),  # Local dev
+        os.path.join(os.path.dirname(__file__), '..', 'dummy users - Sheet1.csv'),  # Relative
+        '/opt/render/project/src/dummy users - Sheet1.csv',  # Render absolute
+        os.path.join(os.getcwd(), '..', 'dummy users - Sheet1.csv'),  # CWD parent
+        os.path.join(os.getcwd(), 'dummy users - Sheet1.csv'),  # CWD
+    ]
     
-    if not os.path.exists(csv_path):
-        print(f"❌ CSV file not found at: {csv_path}")
+    csv_path = None
+    print("Searching for CSV file...")
+    for path in possible_paths:
+        normalized = os.path.normpath(path)
+        print(f"  Checking: {normalized}")
+        if os.path.exists(normalized):
+            csv_path = normalized
+            print(f"  ✓ Found!")
+            break
+    
+    if not csv_path:
+        print(f"❌ CSV file not found! Searched paths: {[os.path.normpath(p) for p in possible_paths]}")
+        print(f"   Current working directory: {os.getcwd()}")
         return
     
-    print(f"Reading CSV file: {csv_path}\n")
+    print(f"\\nReading CSV file: {csv_path}\\n")
     
     created_count = 0
     skipped_count = 0
