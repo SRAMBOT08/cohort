@@ -160,6 +160,14 @@ STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, os.getenv('STATIC_ROOT', 'staticfiles'))
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# React Frontend Build Directory
+REACT_APP_BUILD_PATH = os.path.join(BASE_DIR.parent, 'dist')
+
+# Add React build directory to static files (if it exists)
+STATICFILES_DIRS = [
+    REACT_APP_BUILD_PATH,
+] if os.path.exists(REACT_APP_BUILD_PATH) else []
+
 # Media files (User uploads)
 MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
 MEDIA_ROOT = os.path.join(BASE_DIR, os.getenv('MEDIA_ROOT', 'media'))
@@ -168,6 +176,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, os.getenv('MEDIA_ROOT', 'media'))
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Settings
+# When deployed on same service, CORS is not needed for same-origin
+# But keep for local development with separate frontend server
 CORS_ALLOWED_ORIGINS = os.getenv(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,http://127.0.0.1:5176'

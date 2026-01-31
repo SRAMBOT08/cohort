@@ -549,10 +549,34 @@ This project is proprietary software. All rights reserved.
 
 ## 🚀 Deployment
 
-### Quick Deploy to Render
+### Single-Service Deployment to Render
 
-Deploy both frontend and backend to Render in 10 minutes:
+Deploy both frontend and backend on **ONE service** - simpler and cheaper!
 
+```
+┌─────────────────────────────────────┐
+│   cohort-app.onrender.com          │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌─────────────┐  ┌──────────────┐│
+│  │   React     │  │   Django     ││
+│  │  Frontend   │◄─┤   Backend    ││
+│  │   (Vite)    │  │  (ASGI)      ││
+│  └─────────────┘  └──────────────┘│
+│         │                 │        │
+│         └─────────┬───────┘        │
+│                   ▼                │
+│           One Domain (/)           │
+└─────────────────────────────────────┘
+            │
+            ▼
+    ┌───────────────┐
+    │   Supabase    │
+    │  PostgreSQL   │
+    └───────────────┘
+```
+
+**Quick Deploy:**
 ```bash
 # 1. Create Supabase database at https://supabase.com
 # 2. Go to https://dashboard.render.com
@@ -562,14 +586,24 @@ Deploy both frontend and backend to Render in 10 minutes:
 ```
 
 **📚 Deployment Guides:**
-- [RENDER_QUICKSTART.md](RENDER_QUICKSTART.md) - 10-minute deployment guide
+- [RENDER_QUICKSTART.md](RENDER_QUICKSTART.md) - **Start here!** 10-minute deployment
 - [RENDER_DEPLOYMENT_COMPLETE.md](RENDER_DEPLOYMENT_COMPLETE.md) - Full documentation
-- [SUPABASE_DEPLOYMENT_GUIDE.md](SUPABASE_DEPLOYMENT_GUIDE.md) - Database setup guide
+- [SUPABASE_DEPLOYMENT_GUIDE.md](SUPABASE_DEPLOYMENT_GUIDE.md) - Database setup
 
-### Deployment Files
-- `render.yaml` - Render Blueprint configuration
-- `backend/build.sh` - Backend build script
-- `backend/.env.example` - Environment variables template
+### Service Architecture
+
+| Resource | URL | Description |
+|----------|-----|-------------|
+| **Frontend** | `https://cohort-app.onrender.com/` | React app (index) |
+| **API** | `https://cohort-app.onrender.com/api/` | REST endpoints |
+| **Admin** | `https://cohort-app.onrender.com/admin/` | Django admin |
+| **Database** | Supabase | PostgreSQL (external) |
+
+### Key Configuration Files
+- `render.yaml` - Single-service Blueprint
+- `backend/config/settings.py` - Serves React build
+- `backend/config/urls.py` - Catch-all route for frontend
+- `.env.production` - Production environment variables
 
 ---
 

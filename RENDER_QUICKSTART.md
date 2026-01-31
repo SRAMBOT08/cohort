@@ -1,12 +1,18 @@
-# 🚀 Render Deployment Quick Start
+# 🚀 Render Single-Service Deployment
 
-Deploy your full-stack application to Render in 10 minutes!
+Deploy your full-stack application (frontend + backend) to Render on ONE service in 10 minutes!
 
 ## 📦 What You'll Deploy
 
-- ✅ Django Backend (ASGI/Daphne)
-- ✅ React Frontend (Static)
-- ✅ Supabase PostgreSQL Database
+- ✅ Django Backend (ASGI/Daphne) + React Frontend
+- ✅ Supabase PostgreSQL Database  
+- ✅ Single URL for everything
+
+**One service means:**
+- ✅ Lower cost (1 service instead of 2)
+- ✅ No CORS issues (same origin)
+- ✅ Simpler deployment
+- ✅ One domain: `cohort-app.onrender.com`
 
 ---
 
@@ -29,63 +35,85 @@ Deploy your full-stack application to Render in 10 minutes!
 2. Click **New +** → **Blueprint**
 3. Connect GitHub and select `cohort` repository
 4. **IMPORTANT**: Before clicking Apply, set `DATABASE_URL`:
-   - Find **cohort-backend** service
+   - Find **cohort-app** service
    - Set `DATABASE_URL` to your Supabase connection string (from Step 1)
 5. Click **"Apply"** and wait for deployment (~5-10 minutes)
 
-### Step 3: Initialize Database (3 minutes)
+### Step 3: Verify Deployment (1 minute)
 
-Once backend is live:
+Once the service shows **"Live"**:
 
-1. Go to **cohort-backend** service → **Shell** tab
-2. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-3. Create admin user:
-   ```bash
-   python manage.py createsuperuser
-   ```
+1. Visit: `https://cohort-app.onrender.com/`
+2. You should see your React app
+3. Try logging in with default credentials:
+   - **Admin**: username `admin`, password `admin123`
+   - **Student**: username from your database
 
 ---
 
-## ✅ Verify Deployment
+## ✅ Your Service URLs
 
-### Test Backend
-```bash
-curl https://cohort-backend.onrender.com/admin/login/
-```
+Everything is on ONE domain:
 
-### Test Frontend
-Open in browser: `https://cohort-frontend.onrender.com/`
-
----
-
-## 🎯 Your URLs
-
-| Service | URL |
+| Resource | URL |
 |---------|-----|
-| **App** | https://cohort-frontend.onrender.com |
-| **API** | https://cohort-backend.onrender.com/api |
-| **Admin** | https://cohort-backend.onrender.com/admin |
+| **React App** | https://cohort-app.onrender.com/ |
+| **API** | https://cohort-app.onrender.com/api/ |
+| **Admin Panel** | https://cohort-app.onrender.com/admin/ |
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Backend won't start?
-- Check DATABASE_URL is set correctly
-- Verify Supabase password is correct
-- Ensure using port **6543** (not 5432)
+### Service won't start?
+**Check Render logs for:**
+```
+Error: DATABASE_URL not set
+```
+**Solution**: Set DATABASE_URL in environment variables
 
-### Frontend shows white page?
-- Check browser console for errors
-- Verify VITE_API_URL points to backend
-- Check backend is running (visit `/admin/`)
+### Build fails?
+```
+npm ERR! or pip error
+```
+**Solution**: 
+- Check `package.json` and `requirements.txt` are valid
+- Verify Node.js 20.11.0 and Python 3.12.0 are set
 
-### CORS errors?
-- Verify `CORS_ALLOWED_ORIGINS` includes frontend URL
-- Should be: `https://cohort-frontend.onrender.com`
+### Frontend shows 503?
+```
+Frontend not built. Run: npm run build
+```
+**Solution**: Build process failed. Check logs for npm build errors.
+
+### Can't login?
+**Solution**: Create superuser via Render Shell:
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## 🔧 Advanced: Custom Commands
+
+### Access Service Shell
+1. Go to **cohort-app** service → **Shell** tab
+2. You're in the root directory, navigate to backend:
+   ```bash
+   cd backend
+   python manage.py migrate
+   python manage.py createsuperuser
+   python manage.py shell
+   ```
+
+### Rebuild Frontend
+If you update React code:
+```bash
+npm run build
+cd backend
+python manage.py collectstatic --no-input
+```
+Then restart the service.
 
 ---
 
@@ -97,6 +125,12 @@ For detailed instructions, see [RENDER_DEPLOYMENT_COMPLETE.md](./RENDER_DEPLOYME
 
 ## 🎉 Done!
 
-Your app is live! Share the frontend URL and start using your deployed application.
+Your full-stack app is live on **ONE service**: `https://cohort-app.onrender.com`
 
-**Need help?** Check the logs in Render Dashboard → Select service → Logs
+**Benefits of single-service deployment:**
+- ✅ Simpler than managing 2 services  
+- ✅ No CORS configuration needed
+- ✅ One URL for everything
+- ✅ Costs less (1 free service vs 2)
+
+**Need help?** Check logs: Render Dashboard → cohort-app → Logs
