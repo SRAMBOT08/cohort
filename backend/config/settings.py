@@ -156,17 +156,14 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = os.getenv('STATIC_URL', '/static/')
-STATIC_ROOT = os.path.join(BASE_DIR, os.getenv('STATIC_ROOT', 'staticfiles'))
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Use WhiteNoise for static file serving
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # React Frontend Build Directory
 REACT_APP_BUILD_PATH = os.path.join(BASE_DIR.parent, 'dist')
-
-# Add React build directory to static files (if it exists)
-STATICFILES_DIRS = [
-    REACT_APP_BUILD_PATH,
-] if os.path.exists(REACT_APP_BUILD_PATH) else []
 
 # Media files (User uploads)
 MEDIA_URL = os.getenv('MEDIA_URL', '/media/')

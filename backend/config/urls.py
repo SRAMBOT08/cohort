@@ -73,25 +73,26 @@ urlpatterns = [
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Serve React Frontend - catch-all route (must be last)
-from django.views.generic import TemplateView
 from django.views.static import serve
 import os
 
 def serve_react(request, path=''):
     """Serve React app for all non-API routes"""
-    react_build_path = os.path.join(settings.BASE_DIR.parent, 'dist')
-    if os.path.exists(react_build_path):
-        if path and os.path.exists(os.path.join(react_build_path, path)):
-            return serve(request, path, document_root=react_build_path)
-        return serve(request, 'index.html', document_root=react_build_path)
+    # In production, files are in staticfiles/
+    staticfiles_path = os.path.join(settings.BASE_DIR, 'staticfiles')
+    if path and os.path.exists(os.path.join(staticfiles_path, path)):
+        return serve(request, path, document_root=staticfiles_path)
+    # Serve index.html for all other routes (React Router handles routing)
+    index_path = os.path.join(staticfiles_path, 'index.html')
+    if os.path.exists(index_path):
+        return serve(request, 'index.html', document_root=staticfiles_path)
     from django.http import HttpResponse
     return HttpResponse('Frontend not built. Run: npm run build', status=503)
 
 # Add catch-all route for React frontend (must be last!)
 from django.urls import re_path
 urlpatterns += [
-    re_path(r'^(?!api/|admin/|media/|static/).*$', serve_react),
+    re_path(r'^(?!api/|admin/|media/).*$', serve_react),
 ]
