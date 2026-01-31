@@ -6,6 +6,9 @@ A comprehensive platform connecting students, mentors, and institutions in a str
 ![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)
 ![Django](https://img.shields.io/badge/Django-4.2.7-092E20?logo=django)
 ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
+![Database](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?logo=supabase)
+
+> **🔄 Database Migration**: This project now uses **Supabase PostgreSQL** for better performance and scalability. See [SUPABASE_MIGRATION_SUMMARY.md](SUPABASE_MIGRATION_SUMMARY.md) for migration guide.
 
 ## 📋 Table of Contents
 
@@ -80,7 +83,7 @@ Cohort Web is a unified platform designed to track and manage student developmen
 - **Framework**: Django 4.2.7
 - **API**: Django REST Framework 3.14.0
 - **Authentication**: JWT (djangorestframework-simplejwt 5.3.0)
-- **Database**: PostgreSQL (psycopg2-binary 2.9.9)
+- **Database**: PostgreSQL via Supabase (psycopg 3.1.0+)
 - **Image Processing**: Pillow 10.1.0
 - **CORS**: django-cors-headers 4.3.1
 - **Security**: Cryptography 41.0.7, Argon2 23.1.0
@@ -275,6 +278,13 @@ python3 create_test_users.py
 
 ### Database Setup
 
+#### Option 1: Supabase (Recommended for Production)
+1. Create a Supabase project at https://supabase.com
+2. Go to Project Settings → Database
+3. Copy the connection string (URI format)
+4. Set `DATABASE_URL` in your `.env` file
+
+#### Option 2: Local PostgreSQL (Development)
 ```bash
 # Create PostgreSQL database
 psql -U postgres
@@ -454,11 +464,19 @@ VITE_LINKEDIN_REDIRECT_URI=http://localhost:5173/iipc/callback
 ```env
 DEBUG=True
 SECRET_KEY=your-secret-key
-DATABASE_NAME=cohort_db
-DATABASE_USER=your_db_user
-DATABASE_PASSWORD=your_db_password
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
+
+# Option 1: Supabase (Production/Recommended)
+DATABASE_URL=postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+
+# Option 2: Local PostgreSQL (Development)
+# DB_ENGINE=django.db.backends.postgresql
+# DB_NAME=cohort_db
+# DB_USER=your_db_user
+# DB_PASSWORD=your_db_password
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_SSLMODE=prefer
+
 ALLOWED_HOSTS=localhost,127.0.0.1
 CORS_ALLOWED_ORIGINS=http://localhost:5173
 JWT_SECRET_KEY=your-jwt-secret
@@ -529,6 +547,32 @@ This project is proprietary software. All rights reserved.
 - Migration warnings for `clt` app (non-blocking)
 - Port 5173 may be occupied (app automatically uses 5174)
 
+## 🚀 Deployment
+
+### Quick Deploy to Render
+
+Deploy both frontend and backend to Render in 10 minutes:
+
+```bash
+# 1. Create Supabase database at https://supabase.com
+# 2. Go to https://dashboard.render.com
+# 3. New → Blueprint → Select this repo
+# 4. Set DATABASE_URL to Supabase connection string
+# 5. Click Apply
+```
+
+**📚 Deployment Guides:**
+- [RENDER_QUICKSTART.md](RENDER_QUICKSTART.md) - 10-minute deployment guide
+- [RENDER_DEPLOYMENT_COMPLETE.md](RENDER_DEPLOYMENT_COMPLETE.md) - Full documentation
+- [SUPABASE_DEPLOYMENT_GUIDE.md](SUPABASE_DEPLOYMENT_GUIDE.md) - Database setup guide
+
+### Deployment Files
+- `render.yaml` - Render Blueprint configuration
+- `backend/build.sh` - Backend build script
+- `backend/.env.example` - Environment variables template
+
+---
+
 ## 🚀 Future Enhancements
 
 - [ ] Mobile app (React Native)
@@ -551,5 +595,6 @@ For support, please contact:
 **Built with ❤️ by the Cohort Team**
 
 *Last Updated: January 2025*
-#   F o r c e   r e b u i l d   1 2 / 2 3 / 2 0 2 5   0 0 : 5 6 : 1 6  
+#   F o r c e   r e b u i l d   1 2 / 2 3 / 2 0 2 5   0 0 : 5 6 : 1 6 
+ 
  

@@ -16,6 +16,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',  # Must be first for ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_yasg',
+    'channels',
     
     # Local apps (5 main modules)
     'apps.clt',
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'apps.profiles',
     'apps.dashboard',
     'hackathons',
+    'apps.realtime',  # WebSocket and real-time updates
     
     # Gamification System
     'apps.gamification',
@@ -87,19 +90,27 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
-# Database - PostgreSQL (production) or SQLite (development)
+# Database - PostgreSQL (Supabase/production) or SQLite (development)
 if os.getenv('DATABASE_URL'):
-    # Production: Use PostgreSQL from DATABASE_URL (Render/Cloud provides this)
+    # Production: Use PostgreSQL from DATABASE_URL (Supabase provides this)
+    # Parse the DATABASE_URL and configure for Supabase
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
             conn_max_age=600,
             conn_health_checks=True,
+            ssl_require=True,  # Supabase requires SSL
         )
     }
+    # Supabase-specific SSL settings
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+        'connect_timeout': 10,
+    }
 elif os.getenv('DB_ENGINE') == 'django.db.backends.postgresql':
-    # Local PostgreSQL development
+    # Local PostgreSQL development or Supabase with explicit credentials
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -109,6 +120,10 @@ elif os.getenv('DB_ENGINE') == 'django.db.backends.postgresql':
             'HOST': os.getenv('DB_HOST', 'localhost'),
             'PORT': os.getenv('DB_PORT', '5432'),
             'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'sslmode': os.getenv('DB_SSLMODE', 'prefer'),
+                'connect_timeout': 10,
+            },
         }
     }
 else:
@@ -161,6 +176,39 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False  # Keep it secure
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']
+
+# Django Channels Configuration
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
+            'capacity': 1500,
+            'expiry': 10,
+        },
+    },
+}
+
+# Cache Configuration (Redis)
+# Cache configuration - use dummy cache for local development
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
+# Use Redis cache in production (uncomment and configure when needed)
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+#         'LOCATION': REDIS_URL,
+#         'OPTIONS': {
+#             'db': 1,
+#         }
+#     }
+# }
 
 # Django REST Framework Settings
 REST_FRAMEWORK = {
