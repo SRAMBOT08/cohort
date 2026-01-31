@@ -76,20 +76,31 @@ if settings.DEBUG:
 
 # Serve React Frontend - catch-all route (must be last)
 from django.views.static import serve
+from django.http import HttpResponse
 import os
 
 def serve_react(request, path=''):
     """Serve React app for all non-API routes"""
-    # In production, files are in staticfiles/
     staticfiles_path = os.path.join(settings.BASE_DIR, 'staticfiles')
-    if path and os.path.exists(os.path.join(staticfiles_path, path)):
-        return serve(request, path, document_root=staticfiles_path)
-    # Serve index.html for all other routes (React Router handles routing)
+    
+    # If requesting a specific file that exists, serve it
+    if path:
+        file_path = os.path.join(staticfiles_path, path)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return serve(request, path, document_root=staticfiles_path)
+    
+    # For root or non-existent paths, serve index.html
     index_path = os.path.join(staticfiles_path, 'index.html')
     if os.path.exists(index_path):
         return serve(request, 'index.html', document_root=staticfiles_path)
-    from django.http import HttpResponse
-    return HttpResponse('Frontend not built. Run: npm run build', status=503)
+    
+    # If index.html doesn't exist, return error
+    return HttpResponse(
+        f'Frontend not found. index.html should be at: {index_path}<br>'
+        f'Staticfiles path: {staticfiles_path}<br>'
+        f'Files in staticfiles: {os.listdir(staticfiles_path) if os.path.exists(staticfiles_path) else "Directory not found"}',
+        status=503
+    )
 
 # Add catch-all route for React frontend (must be last!)
 from django.urls import re_path

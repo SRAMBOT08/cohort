@@ -12,10 +12,12 @@ services:
       # Install backend dependencies
       cd backend
       pip install -r requirements.txt
-      # Collect Django static files
+      # Collect Django static files first
       python manage.py collectstatic --no-input
-      # Copy React build to staticfiles root
-      cp -r ../dist/* staticfiles/ 2>/dev/null || true
+      # Copy React build files to staticfiles (overwrite)
+      cp -rf ../dist/* staticfiles/
+      # Verify index.html exists
+      ls -la staticfiles/index.html
       # Run migrations
       python manage.py migrate
       # Create initial users
