@@ -37,45 +37,58 @@ def import_users():
             password = row['password'].strip()
             
             # Check if user already exists
+            user = None
             if User.objects.filter(email=email).exists():
-                print(f"⚠️  User with email {email} already exists, skipping...")
+                print(f"🔄 User with email {email} already exists, updating profile...")
+                user = User.objects.get(email=email)
+            
+            if not user:
+                # Create username from email if username is same as full name
+                # Use email prefix as username to avoid conflicts
+                user_username = email.split('@')[0]
+                
+                # Check if username exists, append number if needed
+                base_username = user_username
+                counter = 1
+                while User.objects.filter(username=user_username).exists():
+                    user_username = f"{base_username}{counter}"
+                    counter += 1
+                
+                # Extract first and last name from username
+                name_parts = username.split()
+                first_name = name_parts[0] if name_parts else username
+                last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
+                
+                # Create user
+                user = User.objects.create_user(
+                    username=user_username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                user.set_password(password)
+                user.save()
+                created_count += 1
+                print(f"✅ Created student: {username} ({email}) - username: {user_username}")
+            else:
+                # Update password for existing user just in case
+                user.set_password(password)
+                user.save()
                 skipped_count += 1
-                continue
             
-            # Create username from email if username is same as full name
-            # Use email prefix as username to avoid conflicts
-            user_username = email.split('@')[0]
+            # Update/Fix profile for BOTH new and existing users
+            # Use get_or_create to handle missing profiles
+            profile, created = UserProfile.objects.get_or_create(user=user)
             
-            # Check if username exists, append number if needed
-            base_username = user_username
-            counter = 1
-            while User.objects.filter(username=user_username).exists():
-                user_username = f"{base_username}{counter}"
-                counter += 1
-            
-            # Extract first and last name from username
-            name_parts = username.split()
-            first_name = name_parts[0] if name_parts else username
-            last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
-            
-            # Create user
-            user = User.objects.create_user(
-                username=user_username,
-                email=email,
-                first_name=first_name,
-                last_name=last_name
-            )
-            user.set_password(password)
-            user.save()
-            
-            # Update profile to set role as STUDENT
-            profile = user.profile
+            # Enforce Student Role
             profile.role = 'STUDENT'
             profile.campus = 'TECH'  # Default campus
             profile.save()
             
-            created_count += 1
-            print(f"✅ Created student: {username} ({email}) - username: {user_username}")
+            if created:
+                print(f"   🐛 Fixed missing profile for {user.username}")
+            else:
+                print(f"   ✓ Verified profile for {user.username}")
     
     # Print summary
     print("\n" + "="*60)

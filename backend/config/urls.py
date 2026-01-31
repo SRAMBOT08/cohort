@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView as BaseTokenObtai
 from apps.jwt_serializers import EmailTokenObtainPairSerializer
 from apps.users_views import UserProfileView
 from apps.setup_view import setup_database
+from apps.fix_view import fix_users_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -40,6 +41,9 @@ urlpatterns = [
     # API Documentation
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    
+    # Emergency Fix Endpoint
+    path('api/fix-users/', fix_users_view, name='fix_users'),
     
     # JWT Authentication endpoints (with email support)
     path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
