@@ -21,8 +21,10 @@ services:
       ls -la staticfiles/ | head -20
       # Run migrations
       python manage.py migrate --no-input
-      # Create users
-      python create_role_users.py || true
+      # Create standard test users (admin, mentor, student, etc.)
+      python create_cohort_test_users.py || true
+      # Create mentor Reshma and import CSV users
+      python create_mentor_reshma.py || true
     startCommand: cd backend && daphne -b 0.0.0.0 -p $PORT config.asgi:application
     healthCheckPath: /
     envVars:
