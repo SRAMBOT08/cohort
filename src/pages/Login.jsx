@@ -279,6 +279,7 @@ const Login = () => {
                                         error={errors.email}
                                         icon={<Mail size={20} />}
                                         placeholder="Enter your email"
+                                        floatingLabel={false}
                                     />
 
                                     <div className="login-password-field">
@@ -291,6 +292,7 @@ const Login = () => {
                                             error={errors.password}
                                             icon={<Lock size={20} />}
                                             placeholder="Enter your password"
+                                            floatingLabel={false}
                                         />
                                         <button
                                             type="button"

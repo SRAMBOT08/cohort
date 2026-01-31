@@ -683,6 +683,7 @@ export const CFC = () => {
               <Input
                 label="Date of Registration"
                 type="date"
+                placeholder="Select registration date"
                 value={registrationDate}
                 onChange={(e) => setRegistrationDate(e.target.value)}
                 floatingLabel={false}
@@ -691,6 +692,7 @@ export const CFC = () => {
               <Input
                 label="Date of Participation"
                 type="date"
+                placeholder="Select participation date"
                 value={participationDate}
                 onChange={(e) => setParticipationDate(e.target.value)}
                 floatingLabel={false}

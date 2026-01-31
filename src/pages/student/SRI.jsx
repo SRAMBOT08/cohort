@@ -7,7 +7,7 @@ import Button from '../../components/Button';
 import './SRI.css';
 
 export const SRI = () => {
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState('');
   const [reflection, setReflection] = useState('');
   const [activityTitle, setActivityTitle] = useState('');
   const [activityDate, setActivityDate] = useState('');
@@ -21,17 +21,6 @@ export const SRI = () => {
     { id: 1, title: 'Beach Cleanup Drive', date: '2025-11-15', hours: 4, type: 'Environment' },
     { id: 2, title: 'Old Age Home Visit', date: '2025-11-28', hours: 3, type: 'Community' },
   ];
-
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const imageUrls = files.map(file => URL.createObjectURL(file));
-    setSelectedImages([...selectedImages, ...imageUrls]);
-  };
-
-  const removeImage = (index) => {
-    const newImages = selectedImages.filter((_, i) => i !== index);
-    setSelectedImages(newImages);
-  };
 
   const characterLimit = 500;
   const characterCount = reflection.length;
@@ -78,64 +67,23 @@ export const SRI = () => {
                 <input
                   type="date"
                   className="sri-input sri-input--with-icon"
+                  placeholder="Select activity date"
                   value={activityDate}
                   onChange={(e) => setActivityDate(e.target.value)}
                 />
               </div>
             </div>
 
-            {/* Image Upload Grid */}
-            <div className="sri-upload-section">
+            {/* Drive Link */}
+            <div className="sri-input-group">
               <label className="sri-label">Activity Photos</label>
-              <div className="sri-image-grid">
-                {selectedImages.map((url, index) => (
-                  <motion.div
-                    key={index}
-                    className="sri-image-card"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.05, rotate: 2 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <img src={url} alt={`Upload ${index + 1}`} className="sri-image" />
-                    <button
-                      className="sri-image-remove"
-                      onClick={() => removeImage(index)}
-                    >
-                      ×
-                    </button>
-                  </motion.div>
-                ))}
-
-                {/* Add Photo Tile */}
-                <motion.label
-                  className="sri-add-photo"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="sri-file-input"
-                  />
-                  <div className="sri-add-photo-content">
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.2, 1],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                      }}
-                    >
-                      <Plus size={32} />
-                    </motion.div>
-                    <span>Add Photos</span>
-                  </div>
-                </motion.label>
-              </div>
+              <input
+                type="text"
+                className="sri-input"
+                placeholder="Add photo drive link"
+                value={selectedImages}
+                onChange={(e) => setSelectedImages(e.target.value)}
+              />
             </div>
 
             {/* Reflection */}
@@ -176,11 +124,11 @@ export const SRI = () => {
                 variant="primary"
                 withGlow
                 onClick={() => {
-                  if (activityTitle && activityDate && selectedImages.length > 0) {
+                  if (activityTitle && activityDate && selectedImages) {
                     alert('Activity submitted successfully!');
                     setActivityTitle('');
                     setActivityDate('');
-                    setSelectedImages([]);
+                    setSelectedImages('');
                     setReflection('');
                   } else {
                     alert('Please fill in all required fields');

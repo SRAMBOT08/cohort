@@ -124,11 +124,11 @@ const MonthlyReport = () => {
   };
 
   const pillarNames = {
-    clt: 'CLT (Certificate & Learning)',
-    sri: 'SRI (Social Responsibility)',
-    cfc: 'CFC (Campus to Corporate)',
-    iipc: 'IIPC (Industry Interaction)',
-    scd: 'SCD (Software & Coding)',
+    clt: 'CLT (Center for Learning and Teaching)',
+    sri: 'SRI (Social Responsibility Initiatives)',
+    cfc: 'CFC (Centre for Creativity)',
+    iipc: 'IIPC (Industry Institute Partnership Cell)',
+    scd: 'SCD (Skill and Career Development)',
   };
 
   if (loading) {
@@ -175,11 +175,12 @@ const MonthlyReport = () => {
         <div className="month-selector">
           <button 
             onClick={handleManualRefresh} 
-            className="refresh-button"
+            className="refresh-button-main"
             disabled={loading || refreshing}
             title="Refresh data"
           >
             <RefreshCw className={`refresh-icon ${refreshing ? 'spinning' : ''}`} />
+            Refresh
           </button>
           <select 
             value={selectedYear && selectedMonth ? `${selectedYear}-${selectedMonth}` : ''}

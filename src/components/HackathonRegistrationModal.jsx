@@ -47,7 +47,7 @@ const HackathonRegistrationModal = ({ isOpen, onClose, onRegister }) => {
               value={formData.hackathon_name}
               onChange={(e) => handleChange('hackathon_name', e.target.value)}
               required
-              floatingLabel
+              floatingLabel={false}
             />
 
             <div className="hackathon-input-group">
@@ -89,20 +89,22 @@ const HackathonRegistrationModal = ({ isOpen, onClose, onRegister }) => {
             <Input
               label="Registration Date"
               type="date"
+              placeholder="Select registration date"
               value={formData.registration_date}
               onChange={(e) => handleChange('registration_date', e.target.value)}
               required
-              floatingLabel
+              floatingLabel={false}
               icon={<Calendar size={20} />}
             />
 
             <Input
               label="Participation Date"
               type="date"
+              placeholder="Select participation date"
               value={formData.participation_date}
               onChange={(e) => handleChange('participation_date', e.target.value)}
               required
-              floatingLabel
+              floatingLabel={false}
               icon={<Calendar size={20} />}
             />
 
@@ -111,7 +113,7 @@ const HackathonRegistrationModal = ({ isOpen, onClose, onRegister }) => {
               placeholder="https://hackathon-website.com"
               value={formData.hackathon_url}
               onChange={(e) => handleChange('hackathon_url', e.target.value)}
-              floatingLabel
+              floatingLabel={false}
               icon={<LinkIcon size={20} />}
             />
 

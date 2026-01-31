@@ -176,7 +176,7 @@ export const ProfileSettings = () => {
                 value={profileData.leetcode_id}
                 onChange={(e) => setProfileData({ ...profileData, leetcode_id: e.target.value })}
                 icon={<Code size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -185,7 +185,7 @@ export const ProfileSettings = () => {
                 value={profileData.github_id}
                 onChange={(e) => setProfileData({ ...profileData, github_id: e.target.value })}
                 icon={<Github size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
 
               <Input
@@ -194,7 +194,7 @@ export const ProfileSettings = () => {
                 value={profileData.linkedin_id}
                 onChange={(e) => setProfileData({ ...profileData, linkedin_id: e.target.value })}
                 icon={<Linkedin size={20} />}
-                floatingLabel
+                floatingLabel={false}
               />
             </div>
 

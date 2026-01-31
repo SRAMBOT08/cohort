@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, TrendingUp, Award, Calendar, Bell, CheckCircle, X } from 'lucide-react';
+import { BookOpen, Users, TrendingUp, Award, Calendar, Bell, CheckCircle, X, Trophy, User } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
 import { useAuth } from '../../context/AuthContext';
 import { getNotifications, markNotificationRead, deleteNotification } from '../../services/notifications';
 import { getMentorStudents } from '../../services/mentor';
 import { getAnnouncements } from '../../services/announcements';
 import { getUserProfile } from '../../services/profile';
+import gamificationAPI from '../../services/gamification';
 import './MentorHome.css';
 
 function MentorHome() {
@@ -22,6 +23,8 @@ function MentorHome() {
         completedReviews: 0,
         pendingReviews: 0,
     });
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [seasonActive, setSeasonActive] = useState(false);
 
     // Fetch notifications and students on mount
     useEffect(() => {
@@ -29,7 +32,24 @@ function MentorHome() {
         loadStudents();
         loadAnnouncements();
         loadUserProfile();
+        fetchLeaderboard();
     }, []);
+
+    const fetchLeaderboard = async () => {
+        try {
+            const response = await gamificationAPI.getCurrentSeasonLeaderboard();
+            // Get top 3 performers only
+            const top3 = response.data.slice(0, 3);
+            setLeaderboard(top3);
+            setSeasonActive(true);
+        } catch (err) {
+            console.error('Error fetching leaderboard:', err);
+            // If 404, season might not be active
+            if (err.response?.status === 404) {
+                setSeasonActive(false);
+            }
+        }
+    };
 
     const loadAnnouncements = async () => {
         try {
@@ -400,10 +420,7 @@ function MentorHome() {
                             )}
                         </div>
                     </GlassCard>
-                </div>
 
-                {/* Right Column */}
-                <div className="mentor-home-right-column">
                     {/* Upcoming Events/Announcements */}
                     <GlassCard>
                         <div className="section-header">
@@ -445,6 +462,109 @@ function MentorHome() {
                             )}
                         </div>
                     </GlassCard>
+                </div>
+
+                {/* Right Column */}
+                <div className="mentor-home-right-column">
+                    {/* Season Champions */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                    >
+                        <GlassCard>
+                            <div className="podium-card">
+                                <h2 style={{ marginBottom: '2.5rem', textAlign: 'center', fontSize: '1.8rem', fontWeight: '700' }}>
+                                    🏆 Season Champions
+                                </h2>
+                                
+                                {!seasonActive || leaderboard.length === 0 ? (
+                                    <div className="podium-locked">
+                                        <Trophy size={80} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                                        <p style={{ opacity: 0.5, textAlign: 'center', fontSize: '1.1rem' }}>Complete the season to unlock the podium</p>
+                                    </div>
+                                ) : (
+                                    <div className="podium-container">
+                                        {/* Rank 2 - Left */}
+                                        {leaderboard[1] && (
+                                            <motion.div
+                                                className="podium-position rank-2"
+                                                initial={{ opacity: 0, y: 30 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.5, duration: 0.6 }}
+                                                whileHover={{ scale: 1.05, y: -5 }}
+                                            >
+                                                <div className="podium-rank">2</div>
+                                                <div className="podium-content">
+                                                    <div className="podium-avatar">
+                                                        <User size={42} />
+                                                    </div>
+                                                    <h3>{leaderboard[1].student_name}</h3>
+                                                    <p className="podium-title">Elite Performer</p>
+                                                    <div className="podium-score">
+                                                        <span className="score-value">{leaderboard[1].total_score}</span>
+                                                        <span className="score-label">pts</span>
+                                                    </div>
+                                                </div>
+                                                <div className="podium-base rank-2-base"></div>
+                                            </motion.div>
+                                        )}
+
+                                        {/* Rank 1 - Center (Champion) */}
+                                        {leaderboard[0] && (
+                                            <motion.div
+                                                className="podium-position rank-1"
+                                                initial={{ opacity: 0, y: 40 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.7, duration: 0.7 }}
+                                                whileHover={{ scale: 1.08, y: -8 }}
+                                            >
+                                                <div className="podium-crown">👑</div>
+                                                <div className="podium-rank champion">1</div>
+                                                <div className="podium-content">
+                                                    <div className="podium-avatar champion-avatar">
+                                                        <User size={52} />
+                                                    </div>
+                                                    <h3>{leaderboard[0].student_name}</h3>
+                                                    <p className="podium-title champion-title">Champion</p>
+                                                    <div className="podium-score champion-score">
+                                                        <span className="score-value">{leaderboard[0].total_score}</span>
+                                                        <span className="score-label">pts</span>
+                                                    </div>
+                                                </div>
+                                                <div className="podium-base rank-1-base"></div>
+                                            </motion.div>
+                                        )}
+
+                                        {/* Rank 3 - Right */}
+                                        {leaderboard[2] && (
+                                            <motion.div
+                                                className="podium-position rank-3"
+                                                initial={{ opacity: 0, y: 30 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.6, duration: 0.6 }}
+                                                whileHover={{ scale: 1.05, y: -5 }}
+                                            >
+                                                <div className="podium-rank">3</div>
+                                                <div className="podium-content">
+                                                    <div className="podium-avatar">
+                                                        <User size={42} />
+                                                    </div>
+                                                    <h3>{leaderboard[2].student_name}</h3>
+                                                    <p className="podium-title">Elite Performer</p>
+                                                    <div className="podium-score">
+                                                        <span className="score-value">{leaderboard[2].total_score}</span>
+                                                        <span className="score-label">pts</span>
+                                                    </div>
+                                                </div>
+                                                <div className="podium-base rank-3-base"></div>
+                                            </motion.div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </GlassCard>
+                    </motion.div>
                 </div>
             </div>
         </div>

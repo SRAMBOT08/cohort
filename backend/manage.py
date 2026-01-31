@@ -2,6 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import warnings
+
+# Suppress pkg_resources deprecation warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='rest_framework_simplejwt')
 
 
 def main():

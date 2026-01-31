@@ -312,6 +312,7 @@ export const CLT = () => {
               <Input
                 label="Completion Date"
                 type="date"
+                placeholder="Select completion date"
                 value={formData.completionDate}
                 onChange={(e) => setFormData({ ...formData, completionDate: e.target.value })}
                 floatingLabel={false}

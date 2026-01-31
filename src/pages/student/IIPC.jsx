@@ -407,6 +407,7 @@ export const IIPC = () => {
                 <Input
                   label="Post Date"
                   type="date"
+                  placeholder="Select post date"
                   value={postDate}
                   onChange={(e) => {
                     setPostDate(e.target.value);

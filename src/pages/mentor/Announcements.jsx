@@ -395,21 +395,20 @@ function Announcements() {
                                             className="form-input"
                                         />
                                     </div>
-
-                                    <div className="form-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowModal(false)}
-                                            className="btn-secondary"
-                                            disabled={submitting}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <Button type="submit" disabled={submitting}>
-                                            {submitting ? 'Saving...' : editingAnnouncement ? 'Update' : 'Create & Notify'}
-                                        </Button>
-                                    </div>
                                 </form>
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowModal(false)}
+                                        className="btn-secondary"
+                                        disabled={submitting}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <Button type="button" onClick={handleSubmit} disabled={submitting}>
+                                        {submitting ? 'Saving...' : editingAnnouncement ? 'Update' : 'Create & Notify'}
+                                    </Button>
+                                </div>
                             </GlassCard>
                         </motion.div>
                     </div>
@@ -574,21 +573,20 @@ function Announcements() {
                                             />
                                         </div>
                                     </div>
-
-                                    <div className="form-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowJobModal(false)}
-                                            className="btn-secondary"
-                                            disabled={submitting}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <Button type="submit" disabled={submitting}>
-                                            {submitting ? 'Posting...' : 'Post Opportunity'}
-                                        </Button>
-                                    </div>
                                 </form>
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowJobModal(false)}
+                                        className="btn-secondary"
+                                        disabled={submitting}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <Button type="button" onClick={handleJobSubmit} disabled={submitting}>
+                                        {submitting ? 'Posting...' : 'Post Opportunity'}
+                                    </Button>
+                                </div>
                             </GlassCard>
                         </motion.div>
                     </div>
