@@ -167,8 +167,12 @@ STATICFILES_DIRS = [
     REACT_APP_BUILD_PATH,
 ] if os.path.exists(REACT_APP_BUILD_PATH) else []
 
-# Use WhiteNoise for static file serving
+# Use WhiteNoise for static file serving  
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# WhiteNoise: Serve React build files (including index.html and /assets/*)
+WHITENOISE_INDEX_FILE = True
+WHITENOISE_ROOT = STATIC_ROOT
 
 # Media files (User uploads)
 MEDIA_URL = os.getenv('MEDIA_URL', '/media/')

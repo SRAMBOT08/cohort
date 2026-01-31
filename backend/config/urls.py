@@ -73,6 +73,12 @@ urlpatterns = [
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # In production, also serve assets directly (not through /static/)
+    from django.views.static import serve as static_serve
+    urlpatterns += [
+        re_path(r'^assets/(?P<path>.*)$', static_serve, {'document_root': os.path.join(settings.STATIC_ROOT, 'assets')}),
+    ]
 
 # Serve React Frontend - catch-all route (must be last)
 from django.views.static import serve
@@ -80,17 +86,10 @@ from django.http import HttpResponse
 import os
 
 def serve_react(request, path=''):
-    """Serve React app for all non-API routes"""
+    """Serve React app index.html for all non-API routes"""
     staticfiles_path = settings.STATIC_ROOT
-    
-    # For specific files, serve directly
-    if path:
-        file_path = os.path.join(staticfiles_path, path)
-        if os.path.isfile(file_path):
-            return serve(request, path, document_root=staticfiles_path)
-    
-    # For all other routes, serve index.html (React Router handles routing)
     index_path = os.path.join(staticfiles_path, 'index.html')
+    
     if os.path.isfile(index_path):
         return serve(request, 'index.html', document_root=staticfiles_path)
     
@@ -109,7 +108,8 @@ def serve_react(request, path=''):
         return HttpResponse(f'Error: {str(e)}', status=503)
 
 # Add catch-all route for React frontend (must be last!)
+# Let WhiteNoise handle /static/ and manually handle /assets/ above
 from django.urls import re_path
 urlpatterns += [
-    re_path(r'^(?!api/|admin/|media/|static/).*$', serve_react),
+    re_path(r'^(?!api/|admin/|media/|static/|assets/).*$', serve_react),
 ]
