@@ -81,29 +81,35 @@ import os
 
 def serve_react(request, path=''):
     """Serve React app for all non-API routes"""
-    staticfiles_path = os.path.join(settings.BASE_DIR, 'staticfiles')
+    staticfiles_path = settings.STATIC_ROOT
     
-    # If requesting a specific file that exists, serve it
+    # For specific files, serve directly
     if path:
         file_path = os.path.join(staticfiles_path, path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
+        if os.path.isfile(file_path):
             return serve(request, path, document_root=staticfiles_path)
     
-    # For root or non-existent paths, serve index.html
+    # For all other routes, serve index.html (React Router handles routing)
     index_path = os.path.join(staticfiles_path, 'index.html')
-    if os.path.exists(index_path):
+    if os.path.isfile(index_path):
         return serve(request, 'index.html', document_root=staticfiles_path)
     
-    # If index.html doesn't exist, return error
-    return HttpResponse(
-        f'Frontend not found. index.html should be at: {index_path}<br>'
-        f'Staticfiles path: {staticfiles_path}<br>'
-        f'Files in staticfiles: {os.listdir(staticfiles_path) if os.path.exists(staticfiles_path) else "Directory not found"}',
-        status=503
-    )
+    # Debug output if index.html not found
+    try:
+        files = os.listdir(staticfiles_path)[:20] if os.path.exists(staticfiles_path) else []
+        return HttpResponse(
+            f'<h2>Frontend not found</h2>'
+            f'<p>Looking for: {index_path}</p>'
+            f'<p>Staticfiles dir: {staticfiles_path}</p>'
+            f'<p>Exists: {os.path.exists(staticfiles_path)}</p>'
+            f'<p>First 20 files:</p><ul>{"".join([f"<li>{f}</li>" for f in files])}</ul>',
+            status=503
+        )
+    except Exception as e:
+        return HttpResponse(f'Error: {str(e)}', status=503)
 
 # Add catch-all route for React frontend (must be last!)
 from django.urls import re_path
 urlpatterns += [
-    re_path(r'^(?!api/|admin/|media/).*$', serve_react),
+    re_path(r'^(?!api/|admin/|media/|static/).*$', serve_react),
 ]

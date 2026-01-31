@@ -6,22 +6,23 @@ services:
     region: oregon
     plan: free
     buildCommand: |
-      # Install frontend dependencies and build React app
+      # Build React frontend
       npm install
       npm run build
-      # Install backend dependencies
+      echo "React build complete, checking dist/"
+      ls -la dist/
+      # Install Python dependencies
       cd backend
       pip install -r requirements.txt
-      # Collect Django static files first
-      python manage.py collectstatic --no-input
-      # Copy React build files to staticfiles (overwrite)
-      cp -rf ../dist/* staticfiles/
-      # Verify index.html exists
-      ls -la staticfiles/index.html
+      # Collect all static files (Django + React from dist/)
+      python manage.py collectstatic --no-input --clear
+      echo "Staticfiles collected, checking for index.html:"
+      ls -la staticfiles/index.html || echo "ERROR: index.html not found!"
+      ls -la staticfiles/ | head -20
       # Run migrations
-      python manage.py migrate
-      # Create initial users
-      python create_role_users.py || echo "Users may already exist"
+      python manage.py migrate --no-input
+      # Create users
+      python create_role_users.py || true
     startCommand: cd backend && daphne -b 0.0.0.0 -p $PORT config.asgi:application
     healthCheckPath: /
     envVars:
