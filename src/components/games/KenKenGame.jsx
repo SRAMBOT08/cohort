@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Calendar, Flame, X, Check, RefreshCw, HelpCircle } from 'lucide-react';
+import { Trophy, Calendar, Flame, X, Check, RefreshCw, HelpCircle, Clock, Undo2, Edit3 } from 'lucide-react';
 import './KenKenGame.css';
 
 const KenKenGame = ({ onClose, pillarName }) => {
@@ -14,11 +14,20 @@ const KenKenGame = ({ onClose, pillarName }) => {
     const [showHints, setShowHints] = useState(false);
     const [focusedCell, setFocusedCell] = useState(null);
     const [currentHint, setCurrentHint] = useState(null);
+    const [timeElapsed, setTimeElapsed] = useState(0); // Stopwatch in seconds
+    const [gameStarted, setGameStarted] = useState(false);
+    const [moveHistory, setMoveHistory] = useState([]); // For undo functionality
+    const [notesGrid, setNotesGrid] = useState([]); // For pencil marks/notes
+    const [notesMode, setNotesMode] = useState(false); // Toggle between normal and notes mode
 
     // Handle keyboard input
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (isComplete) return;
+
+            if (!gameStarted) {
+                setGameStarted(true);
+            }
 
             const key = e.key;
             if (key >= '1' && key <= String(gameState?.size || 4)) {
@@ -46,6 +55,24 @@ const KenKenGame = ({ onClose, pillarName }) => {
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [focusedCell, gameState, isComplete]);
+
+    // Stopwatch effect
+    useEffect(() => {
+        if (!gameStarted || isComplete) return;
+
+        const timer = setInterval(() => {
+            setTimeElapsed(prev => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [gameStarted, isComplete]);
+
+    // Format time display
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     // Generate daily seed based on date
     const getDailySeed = () => {
@@ -184,6 +211,10 @@ const KenKenGame = ({ onClose, pillarName }) => {
         const puzzle = generateKenKenPuzzle();
         setGameState(puzzle);
         setUserGrid(Array(puzzle.size).fill(null).map(() => Array(puzzle.size).fill(0)));
+        setNotesGrid(Array.from({ length: puzzle.size }, () =>
+            Array.from({ length: puzzle.size }, () => [])
+        ));
+        setMoveHistory([]);
 
         // Load streak from localStorage
         const savedData = JSON.parse(localStorage.getItem(`kenken-${pillarName}`) || '{}');
@@ -191,29 +222,69 @@ const KenKenGame = ({ onClose, pillarName }) => {
         setLastPlayed(savedData.lastPlayed || null);
     }, [pillarName]);
 
-    // Handle cell input with validation
+    // Handle cell input with validation, notes, and undo
     const handleCellInput = (row, col, value) => {
-        if (!gameState) return;
+        if (!gameState || !notesGrid.length) return;
 
         const numValue = parseInt(value);
 
-        // Allow empty (0) or valid numbers within range
-        if (value === '' || value === '0' || !numValue) {
-            const newGrid = [...userGrid];
-            newGrid[row][col] = 0;
-            setUserGrid(newGrid);
-            setErrors([]);
-            return;
-        }
+        // Save current state for undo
+        const undoState = {
+            userGrid: userGrid.map(r => [...r]),
+            notesGrid: notesGrid.map(r => r.map(c => [...c])),
+            row,
+            col,
+            timestamp: Date.now()
+        };
 
-        // Validate number is within allowed range (1 to size)
-        if (numValue >= 1 && numValue <= gameState.size) {
-            const newGrid = [...userGrid];
-            newGrid[row][col] = numValue;
-            setUserGrid(newGrid);
-            setErrors([]);
+        if (notesMode) {
+            // Notes mode - toggle pencil marks
+            if (numValue >= 1 && numValue <= gameState.size) {
+                const newNotesGrid = notesGrid.map(r => r.map(c => [...c]));
+                if (!newNotesGrid[row][col].includes(numValue)) {
+                    newNotesGrid[row][col].push(numValue);
+                    newNotesGrid[row][col].sort();
+                } else {
+                    newNotesGrid[row][col] = newNotesGrid[row][col].filter(n => n !== numValue);
+                }
+
+                setMoveHistory(prev => [...prev.slice(-49), undoState]); // Keep last 50 moves
+                setNotesGrid(newNotesGrid);
+
+                // Keep the cell selected for continuous note input
+                setSelectedCell({ row, col });
+                setFocusedCell({ row, col });
+            }
+        } else {
+            // Normal mode - place numbers
+            if (value === '' || value === '0' || !numValue) {
+                const newGrid = [...userGrid];
+                newGrid[row][col] = 0;
+                // Clear notes for this cell when placing a number
+                const newNotesGrid = notesGrid.map(r => r.map(c => [...c]));
+                newNotesGrid[row][col] = [];
+
+                setMoveHistory(prev => [...prev.slice(-49), undoState]);
+                setUserGrid(newGrid);
+                setNotesGrid(newNotesGrid);
+                setErrors([]);
+                return;
+            }
+
+            // Validate number is within allowed range (1 to size)
+            if (numValue >= 1 && numValue <= gameState.size) {
+                const newGrid = [...userGrid];
+                newGrid[row][col] = numValue;
+                // Clear notes for this cell when placing a number
+                const newNotesGrid = notesGrid.map(r => r.map(c => [...c]));
+                newNotesGrid[row][col] = [];
+
+                setMoveHistory(prev => [...prev.slice(-49), undoState]);
+                setUserGrid(newGrid);
+                setNotesGrid(newNotesGrid);
+                setErrors([]);
+            }
         }
-        // If invalid, don't update and optionally show error
     };
 
     // Check solution
@@ -328,9 +399,27 @@ const KenKenGame = ({ onClose, pillarName }) => {
     const resetPuzzle = () => {
         if (!gameState) return;
         setUserGrid(Array(gameState.size).fill(null).map(() => Array(gameState.size).fill(0)));
+        setNotesGrid(Array.from({ length: gameState.size }, () =>
+            Array.from({ length: gameState.size }, () => [])
+        ));
+        setMoveHistory([]);
         setErrors([]);
         setIsComplete(false);
         setCurrentHint(null);
+        setTimeElapsed(0); // Reset stopwatch
+        setGameStarted(false);
+        setNotesMode(false);
+    };
+
+    // Undo last move
+    const undoMove = () => {
+        if (moveHistory.length === 0) return;
+
+        const lastMove = moveHistory[moveHistory.length - 1];
+        setUserGrid(lastMove.userGrid);
+        setNotesGrid(lastMove.notesGrid);
+        setMoveHistory(prev => prev.slice(0, -1));
+        setErrors([]); // Clear errors when undoing
     };
 
     // Generate intelligent hint using actual solution
@@ -447,6 +536,10 @@ const KenKenGame = ({ onClose, pillarName }) => {
                         <Flame size={20} />
                         <span>{streak} Day Streak</span>
                     </div>
+                    <div className="kenken-stat kenken-stat--timer">
+                        <Clock size={20} />
+                        <span>{formatTime(timeElapsed)}</span>
+                    </div>
                     <button
                         className="kenken-hint-btn"
                         onClick={() => setShowHints(!showHints)}
@@ -513,13 +606,27 @@ const KenKenGame = ({ onClose, pillarName }) => {
                                                 {cage.target}{cage.operation || ''}
                                             </div>
                                         )}
+
+                                        {/* Show notes if cell is empty */}
+                                        {userGrid[row][col] === 0 && notesGrid[row]?.[col]?.length > 0 && (
+                                            <div className="kenken-notes">
+                                                {notesGrid[row][col].map(note => (
+                                                    <span key={note} className="kenken-note">{note}</span>
+                                                ))}
+                                            </div>
+                                        )}
+
                                         <input
                                             type="text"
                                             inputMode="numeric"
                                             pattern={`[1-${gameState.size}]`}
                                             maxLength="1"
-                                            value={userGrid[row][col] || ''}
-                                            onChange={(e) => handleCellInput(row, col, e.target.value)}
+                                            value={notesMode ? '' : (userGrid[row][col] || '')}
+                                            onChange={(e) => {
+                                                if (!notesMode) {
+                                                    handleCellInput(row, col, e.target.value);
+                                                }
+                                            }}
                                             onKeyPress={(e) => {
                                                 // Only allow numbers 1 to size
                                                 const char = e.key;
@@ -534,6 +641,7 @@ const KenKenGame = ({ onClose, pillarName }) => {
                                             }}
                                             className="kenken-input"
                                             disabled={isComplete}
+                                            readOnly={notesMode}
                                         />
                                     </div>
                                 );
@@ -610,21 +718,48 @@ const KenKenGame = ({ onClose, pillarName }) => {
                 <AnimatePresence>
                     {isComplete && (
                         <motion.div
-                            className="kenken-success"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 20 }}
+                            className="kenken-success-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <Trophy size={48} />
-                            <h3>Puzzle Complete! 🎉</h3>
-                            <p>Your streak: {streak} days</p>
-                            <p>Come back tomorrow for a new challenge!</p>
+                            <motion.div
+                                className="kenken-success-popup"
+                                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                            >
+                                <Trophy size={64} />
+                                <h3>Puzzle Complete! 🎉</h3>
+                                <p className="completion-time">Completed in: <strong>{formatTime(timeElapsed)}</strong></p>
+                                <p className="streak-info">Your streak: <strong>{streak} days</strong></p>
+                                <p className="next-challenge">Come back tomorrow for a new challenge!</p>
+                                <button className="kenken-btn kenken-btn--primary" onClick={onClose}>
+                                    Close
+                                </button>
+                            </motion.div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
                 {/* Actions */}
                 <div className="kenken-actions">
+                    <button
+                        className="kenken-btn kenken-btn--secondary"
+                        onClick={undoMove}
+                        disabled={moveHistory.length === 0}
+                    >
+                        <Undo2 size={18} />
+                        Undo ({moveHistory.length})
+                    </button>
+                    <button
+                        className={`kenken-btn ${notesMode ? 'kenken-btn--active' : 'kenken-btn--secondary'}`}
+                        onClick={() => setNotesMode(!notesMode)}
+                    >
+                        <Edit3 size={18} />
+                        Notes {notesMode ? 'ON' : 'OFF'}
+                    </button>
                     <button className="kenken-btn kenken-btn--secondary" onClick={resetPuzzle}>
                         <RefreshCw size={18} />
                         Reset

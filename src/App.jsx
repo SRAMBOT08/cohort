@@ -347,29 +347,29 @@ function AppContent() {
           <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
 
           {/* Admin Campus Routes - Before AdminLayout */}
-          <Route 
-            path="/admin/campus-select" 
+          <Route
+            path="/admin/campus-select"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <CampusSelection />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/admin/campus/:campus" 
+          <Route
+            path="/admin/campus/:campus"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <CampusOverview />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/admin/campus/:campus/floor/:floor" 
+          <Route
+            path="/admin/campus/:campus/floor/:floor"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <FloorDetail />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Admin Routes with Sidebar Layout */}
@@ -393,21 +393,21 @@ function AppContent() {
           </Route>
 
           {/* Other Role Dashboards */}
-          <Route 
-            path="/mentor-dashboard/*" 
+          <Route
+            path="/mentor-dashboard/*"
             element={
               <ProtectedRoute requiredRole="MENTOR">
                 <MentorLayout />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/floorwing-dashboard" 
+          <Route
+            path="/floorwing-dashboard"
             element={
               <ProtectedRoute requiredRole="FLOOR_WING">
                 <FloorWingDashboard />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </main>
