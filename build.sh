@@ -25,10 +25,8 @@ npm install
 echo "🏗️  Building React frontend..."
 npm run build
 
-# 5. Move frontend build to backend static directory
-echo "📁 Moving frontend build to backend..."
-mkdir -p backend/staticfiles
-cp -r dist/* backend/staticfiles/
+# 5. Frontend is already built directly into backend/static/frontend
+echo "✅ Frontend built to backend/static/frontend"
 
 # 6. Collect Django static files
 echo "📦 Collecting Django static files..."
