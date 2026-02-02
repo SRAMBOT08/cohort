@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.http import HttpResponse
 from django.conf.urls.static import static
 from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -35,6 +36,9 @@ schema_view = get_schema_view(
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
+
+    # Root OK for uptime checks
+    path('', lambda request: HttpResponse("ok"), name='root_ok'),
     
     # Health Check Endpoints (NEW - for monitoring and scaling)
     path('api/health/', render_health_check, name='render_health_check'),  # Render monitoring
