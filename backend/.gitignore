@@ -1,3 +1,5 @@
+# Render deployment config
+render.yaml
 # Python
 __pycache__/
 *.py[cod]
