@@ -2,33 +2,14 @@
 Django middleware to verify Supabase JWT tokens
 """
 import jwt
-import requests
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.http import JsonResponse
-from functools import lru_cache
 import logging
 
 from .models import SupabaseUserMapping
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache(maxsize=1)
-def get_supabase_jwks():
-    """
-    Fetch Supabase JSON Web Key Set (JWKS) for JWT verification
-    Cached to avoid repeated requests
-    """
-    try:
-        supabase_url = settings.SUPABASE_URL
-        jwks_url = f'{supabase_url}/auth/v1/jwks'
-        response = requests.get(jwks_url, timeout=5)
-        response.raise_for_status()
-        return response.json()
-    except Exception as e:
-        logger.error(f'Failed to fetch Supabase JWKS: {e}')
-        return None
 
 
 class SupabaseAuthMiddleware:
@@ -37,7 +18,7 @@ class SupabaseAuthMiddleware:
     
     Flow:
     1. Extract Bearer token from Authorization header
-    2. Verify JWT signature using Supabase public key
+    2. Verify JWT signature using Supabase JWT secret (HS256)
     3. Extract supabase_id from token claims
     4. Map to Django user via SupabaseUserMapping
     5. Attach user to request.user
@@ -86,34 +67,21 @@ class SupabaseAuthMiddleware:
     def _verify_token(self, token):
         """
         Verify Supabase JWT token and return Django user
+        Uses SUPABASE_JWT_SECRET with HS256 algorithm
         """
         try:
-            # Decode token without verification to get header and kid
-            header = jwt.get_unverified_header(token)
-            kid = header.get('kid')
+            # Get JWT secret from settings
+            jwt_secret = settings.SUPABASE_JWT_SECRET
             
-            # Fetch JWKS (JSON Web Key Set) from Supabase
-            jwks = get_supabase_jwks()
-            if not jwks:
-                logger.error('Failed to fetch JWKS')
+            if not jwt_secret:
+                logger.error('SUPABASE_JWT_SECRET not configured')
                 return None
             
-            # Find the public key matching the kid
-            public_key = None
-            for key in jwks.get('keys', []):
-                if key.get('kid') == kid:
-                    public_key = jwt.algorithms.ECAlgorithm.from_jwk(key)
-                    break
-            
-            if not public_key:
-                logger.warning(f'No public key found for kid: {kid}')
-                return None
-            
-            # Verify token with ES256 algorithm
+            # Verify and decode token with HS256 algorithm (Supabase default)
             decoded = jwt.decode(
                 token,
-                public_key,
-                algorithms=['ES256'],
+                jwt_secret,
+                algorithms=['HS256'],
                 audience='authenticated',
                 options={
                     'verify_signature': True,
