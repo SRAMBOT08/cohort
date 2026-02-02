@@ -4,7 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/static/frontend/',
+  base: '/',
+  build: {
+    outDir: '../backend/static/frontend',
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
       '/api': {

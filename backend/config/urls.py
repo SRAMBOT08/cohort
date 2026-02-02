@@ -95,8 +95,8 @@ urlpatterns = [
     # Admin APIs
     path('api/admin/', include('apps.admin_urls')),
 
-    # SPA fallback for non-API routes
-    re_path(r'^(?!api/|admin/).*$', lambda request: serve_frontend_index(), name='spa_fallback'),
+    # SPA fallback for non-API routes (exclude static files)
+    re_path(r'^(?!api/|admin/|static/|assets/).*$', lambda request: serve_frontend_index(), name='spa_fallback'),
 ]
 
 # Serve media files in development
