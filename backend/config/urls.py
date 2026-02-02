@@ -36,16 +36,16 @@ schema_view = get_schema_view(
 )
 
 
-def serve_frontend_index():
-    # Prefer collected static (STATIC_ROOT), then source static dir
-    candidates = [
-        os.path.join(getattr(settings, "STATIC_ROOT", ""), "frontend", "index.html"),
-        os.path.join(settings.BASE_DIR, "static", "frontend", "index.html"),
-    ]
-    for path in candidates:
-        if path and os.path.exists(path):
-            return FileResponse(open(path, "rb"), content_type="text/html")
-    return HttpResponse("ok")
+def serve_frontend_index(request):
+    # Serve the React app index.html
+    index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(open(index_path, "rb"), content_type="text/html")
+    # Fallback for development
+    dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
+    if os.path.exists(dev_path):
+        return FileResponse(open(dev_path, "rb"), content_type="text/html")
+    return HttpResponse("Frontend not built. Run 'npm run build' first.", status=500)
 
 urlpatterns = [
     # Admin
