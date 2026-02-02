@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     
     # Analytics & Scaling (NEW - for 2000+ students)
     'apps.analytics_summary',
+    
+    # Supabase Authentication
+    'apps.auth_supabase',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # Supabase JWT verification
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
