@@ -39,6 +39,9 @@ export const authService = {
       if (data.session) {
         localStorage.setItem('supabase_access_token', data.session.access_token);
         localStorage.setItem('supabase_refresh_token', data.session.refresh_token);
+        // Also store as accessToken for compatibility with existing code
+        localStorage.setItem('accessToken', data.session.access_token);
+        localStorage.setItem('refreshToken', data.session.refresh_token);
       }
       
       // Store user data
@@ -69,6 +72,8 @@ export const authService = {
     
     localStorage.removeItem('supabase_access_token');
     localStorage.removeItem('supabase_refresh_token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   },
 
