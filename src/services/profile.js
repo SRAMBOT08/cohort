@@ -11,7 +11,7 @@ const profileAxios = axios.create({
 // Request interceptor to add auth token
 profileAxios.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,8 +26,9 @@ profileAxios.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('supabase_access_token');
+      localStorage.removeItem('supabase_refresh_token');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);

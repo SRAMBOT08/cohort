@@ -9,7 +9,7 @@ const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',

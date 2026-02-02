@@ -14,7 +14,7 @@ const scdAxios = axios.create({
 // Add request interceptor for authentication
 scdAxios.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

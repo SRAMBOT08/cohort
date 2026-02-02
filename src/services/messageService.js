@@ -5,7 +5,7 @@ const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Get auth token from localStorage
 const getAuthToken = () => {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem('supabase_access_token');
 };
 
 // Configure axios instance with auth headers

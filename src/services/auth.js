@@ -1,99 +1,75 @@
-import axios from 'axios';
+import { createClient } from '@supabase/supabase-js';
 import { API_CONFIG } from '../config';
 
-const API_BASE_URL = API_CONFIG.BASE_URL;
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://yfoopcuwdyotlukbkoej.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmb29wY3V3ZHlvdGx1a2Jrb2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDA4NDEsImV4cCI6MjA4NTM3Njg0MX0.YK5uw24Grhc2TPYnF98i0eORgZHNHLJMdd5akenvKRs';
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
- * Authentication API Service
- * Handles login, logout, token refresh, and user management
+ * Authentication API Service using Supabase
+ * Handles login, logout, and user management
  */
 
 export const authService = {
   /**
-   * Login user and get JWT tokens
-   * @param {string} username - Username or email
+   * Login user with Supabase
+   * @param {string} email - User email
    * @param {string} password - Password
-   * @returns {Promise} - User data with tokens
+   * @returns {Promise} - User data with session
    */
-  login: async (username, password) => {
-    console.log('Auth service - attempting login with:', username);
+  login: async (email, password) => {
+    console.log('Auth service - attempting Supabase login with:', email);
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/token/`, {
-        username,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
         password,
       });
       
-      console.log('Auth service - login response:', response.status);
-      console.log('Auth service - response data:', response.data);
-      
-      const { access, refresh } = response.data;
-      
-      if (!access || !refresh) {
-        console.error('Missing tokens in response:', response.data);
-        throw new Error('Invalid response from server - missing tokens');
+      if (error) {
+        console.error('Auth service - Supabase login error:', error);
+        throw error;
       }
       
-      // Store tokens in localStorage first
-      localStorage.setItem('accessToken', access);
-      localStorage.setItem('refreshToken', refresh);
+      console.log('Auth service - Supabase login successful');
       
-      console.log('Auth service - fetching user profile...');
+      // Store session data
+      if (data.session) {
+        localStorage.setItem('supabase_access_token', data.session.access_token);
+        localStorage.setItem('supabase_refresh_token', data.session.refresh_token);
+      }
       
-      // Fetch user profile with the access token
-      const userResponse = await axios.get(`${API_BASE_URL}/auth/user/`, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
+      // Store user data
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.email.split('@')[0],
+        }));
+      }
       
-      console.log('Auth service - user profile response:', userResponse.status);
-      console.log('Auth service - user data:', userResponse.data);
-      
-      const user = userResponse.data;
-      
-      // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      console.log('Auth service - login successful');
-      
-      // Return both tokens and user
-      return { access, refresh, user };
+      return data;
     } catch (error) {
       console.error('Auth service - login error:', error);
-      console.error('Auth service - error response:', error.response?.data);
-      console.error('Auth service - error status:', error.response?.status);
       throw error;
     }
   },
 
   /**
-   * Logout user and clear tokens
+   * Logout user and clear session
    */
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-  },
-
-  /**
-   * Refresh access token using refresh token
-   * @returns {Promise} - New access token
-   */
-  refreshToken: async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
+  logout: async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
-
-    const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {
-      refresh: refreshToken,
-    });
-
-    const { access } = response.data;
-    localStorage.setItem('accessToken', access);
     
-    return access;
+    localStorage.removeItem('supabase_access_token');
+    localStorage.removeItem('supabase_refresh_token');
+    localStorage.removeItem('user');
   },
 
   /**
@@ -110,7 +86,7 @@ export const authService = {
    * @returns {boolean}
    */
   isAuthenticated: () => {
-    return !!localStorage.getItem('accessToken');
+    return !!localStorage.getItem('supabase_access_token');
   },
 
   /**
@@ -118,7 +94,15 @@ export const authService = {
    * @returns {string|null}
    */
   getAccessToken: () => {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('supabase_access_token');
+  },
+
+  /**
+   * Get Supabase client
+   * @returns {object} - Supabase client
+   */
+  getSupabaseClient: () => {
+    return supabase;
   },
 };
 
