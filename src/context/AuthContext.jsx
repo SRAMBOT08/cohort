@@ -46,8 +46,9 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             const response = await authService.login(username, password);
 
-            // Extract role from backend response (profile.role)
-            const userRole = response.user?.profile?.role || role || 'STUDENT';
+            // TEMPORARY: Use selected role since Django sync isn't done yet
+            // TODO: Once Django users are synced, fetch profile from backend API
+            const userRole = role || response.user?.profile?.role || 'STUDENT';
             const campus = response.user?.profile?.campus;
             const floor = response.user?.profile?.floor;
 
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }) => {
                 timestamp: new Date().toISOString(),
             };
 
+            console.log('Login successful, user role:', userRole);
             setUser(userWithRole);
             localStorage.setItem('user', JSON.stringify(userWithRole));
             return userWithRole;
