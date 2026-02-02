@@ -1,39 +1,39 @@
 # Render + Supabase Deployment Configuration
-# Place this in your project root as render.yaml
+# render.yaml (place in project root)
 
 services:
-  # Web Service - Combined Frontend + Backend
   - type: web
     name: cohort-web-app
     env: python
     region: oregon
-    plan: free  # Change to 'starter' or higher for production
-    
-    # Build settings
+    plan: free
+
     buildCommand: |
-      # Install backend dependencies
+      echo "Installing backend dependencies"
       pip install --upgrade pip
       pip install -r backend/requirements.txt
-      
-      # Install frontend dependencies and build
+
+      echo "Building frontend"
       npm install
       npm run build
-      
-      # Copy built frontend into Django static so whitenoise can serve it
+
+      echo "Copy frontend build into Django static folder"
       mkdir -p backend/static/frontend
       cp -r dist/* backend/static/frontend/
-      
-      # Collect Django static files
+
+      echo "Collect Django static files"
       cd backend
       python manage.py collectstatic --noinput
       cd ..
-    
-    # Start command - Serves both frontend and backend
+
     startCommand: |
-      # Start gunicorn from backend directory
-      cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile - --error-logfile -
-    
-    # Health check endpoint
+      cd backend && gunicorn config.wsgi:application \
+        --bind 0.0.0.0:$PORT \
+        --workers 2 \
+        --timeout 120 \
+        --access-logfile - \
+        --error-logfile -
+
     healthCheckPath: /api/health/
     
     # Auto-deploy settings
@@ -59,15 +59,14 @@ services:
         value: False
       
       - key: ALLOWED_HOSTS
-        value: cohort-web-app.onrender.com,localhost,127.0.0.1
+        value: cohort-app-g06z.onrender.com,localhost,127.0.0.1
       
       # Supabase Database Connection
-      - key: postgresql://postgres.yfoopcuwdyotlukbkoej:Cohort_db%40123@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
-        sync: false  # Add manually from Supabase dashboard
-        # Format: postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres
+      - key: DATABASE_URL
+        value: postgresql://postgres.yfoopcuwdyotlukbkoej:Cohort_db%40123@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
       
       # Supabase Authentication & API
-      - key:
+      - key: SUPABASE_URL
         sync: false  # Add from Supabase: Settings > API > Project URL
       
       - key: SUPABASE_ANON_KEY
