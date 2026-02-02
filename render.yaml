@@ -38,7 +38,7 @@ services:
     
     # Auto-deploy settings
     autoDeploy: true
-    branch: main  # Change to your default branch name
+    branch: main_deploy  # Deploy combined frontend+backend from this branch
     
     # Environment variables (add these in Render dashboard)
     envVars:
