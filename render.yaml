@@ -76,7 +76,7 @@ services:
         value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmb29wY3V3ZHlvdGx1a2Jrb2VqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTgwMDg0MSwiZXhwIjoyMDg1Mzc2ODQxfQ.57FMzdhavCWYdp2-yjiWrtt7ZrEHq3Aq6YyChihx1sc
       
       - key: SUPABASE_JWT_SECRET
-        value: your-super-secret-jwt-secret-with-at-least-256-bits
+        value: zy/392pVFfUBs/+wzZmA9Y8/B+R9tCjSLHZMaubjIiv6NUzu4yMtQtbmNYCFuz7ZVQZHlpAHZ4DHzJqb/Frjcg==
       
       # JWT Settings
       - key: JWT_SECRET_KEY
