@@ -57,8 +57,7 @@ def serve_frontend_index(request):
     
     if os.path.exists(index_path):
         logger.error(f"✅ Found index.html, serving it")
-        with open(index_path, "rb") as f:
-            return FileResponse(f, content_type="text/html")
+        return FileResponse(open(index_path, "rb"), content_type="text/html")
     
     # Fallback for development
     dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
@@ -67,8 +66,7 @@ def serve_frontend_index(request):
     
     if os.path.exists(dev_path):
         logger.error(f"✅ Found index.html at dev path, serving it")
-        with open(dev_path, "rb") as f:
-            return FileResponse(f, content_type="text/html")
+        return FileResponse(open(dev_path, "rb"), content_type="text/html")
     
     # Debug: list what's in staticfiles
     static_root = settings.STATIC_ROOT
