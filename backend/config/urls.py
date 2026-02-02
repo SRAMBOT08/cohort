@@ -1,7 +1,9 @@
+import os
+
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.conf.urls.static import static
 from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -33,12 +35,24 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
+
+def serve_frontend_index():
+    # Prefer collected static (STATIC_ROOT), then source static dir
+    candidates = [
+        os.path.join(getattr(settings, "STATIC_ROOT", ""), "frontend", "index.html"),
+        os.path.join(settings.BASE_DIR, "static", "frontend", "index.html"),
+    ]
+    for path in candidates:
+        if path and os.path.exists(path):
+            return FileResponse(open(path, "rb"), content_type="text/html")
+    return HttpResponse("ok")
+
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
-    # Root OK for uptime checks
-    path('', lambda request: HttpResponse("ok"), name='root_ok'),
+    # Root + SPA fallback (serves built frontend index.html if present)
+    path('', lambda request: serve_frontend_index(), name='root_ok'),
     
     # Health Check Endpoints (NEW - for monitoring and scaling)
     path('api/health/', render_health_check, name='render_health_check'),  # Render monitoring
@@ -80,6 +94,9 @@ urlpatterns = [
     
     # Admin APIs
     path('api/admin/', include('apps.admin_urls')),
+
+    # SPA fallback for non-API routes
+    re_path(r'^(?!api/|admin/).*$', lambda request: serve_frontend_index(), name='spa_fallback'),
 ]
 
 # Serve media files in development
