@@ -42,19 +42,22 @@ def serve_frontend_index(request):
     logger = logging.getLogger(__name__)
     
     index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
-    logger.info(f"Looking for index.html at: {index_path}")
-    logger.info(f"File exists: {os.path.exists(index_path)}")
+    logger.error(f"🔍 Looking for index.html at: {index_path}")
+    logger.error(f"📁 STATIC_ROOT: {settings.STATIC_ROOT}")
+    logger.error(f"✅ File exists: {os.path.exists(index_path)}")
     
     if os.path.exists(index_path):
+        logger.error(f"✅ Found index.html, serving it")
         with open(index_path, "rb") as f:
             return FileResponse(f, content_type="text/html")
     
     # Fallback for development
     dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
-    logger.info(f"Trying dev path: {dev_path}")
-    logger.info(f"Dev file exists: {os.path.exists(dev_path)}")
+    logger.error(f"🔍 Trying dev path: {dev_path}")
+    logger.error(f"✅ Dev file exists: {os.path.exists(dev_path)}")
     
     if os.path.exists(dev_path):
+        logger.error(f"✅ Found index.html at dev path, serving it")
         with open(dev_path, "rb") as f:
             return FileResponse(f, content_type="text/html")
     
@@ -63,14 +66,15 @@ def serve_frontend_index(request):
     if os.path.exists(static_root):
         try:
             contents = os.listdir(static_root)
-            logger.error(f"STATIC_ROOT contents: {contents}")
+            logger.error(f"📂 STATIC_ROOT contents: {contents[:10]}")  # First 10 items
             frontend_path = os.path.join(static_root, "frontend")
             if os.path.exists(frontend_path):
                 frontend_contents = os.listdir(frontend_path)
-                logger.error(f"frontend/ contents: {frontend_contents}")
+                logger.error(f"📂 frontend/ contents: {frontend_contents}")
         except Exception as e:
-            logger.error(f"Error listing directory: {e}")
+            logger.error(f"❌ Error listing directory: {e}")
     
+    logger.error(f"❌ Frontend not found anywhere!")
     return HttpResponse(f"Frontend not found. STATIC_ROOT={static_root}, index_path={index_path}", status=500)
 
 urlpatterns = [
