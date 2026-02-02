@@ -88,20 +88,32 @@ class SupabaseAuthMiddleware:
         Verify Supabase JWT token and return Django user
         """
         try:
-            # Decode token without verification first to get header
-            unverified = jwt.decode(
-                token,
-                options={'verify_signature': False}
-            )
+            # Decode token without verification to get header and kid
+            header = jwt.get_unverified_header(token)
+            kid = header.get('kid')
             
-            # Verify token signature using Supabase public key
-            # Supabase uses RS256 algorithm
-            supabase_jwt_secret = settings.SUPABASE_JWT_SECRET
+            # Fetch JWKS (JSON Web Key Set) from Supabase
+            jwks = get_supabase_jwks()
+            if not jwks:
+                logger.error('Failed to fetch JWKS')
+                return None
             
+            # Find the public key matching the kid
+            public_key = None
+            for key in jwks.get('keys', []):
+                if key.get('kid') == kid:
+                    public_key = jwt.algorithms.ECAlgorithm.from_jwk(key)
+                    break
+            
+            if not public_key:
+                logger.warning(f'No public key found for kid: {kid}')
+                return None
+            
+            # Verify token with ES256 algorithm
             decoded = jwt.decode(
                 token,
-                supabase_jwt_secret,
-                algorithms=['HS256'],
+                public_key,
+                algorithms=['ES256'],
                 audience='authenticated',
                 options={
                     'verify_signature': True,
