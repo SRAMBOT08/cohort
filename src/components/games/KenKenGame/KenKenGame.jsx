@@ -216,15 +216,30 @@ const KenKenGame = ({ onClose, pillarName }) => {
         ));
         setMoveHistory([]);
 
-        // Load streak from localStorage
+        // Load streak from localStorage and check if already completed today
         const savedData = JSON.parse(localStorage.getItem(`kenken-${pillarName}`) || '{}');
         setStreak(savedData.streak || 0);
         setLastPlayed(savedData.lastPlayed || null);
+        
+        // Check if already completed today
+        const today = new Date().toDateString();
+        if (savedData.lastPlayed === today && savedData.completed) {
+            setIsComplete(true);
+            setTimeElapsed(savedData.completionTime || 0);
+            // Restore the completed grid if available
+            if (savedData.completedGrid) {
+                setUserGrid(savedData.completedGrid);
+            }
+        }
     }, [pillarName]);
 
     // Handle cell input with validation, notes, and undo
     const handleCellInput = (row, col, value) => {
         if (!gameState || !notesGrid.length) return;
+        
+        // Prevent input if already completed today
+        const today = new Date().toDateString();
+        if (isComplete && lastPlayed === today) return;
 
         const numValue = parseInt(value);
 
@@ -391,13 +406,21 @@ const KenKenGame = ({ onClose, pillarName }) => {
         setStreak(newStreak);
         localStorage.setItem(`kenken-${pillarName}`, JSON.stringify({
             streak: newStreak,
-            lastPlayed: today
+            lastPlayed: today,
+            completed: true,
+            completionTime: timeElapsed,
+            completedGrid: userGrid
         }));
     };
 
     // Reset puzzle
     const resetPuzzle = () => {
         if (!gameState) return;
+        
+        // Prevent reset if already completed today
+        const today = new Date().toDateString();
+        if (isComplete && lastPlayed === today) return;
+        
         setUserGrid(Array(gameState.size).fill(null).map(() => Array(gameState.size).fill(0)));
         setNotesGrid(Array.from({ length: gameState.size }, () =>
             Array.from({ length: gameState.size }, () => [])

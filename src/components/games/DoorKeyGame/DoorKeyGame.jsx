@@ -15,6 +15,7 @@ const DoorKeyGame = ({ onClose, pillarName }) => {
     const [gameStarted, setGameStarted] = useState(false);
     const [hitWall, setHitWall] = useState(false);
     const [message, setMessage] = useState('');
+    const [lastPlayed, setLastPlayed] = useState(null);
 
     // Stopwatch effect
     useEffect(() => {
@@ -251,15 +252,23 @@ const DoorKeyGame = ({ onClose, pillarName }) => {
         setCollectedKeys([]);
         setVisitedCells(new Set([`${startRow},${startCol}`]));
 
-        // Load streak from localStorage
-        const savedData = JSON.parse(localStorage.getItem(`hiddenmaze-${pillarName}`) || '{}');
+        // Load streak from localStorage and check if already completed today
+        const savedData = JSON.parse(localStorage.getItem(`doorkey-${pillarName}`) || '{}');
         setStreak(savedData.streak || 0);
+        setLastPlayed(savedData.lastPlayed || null);
+        
+        // Check if already completed today
+        const today = new Date().toDateString();
+        if (savedData.lastPlayed === today && savedData.completed) {
+            setIsComplete(true);
+            setTimeElapsed(savedData.completionTime || 0);
+        }
     }, [pillarName, generateHiddenMaze]);
 
     // Update streak with proper daily tracking
     const updateStreak = useCallback(() => {
         const today = new Date().toDateString();
-        const savedData = JSON.parse(localStorage.getItem(`hiddenmaze-${pillarName}`) || '{}');
+        const savedData = JSON.parse(localStorage.getItem(`doorkey-${pillarName}`) || '{}');
 
         // If already completed today, don't update streak
         if (savedData.lastPlayed === today) {
@@ -287,15 +296,21 @@ const DoorKeyGame = ({ onClose, pillarName }) => {
         }
 
         setStreak(newStreak);
-        localStorage.setItem(`hiddenmaze-${pillarName}`, JSON.stringify({
+        localStorage.setItem(`doorkey-${pillarName}`, JSON.stringify({
             streak: newStreak,
-            lastPlayed: today
+            lastPlayed: today,
+            completed: true,
+            completionTime: timeElapsed
         }));
-    }, [pillarName]); // Add dependencies
+    }, [pillarName, timeElapsed]); // Add dependencies
 
     // Move player function
     const movePlayer = useCallback((newPosition) => {
         if (!gameState || isComplete) return;
+        
+        // Check if already completed today - prevent further moves
+        const today = new Date().toDateString();
+        if (lastPlayed === today) return;
 
         // Check if new position has a wall
         if (gameState.walls[newPosition.row][newPosition.col] === 1) {
@@ -436,7 +451,7 @@ const DoorKeyGame = ({ onClose, pillarName }) => {
                 <div className="doorkey-header">
                     <div className="doorkey-title">
                         <Key size={24} />
-                        <h2>Hidden Maze Challenge - {pillarName}</h2>
+                        <h2>Door Key Challenge - {pillarName}</h2>
                     </div>
                     <button className="doorkey-close" onClick={onClose}>
                         <X size={24} />
@@ -576,12 +591,25 @@ const DoorKeyGame = ({ onClose, pillarName }) => {
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
                             >
-                                <Trophy size={64} />
-                                <h3>Maze Complete! 🎉</h3>
-                                <p className="completion-time">Completed in: <strong>{formatTime(timeElapsed)}</strong></p>
-                                <p className="streak-info">Your streak: <strong>{streak} days</strong></p>
-                                <p className="next-challenge">Come back tomorrow for a new challenge!</p>
-                                <button className="doorkey-btn doorkey-btn--primary" onClick={onClose}>
+                                <div className="doorkey-completion-icon">
+                                    <Trophy size={48} />
+                                </div>
+                                <h2 className="doorkey-completion-title">Puzzle Complete! 🎉</h2>
+                                
+                                <div className="doorkey-completion-time">
+                                    <p className="doorkey-completion-label">Completed in:</p>
+                                    <p className="doorkey-completion-value">{formatTime(timeElapsed)}</p>
+                                </div>
+
+                                <p className="doorkey-completion-streak">
+                                    Your streak: <span className="doorkey-streak-highlight">{streak} days</span>
+                                </p>
+
+                                <p className="doorkey-completion-message">
+                                    Come back tomorrow for a new challenge!
+                                </p>
+
+                                <button className="doorkey-completion-close" onClick={onClose}>
                                     Close
                                 </button>
                             </motion.div>

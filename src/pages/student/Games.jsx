@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gamepad2, Trophy, Puzzle, Brain, Key } from 'lucide-react';
+import { Gamepad2, Trophy, Puzzle, Brain, Key, Target } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
-import KenKenGame from '../../components/games/KenKenGame';
-import DoorKeyGame from '../../components/games/DoorKeyGame';
+import KenKenGame from '../../components/games/KenKenGame/KenKenGame';
+import DoorKeyGame from '../../components/games/DoorKeyGame/DoorKeyGame';
+import SelectBubblesGame from '../../components/games/SelectBubblesGame/SelectBubblesGame';
 import './Games.css';
 
 export const Games = () => {
@@ -13,18 +14,26 @@ export const Games = () => {
         {
             id: 'kenken',
             name: 'KenKen Puzzle',
-            description: 'Daily mathematical logic puzzle. Solve a new 4x4 KenKen puzzle each day and maintain your streak!',
+            description: 'Solve math puzzles using addition, subtraction, multiplication, and division. Complete the daily challenge!',
             icon: Brain,
             color: 'linear-gradient(135deg, #F7C948 0%, #FFA726 100%)',
             borderColor: 'rgba(247, 201, 72, 0.5)',
         },
         {
             id: 'doorkey',
-            name: 'Door-Key Logic',
-            description: 'Logical reasoning puzzle with doors and keys. Solve Accenture-style entrance exam questions with time pressure!',
+            name: 'DoorKey Puzzle',
+            description: 'Navigate through hidden mazes, collect keys, and reach the door. Avoid walls to complete the challenge!',
             icon: Key,
             color: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
             borderColor: 'rgba(79, 70, 229, 0.5)',
+        },
+        {
+            id: 'selectbubbles',
+            name: 'Select Bubbles',
+            description: 'Solve mathematical expressions and select bubbles in ascending order. Tests numerical ability and logical sequencing!',
+            icon: Target,
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderColor: 'rgba(102, 126, 234, 0.5)',
         },
         // More games can be added here in the future
     ];
@@ -121,6 +130,12 @@ export const Games = () => {
                 )}
                 {selectedGame === 'doorkey' && (
                     <DoorKeyGame
+                        onClose={() => setSelectedGame(null)}
+                        pillarName="Games"
+                    />
+                )}
+                {selectedGame === 'selectbubbles' && (
+                    <SelectBubblesGame
                         onClose={() => setSelectedGame(null)}
                         pillarName="Games"
                     />

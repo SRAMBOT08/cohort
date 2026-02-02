@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gamepad2, Trophy, Puzzle, Brain } from 'lucide-react';
 import GlassCard from '../../components/GlassCard';
-import KenKenGame from '../../components/games/KenKenGame';
+import KenKenGame from '../../components/games/KenKenGame/KenKenGame';
 import './Games.css';
 
 export const Games = () => {

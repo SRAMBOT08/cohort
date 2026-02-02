@@ -124,18 +124,20 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--glass-border);
+    background: rgba(247, 201, 72, 0.1);
+    border: none;
     border-radius: 12px;
     font-family: 'Manrope', sans-serif;
     font-weight: 600;
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s;
+    flex: 1;
+    min-width: 140px;
 }
 
-[data-theme='dark'] .kenken-hint-btn {
-    background: rgba(255, 255, 255, 0.05);
+.kenken-hint-btn svg {
+    color: #F7C948;
 }
 
 .kenken-hint-btn:hover {
