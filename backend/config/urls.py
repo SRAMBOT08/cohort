@@ -16,6 +16,7 @@ from config.health import health_check as render_health_check
 from apps.fix_passwords_view import fix_user_password
 from apps.simple_sync_view import simple_sync_mappings
 from apps.import_supabase_view import import_from_supabase
+from apps.supabase_login_view import supabase_login
 from apps.auth_supabase.sync_views import sync_mappings_public
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -82,8 +83,8 @@ urlpatterns = [
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
-    # JWT Authentication endpoints (with email support)
-    path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # JWT Authentication endpoints (with Supabase)
+    path('api/auth/token/', supabase_login, name='token_obtain_pair'),  # Supabase hybrid auth
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # User Profile
