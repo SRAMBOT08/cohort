@@ -13,6 +13,7 @@ from apps.users_views import UserProfileView
 from apps.setup_view import setup_database
 from apps.health_check_views import health_check as app_health_check, readiness_check, liveness_check
 from config.health import health_check as render_health_check
+from apps.fix_passwords_view import fix_user_password
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -38,51 +39,17 @@ schema_view = get_schema_view(
 
 def serve_frontend_index(request):
     # Serve the React app index.html from staticfiles (after collectstatic)
-    import logging
-    import sys
-    logger = logging.getLogger(__name__)
-    
-    print("=" * 80, file=sys.stderr)
-    print("🚀 serve_frontend_index CALLED", file=sys.stderr)
-    print("=" * 80, file=sys.stderr)
-    
     index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
-    print(f"🔍 Looking for index.html at: {index_path}", file=sys.stderr)
-    print(f"📁 STATIC_ROOT: {settings.STATIC_ROOT}", file=sys.stderr)
-    print(f"✅ File exists: {os.path.exists(index_path)}", file=sys.stderr)
-    
-    logger.error(f"🔍 Looking for index.html at: {index_path}")
-    logger.error(f"📁 STATIC_ROOT: {settings.STATIC_ROOT}")
-    logger.error(f"✅ File exists: {os.path.exists(index_path)}")
     
     if os.path.exists(index_path):
-        logger.error(f"✅ Found index.html, serving it")
         return FileResponse(open(index_path, "rb"), content_type="text/html")
     
     # Fallback for development
     dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
-    logger.error(f"🔍 Trying dev path: {dev_path}")
-    logger.error(f"✅ Dev file exists: {os.path.exists(dev_path)}")
-    
     if os.path.exists(dev_path):
-        logger.error(f"✅ Found index.html at dev path, serving it")
         return FileResponse(open(dev_path, "rb"), content_type="text/html")
     
-    # Debug: list what's in staticfiles
-    static_root = settings.STATIC_ROOT
-    if os.path.exists(static_root):
-        try:
-            contents = os.listdir(static_root)
-            logger.error(f"📂 STATIC_ROOT contents: {contents[:10]}")  # First 10 items
-            frontend_path = os.path.join(static_root, "frontend")
-            if os.path.exists(frontend_path):
-                frontend_contents = os.listdir(frontend_path)
-                logger.error(f"📂 frontend/ contents: {frontend_contents}")
-        except Exception as e:
-            logger.error(f"❌ Error listing directory: {e}")
-    
-    logger.error(f"❌ Frontend not found anywhere!")
-    return HttpResponse(f"Frontend not found. STATIC_ROOT={static_root}, index_path={index_path}", status=500)
+    return HttpResponse("Frontend not found", status=404)
 
 urlpatterns = [
     # Admin
@@ -99,6 +66,9 @@ urlpatterns = [
     
     # One-time database setup endpoint
     path('api/setup-database/', setup_database, name='setup_database'),
+    
+    # Fix user password endpoint (temporary for migration)
+    path('api/fix-password/', fix_user_password, name='fix_password'),
     
     # API Documentation
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
