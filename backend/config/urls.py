@@ -37,22 +37,48 @@ schema_view = get_schema_view(
 
 
 def serve_frontend_index(request):
-    # Serve the React app index.html
+    # Serve the React app index.html from staticfiles (after collectstatic)
+    import logging
+    logger = logging.getLogger(__name__)
+    
     index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
+    logger.info(f"Looking for index.html at: {index_path}")
+    logger.info(f"File exists: {os.path.exists(index_path)}")
+    
     if os.path.exists(index_path):
-        return FileResponse(open(index_path, "rb"), content_type="text/html")
+        with open(index_path, "rb") as f:
+            return FileResponse(f, content_type="text/html")
+    
     # Fallback for development
     dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
+    logger.info(f"Trying dev path: {dev_path}")
+    logger.info(f"Dev file exists: {os.path.exists(dev_path)}")
+    
     if os.path.exists(dev_path):
-        return FileResponse(open(dev_path, "rb"), content_type="text/html")
-    return HttpResponse("Frontend not built. Run 'npm run build' first.", status=500)
+        with open(dev_path, "rb") as f:
+            return FileResponse(f, content_type="text/html")
+    
+    # Debug: list what's in staticfiles
+    static_root = settings.STATIC_ROOT
+    if os.path.exists(static_root):
+        try:
+            contents = os.listdir(static_root)
+            logger.error(f"STATIC_ROOT contents: {contents}")
+            frontend_path = os.path.join(static_root, "frontend")
+            if os.path.exists(frontend_path):
+                frontend_contents = os.listdir(frontend_path)
+                logger.error(f"frontend/ contents: {frontend_contents}")
+        except Exception as e:
+            logger.error(f"Error listing directory: {e}")
+    
+    return HttpResponse(f"Frontend not found. STATIC_ROOT={static_root}, index_path={index_path}", status=500)
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
     # Root + SPA fallback (serves built frontend index.html if present)
-    path('', lambda request: serve_frontend_index(), name='root_ok'),
+    path('', serve_frontend_index, name='root_ok'),
     
     # Health Check Endpoints (NEW - for monitoring and scaling)
     path('api/health/', render_health_check, name='render_health_check'),  # Render monitoring
@@ -96,7 +122,7 @@ urlpatterns = [
     path('api/admin/', include('apps.admin_urls')),
 
     # SPA fallback for non-API routes (exclude static files)
-    re_path(r'^(?!api/|admin/|static/|assets/).*$', lambda request: serve_frontend_index(), name='spa_fallback'),
+    re_path(r'^(?!api/|admin/|static/|assets/).*$', serve_frontend_index, name='spa_fallback'),
 ]
 
 # Serve media files in development
