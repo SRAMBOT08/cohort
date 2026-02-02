@@ -14,6 +14,7 @@ from apps.setup_view import setup_database
 from apps.health_check_views import health_check as app_health_check, readiness_check, liveness_check
 from config.health import health_check as render_health_check
 from apps.fix_passwords_view import fix_user_password
+from apps.simple_sync_view import simple_sync_mappings
 from apps.auth_supabase.sync_views import sync_mappings_public
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -73,6 +74,7 @@ urlpatterns = [
     
     # Sync Supabase mappings (one-time setup)
     path('api/sync-mappings/', sync_mappings_public, name='sync_mappings'),
+    path('api/simple-sync/', simple_sync_mappings, name='simple_sync'),
     
     # API Documentation
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
