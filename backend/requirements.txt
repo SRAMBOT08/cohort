@@ -45,6 +45,7 @@ django-ratelimit==4.1.0
 
 # Production Server
 gunicorn==21.2.0
+uvicorn>=0.27.0
 whitenoise==6.6.0
 # ASGI server for Render command
 daphne==4.0.0
