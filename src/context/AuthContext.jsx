@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         hasAccess,
         loading,
-        isAuthenticated: authService.isAuthenticated(),
+        isAuthenticated: !!user, // Use user state instead of checking localStorage
         getToken,
         getHomePath,
     };
