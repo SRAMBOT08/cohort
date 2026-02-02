@@ -39,9 +39,18 @@ schema_view = get_schema_view(
 def serve_frontend_index(request):
     # Serve the React app index.html from staticfiles (after collectstatic)
     import logging
+    import sys
     logger = logging.getLogger(__name__)
     
+    print("=" * 80, file=sys.stderr)
+    print("🚀 serve_frontend_index CALLED", file=sys.stderr)
+    print("=" * 80, file=sys.stderr)
+    
     index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
+    print(f"🔍 Looking for index.html at: {index_path}", file=sys.stderr)
+    print(f"📁 STATIC_ROOT: {settings.STATIC_ROOT}", file=sys.stderr)
+    print(f"✅ File exists: {os.path.exists(index_path)}", file=sys.stderr)
+    
     logger.error(f"🔍 Looking for index.html at: {index_path}")
     logger.error(f"📁 STATIC_ROOT: {settings.STATIC_ROOT}")
     logger.error(f"✅ File exists: {os.path.exists(index_path)}")
