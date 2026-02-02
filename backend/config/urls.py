@@ -14,6 +14,7 @@ from apps.setup_view import setup_database
 from apps.health_check_views import health_check as app_health_check, readiness_check, liveness_check
 from config.health import health_check as render_health_check
 from apps.fix_passwords_view import fix_user_password
+from apps.auth_supabase.sync_views import sync_mappings_public
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -70,6 +71,9 @@ urlpatterns = [
     # Fix user password endpoint (temporary for migration)
     path('api/fix-password/', fix_user_password, name='fix_password'),
     
+    # Sync Supabase mappings (one-time setup)
+    path('api/sync-mappings/', sync_mappings_public, name='sync_mappings'),
+    
     # API Documentation
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
@@ -83,6 +87,9 @@ urlpatterns = [
     
     # User Profile Settings
     path('api/profiles/', include('apps.profiles.urls')),
+    
+    # Supabase Authentication
+    path('api/supabase/', include('apps.auth_supabase.urls')),
     
     # App URLs
     path('api/clt/', include('apps.clt.urls')),
