@@ -67,13 +67,13 @@ services:
       
       # Supabase Authentication & API
       - key: SUPABASE_URL
-        sync: false  # Add from Supabase: Settings > API > Project URL
+        value: https://yfoopcuwdyotlukbkoej.supabase.co
       
       - key: SUPABASE_ANON_KEY
-        sync: false  # Add from Supabase: Settings > API > anon public key
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmb29wY3V3ZHlvdGx1a2Jrb2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDA4NDEsImV4cCI6MjA4NTM3Njg0MX0.YK5uw24Grhc2TPYnF98i0eORgZHNHLJMdd5akenvKRs
       
       - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false  # Add from Supabase: Settings > API > service_role secret
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmb29wY3V3ZHlvdGx1a2Jrb2VqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTgwMDg0MSwiZXhwIjoyMDg1Mzc2ODQxfQ.57FMzdhavCWYdp2-yjiWrtt7ZrEHq3Aq6YyChihx1sc
       
       # JWT Settings
       - key: JWT_SECRET_KEY
@@ -90,7 +90,7 @@ services:
       
       # CORS Settings (update after deployment)
       - key: CORS_ALLOWED_ORIGINS
-        value: https://cohort-web-app.onrender.com
+        value: https://cohort-app-g06z.onrender.com
       
       # Static/Media files
       - key: STATIC_URL
