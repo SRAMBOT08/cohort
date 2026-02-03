@@ -22,4 +22,5 @@ urlpatterns = [
     
     # Health check
     path('health', views.health_check, name='health'),
+    path('echo-headers/', views.echo_headers, name='echo_headers'),
 ]

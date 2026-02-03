@@ -68,3 +68,21 @@ def health_check(request):
         'status': 'ok',
         'service': 'django-supabase-auth'
     })
+
+
+@require_http_methods(['GET'])
+def echo_headers(request):
+    """
+    Debug endpoint to echo incoming Authorization header (safe preview).
+    GET /api/supabase/echo-headers/
+    """
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    try:
+        preview = f"{auth_header[:40]}... (len={len(auth_header)})" if auth_header else ''
+    except Exception:
+        preview = 'unavailable'
+
+    return JsonResponse({
+        'authorization_header_present': bool(auth_header),
+        'authorization_preview': preview,
+    })

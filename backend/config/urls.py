@@ -12,6 +12,7 @@ from apps.jwt_serializers import EmailTokenObtainPairSerializer
 from apps.users_views import UserProfileView
 from apps.setup_view import setup_database
 from apps.health_check_views import health_check as app_health_check, readiness_check, liveness_check
+from apps.debug_views import list_urls
 from config.health import health_check as render_health_check
 from apps.fix_passwords_view import fix_user_password
 from apps.simple_sync_view import simple_sync_mappings
@@ -67,6 +68,8 @@ urlpatterns = [
     path('health/', app_health_check, name='health_check'),
     path('health/ready/', readiness_check, name='readiness_check'),
     path('health/live/', liveness_check, name='liveness_check'),
+    # Debug: list loaded URL patterns
+    path('api/debug/urls/', list_urls, name='debug_urls'),
     
     # One-time database setup endpoint
     path('api/setup-database/', setup_database, name='setup_database'),
