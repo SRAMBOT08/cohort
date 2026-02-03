@@ -8,6 +8,7 @@ from django.http import JsonResponse
 import logging
 
 from .models import SupabaseUserMapping
+from apps.supabase_integration import SupabaseService
 
 logger = logging.getLogger(__name__)
 
@@ -70,47 +71,34 @@ class SupabaseAuthMiddleware:
         Uses SUPABASE_JWT_SECRET with HS256 algorithm
         """
         try:
-            # Get JWT secret from settings
-            jwt_secret = settings.SUPABASE_JWT_SECRET
-            
-            if not jwt_secret:
-                logger.error('SUPABASE_JWT_SECRET not configured')
+            # Use Supabase admin client to verify token and fetch user
+            client = SupabaseService.get_client()
+            response = client.auth.get_user(token)
+
+            supabase_user = getattr(response, 'user', None)
+            if not supabase_user:
+                logger.warning('Supabase returned no user for token')
                 return None
-            
-            # Verify and decode token with HS256 algorithm (Supabase default)
-            decoded = jwt.decode(
-                token,
-                jwt_secret,
-                algorithms=['HS256'],
-                audience='authenticated',
-                options={
-                    'verify_signature': True,
-                    'verify_exp': True,
-                    'verify_aud': True,
-                }
-            )
-            
-            # Extract Supabase user ID from token
-            supabase_id = decoded.get('sub')
-            
+
+            supabase_id = getattr(supabase_user, 'id', None)
             if not supabase_id:
-                logger.warning('Token missing sub claim')
+                logger.warning('Supabase user missing id')
                 return None
-            
+
             # Map to Django user
             django_user = SupabaseUserMapping.get_django_user_by_supabase_id(supabase_id)
-            
+
             if not django_user:
                 logger.warning(f'No Django user found for Supabase ID: {supabase_id}')
                 return None
-            
+
             # Update last login
             try:
                 mapping = django_user.supabase_mapping
                 mapping.update_last_login()
             except Exception as e:
                 logger.error(f'Failed to update last login: {e}')
-            
+
             return django_user
             
         except jwt.ExpiredSignatureError:

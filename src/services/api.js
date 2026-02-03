@@ -15,7 +15,7 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,38 +31,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // If 401 and we haven't tried to refresh yet, try refreshing the token
+    // If 401, clear Supabase session and redirect to login
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        
-        if (!refreshToken) {
-          // No refresh token, redirect to login
-          throw new Error('No refresh token');
-        }
-        
-        // Try to refresh the access token
-        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {
-          refresh: refreshToken,
-        });
-        
-        const { access } = response.data;
-        localStorage.setItem('accessToken', access);
-        
-        // Retry the original request with new token
-        originalRequest.headers.Authorization = `Bearer ${access}`;
-        return axios(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed, clear session and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+      localStorage.removeItem('supabase_access_token');
+      localStorage.removeItem('supabase_refresh_token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
 
     return Promise.reject(error);
