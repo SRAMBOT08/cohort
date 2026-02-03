@@ -15,7 +15,23 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('supabase_access_token');
+    let token = localStorage.getItem('supabase_access_token');
+
+    // Fallback: Supabase client persists the full session JSON under
+    // the key `cohort-supabase-auth`. If the simple key is missing,
+    // try to parse that JSON and extract `access_token`.
+    if (!token) {
+      try {
+        const raw = localStorage.getItem('cohort-supabase-auth');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          token = parsed?.access_token || parsed?.accessToken || null;
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
