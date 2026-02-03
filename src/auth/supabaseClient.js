@@ -30,10 +30,33 @@ export const auth = {
       email,
       password,
     });
+
+    // Persist tokens for compatibility with existing code paths
+    const session = data?.session;
+    if (session) {
+      try {
+        const access = session.access_token;
+        const refresh = session.refresh_token;
+        if (access) {
+          localStorage.setItem('supabase_access_token', access);
+          localStorage.setItem('accessToken', access);
+        }
+        if (refresh) {
+          localStorage.setItem('supabase_refresh_token', refresh);
+          localStorage.setItem('refreshToken', refresh);
+        }
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+      } catch (e) {
+        console.warn('Failed to persist Supabase session to localStorage', e);
+      }
+    }
+
     return { 
       user: data?.user, 
-      session: data?.session,
-      accessToken: data?.session?.access_token,
+      session: session,
+      accessToken: session?.access_token,
       error 
     };
   },
@@ -51,9 +74,29 @@ export const auth = {
    */
   getSession: async () => {
     const { data, error } = await supabase.auth.getSession();
+    const session = data?.session;
+
+    // Keep localStorage in sync if session exists
+    if (session) {
+      try {
+        const access = session.access_token;
+        const refresh = session.refresh_token;
+        if (access) {
+          localStorage.setItem('supabase_access_token', access);
+          localStorage.setItem('accessToken', access);
+        }
+        if (refresh) {
+          localStorage.setItem('supabase_refresh_token', refresh);
+          localStorage.setItem('refreshToken', refresh);
+        }
+      } catch (e) {
+        console.warn('Failed to sync Supabase session to localStorage', e);
+      }
+    }
+
     return { 
-      session: data?.session,
-      accessToken: data?.session?.access_token,
+      session: session,
+      accessToken: session?.access_token,
       error 
     };
   },
