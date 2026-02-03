@@ -8,6 +8,7 @@ from django.http import JsonResponse
 import logging
 
 from .models import SupabaseUserMapping
+from django.contrib.auth.models import User
 from apps.supabase_integration import SupabaseService
 
 logger = logging.getLogger(__name__)
@@ -89,8 +90,33 @@ class SupabaseAuthMiddleware:
             django_user = SupabaseUserMapping.get_django_user_by_supabase_id(supabase_id)
 
             if not django_user:
-                logger.warning(f'No Django user found for Supabase ID: {supabase_id}')
-                return None
+                # Try to find Django user by email and create mapping on-the-fly
+                supabase_email = getattr(supabase_user, 'email', None)
+                if supabase_email:
+                    django_user = User.objects.filter(email=supabase_email).first()
+
+                if not django_user:
+                    # Create a new Django user for this Supabase account
+                    try:
+                        username = (supabase_email.split('@')[0].replace('.', '_')[:150]
+                                    if supabase_email else f'user_{supabase_id[:8]}')
+                        django_user = User.objects.create_user(
+                            username=username,
+                            email=supabase_email or '',
+                            password=None
+                        )
+                        logger.info(f'Created Django user for Supabase ID: {supabase_id} email: {supabase_email}')
+                    except Exception as e:
+                        logger.error(f'Failed to create Django user: {e}')
+                        return None
+
+                # Create mapping
+                try:
+                    SupabaseUserMapping.create_mapping(django_user, supabase_id, supabase_email or '')
+                    logger.info(f'Created SupabaseUserMapping for {django_user.username} <-> {supabase_id}')
+                except Exception as e:
+                    logger.error(f'Failed to create mapping: {e}')
+                    return None
 
             # Update last login
             try:
