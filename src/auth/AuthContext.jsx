@@ -57,6 +57,22 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       setSession(session);
       setAccessToken(accessToken);
+
+      // Persist tokens to localStorage for pages using direct localStorage access
+      try {
+        if (accessToken) {
+          localStorage.setItem('supabase_access_token', accessToken);
+          localStorage.setItem('accessToken', accessToken);
+        }
+        const refresh = session?.refresh_token;
+        if (refresh) {
+          localStorage.setItem('supabase_refresh_token', refresh);
+          localStorage.setItem('refreshToken', refresh);
+        }
+        console.log('AuthContext - signIn stored tokens, access:', accessToken ? 'present' : 'missing');
+      } catch (e) {
+        console.warn('AuthContext - failed to persist tokens', e);
+      }
       
       return { user, error: null };
     } catch (error) {

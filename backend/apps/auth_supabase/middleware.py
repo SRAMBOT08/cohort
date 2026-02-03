@@ -43,6 +43,11 @@ class SupabaseAuthMiddleware:
         
         # Extract token
         token = auth_header.replace('Bearer ', '')
+        try:
+            token_preview = f"{token[:8]}... (len={len(token)})"
+        except Exception:
+            token_preview = 'unavailable'
+        logger.info(f'Received Authorization token: {token_preview}')
         
         # Verify and decode token
         user = self._verify_token(token)
