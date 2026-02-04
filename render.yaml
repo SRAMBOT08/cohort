@@ -36,7 +36,7 @@ services:
     
     # Auto-deploy settings
     autoDeploy: true
-    branch: main_deploy
+    branch: cloud_deploy
     
     # Environment variables
     envVars:
@@ -92,20 +92,22 @@ services:
       # Add your Cloudflare Pages URL here (e.g., https://cohort-web.pages.dev)
       - key: CORS_ALLOWED_ORIGINS
         value: https://cohort.pages.dev,https://cohort-37ur.onrender.com,http://localhost:5173
-      
+
       # Static/Media files
       - key: STATIC_URL
         value: /static/
       
       - key: MEDIA_URL
         value: /media/
-      
-      # Email settings (optional - configure if using email)
+
+      # Email Configuration (Gmail - Recommended)
+      # See EMAIL_SETUP_GUIDE.md for complete setup instructions
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.smtp.EmailBackend
       
+      # Gmail SMTP server
       - key: EMAIL_HOST
-        sync: false
+        value: smtp.gmail.com
       
       - key: EMAIL_PORT
         value: 587
@@ -113,11 +115,19 @@ services:
       - key: EMAIL_USE_TLS
         value: True
       
+      # IMPORTANT: Replace with your Gmail address in Render Dashboard
       - key: EMAIL_HOST_USER
-        sync: false
+        value: your-email@gmail.com
       
+      # IMPORTANT: Set this in Render Dashboard with Gmail App Password
+      # Generate at: https://myaccount.google.com/apppasswords
       - key: EMAIL_HOST_PASSWORD
         sync: false
+      
+      # Default "From" address for sent emails
+      - key: DEFAULT_FROM_EMAIL
+        value: your-email@gmail.com
+
 
 # Database is provided by Supabase (external)
 # Frontend is provided by Cloudflare Pages (external)
