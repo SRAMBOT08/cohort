@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
-    'rest_framework_simplejwt',
+    # Removed: 'rest_framework_simplejwt' - Using Supabase-only authentication
     'corsheaders',
     'drf_yasg',
     
@@ -66,7 +66,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # Disabled - using Django JWT auth
+    'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # ✅ Supabase-only auth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -177,9 +177,10 @@ CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']
 
 # Django REST Framework Settings
+# Using Supabase-only authentication via SupabaseAuthMiddleware
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Removed: rest_framework_simplejwt (using Supabase tokens only)
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
