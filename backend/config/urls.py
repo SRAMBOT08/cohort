@@ -19,6 +19,7 @@ from apps.simple_sync_view import simple_sync_mappings
 from apps.import_supabase_view import import_from_supabase
 from apps.supabase_login_view import supabase_login
 from apps.auth_supabase.sync_views import sync_mappings_public
+from apps.simple_docs_view import simple_api_docs
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -79,6 +80,7 @@ urlpatterns = [
     
     # API Documentation
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/docs/simple/', simple_api_docs, name='simple-docs'),  # Fallback simple docs
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
     # JWT Authentication endpoints (with Supabase)
