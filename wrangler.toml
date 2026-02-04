@@ -2,26 +2,3 @@ name = "cohort-frontend"
 compatibility_date = "2024-01-01"
 
 pages_build_output_dir = "dist"
-
-[site]
-bucket = "dist"
-
-# Build configuration
-[build]
-command = "npm run build"
-
-[build.upload]
-format = "service-worker"
-
-# Environment variables (add your actual values in Cloudflare dashboard)
-[env.production]
-vars = { NODE_ENV = "production" }
-
-# Single Page Application routing
-[[rules]]
-pattern = "/*"
-headers = { "Cache-Control" = "public, max-age=3600" }
-
-[[rules]]
-pattern = "/assets/*"
-headers = { "Cache-Control" = "public, max-age=31536000, immutable" }
