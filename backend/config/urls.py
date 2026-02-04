@@ -43,24 +43,17 @@ schema_view = get_schema_view(
 
 
 def serve_frontend_index(request):
-    # Serve the React app index.html from staticfiles (after collectstatic)
-    index_path = os.path.join(settings.STATIC_ROOT, "frontend", "index.html")
-    
-    if os.path.exists(index_path):
-        return FileResponse(open(index_path, "rb"), content_type="text/html")
-    
-    # Fallback for development
-    dev_path = os.path.join(settings.BASE_DIR, "static", "frontend", "index.html")
-    if os.path.exists(dev_path):
-        return FileResponse(open(dev_path, "rb"), content_type="text/html")
-    
-    return HttpResponse("Frontend not found", status=404)
+    """Frontend is now served from Cloudflare Pages - redirect to API docs"""
+    return HttpResponse(
+        '{"message": "Cohort Backend API", "status": "running", "docs": "/api/docs/", "frontend": "https://cohort.pages.dev"}',
+        content_type="application/json"
+    )
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
-    # Root + SPA fallback (serves built frontend index.html if present)
+    # Root - show API info (frontend is on Cloudflare)
     path('', serve_frontend_index, name='root_ok'),
     
     # Health Check Endpoints (NEW - for monitoring and scaling)
@@ -117,8 +110,7 @@ urlpatterns = [
     # Admin APIs
     path('api/admin/', include('apps.admin_urls')),
 
-    # SPA fallback for non-API routes (exclude static files)
-    re_path(r'^(?!api/|admin/|static/|assets/).*$', serve_frontend_index, name='spa_fallback'),
+    # Removed: SPA fallback - frontend is on Cloudflare Pages
 ]
 
 # Serve media files in development
