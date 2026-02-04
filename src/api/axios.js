@@ -16,15 +16,28 @@ api.interceptors.request.use(
     try {
       // Get Supabase access token
       const token = await auth.getAccessToken();
-      
+
+      // DEBUG: Log token status
+      console.log('🔐 [AUTH] Token retrieved:', token ? '✅ YES' : '❌ NO');
+      if (token) {
+        console.log('🔐 [AUTH] Token preview:', token.substring(0, 30) + '...');
+      }
+
       if (token) {
         // Add token to Authorization header
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('✅ [AUTH] Authorization header set');
+      } else {
+        console.warn('⚠️ [AUTH] No token available - request will fail with 403');
       }
     } catch (error) {
-      console.error('Error getting access token:', error);
+      console.error('❌ [AUTH] Error getting access token:', error);
     }
-    
+
+    // DEBUG: Log final headers
+    console.log('📤 [REQUEST]', config.method?.toUpperCase(), config.url);
+    console.log('📋 [HEADERS] Authorization:', config.headers.Authorization ? 'Present' : 'Missing');
+
     return config;
   },
   (error) => {
@@ -47,7 +60,7 @@ api.interceptors.response.use(
       try {
         // Try to refresh the session
         const { session } = await auth.getSession();
-        
+
         if (session?.access_token) {
           // Update the failed request with new token
           originalRequest.headers.Authorization = `Bearer ${session.access_token}`;
@@ -85,7 +98,7 @@ export const apiClient = {
 
   // Dashboard endpoints
   getDashboard: () => api.get('/dashboard'),
-  
+
   // Add more endpoints as needed
 };
 
