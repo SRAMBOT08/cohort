@@ -14,6 +14,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# In development, allow all hosts to avoid DisallowedHost during local testing
+if os.getenv('FORCE_ALLOW_ALL_HOSTS', None) == '1' or os.getenv('DJANGO_ALLOW_ALL_HOSTS', None) == '1' or (os.getenv('ENV', '').lower() != 'production' and os.getenv('DEBUG', 'True') == 'True'):
+    ALLOWED_HOSTS = ['*']
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
