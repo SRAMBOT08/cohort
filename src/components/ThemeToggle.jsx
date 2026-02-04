@@ -14,10 +14,10 @@ export const ThemeToggle = ({ className = '' }) => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
-<<<<<<< HEAD
+
       type="button"
-=======
->>>>>>> 8a237f26876c53989100c758417fd3467c1cac1a
+
+
     >
       <motion.div
         className="theme-toggle-track"
