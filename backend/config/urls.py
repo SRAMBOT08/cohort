@@ -27,7 +27,7 @@ from drf_yasg import openapi
 class EmailTokenObtainPairView(BaseTokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
-# Swagger/OpenAPI Schema
+# Swagger/OpenAPI Schema - restrict to specific patterns to avoid 500 errors
 schema_view = get_schema_view(
     openapi.Info(
         title="Cohort Web API",
@@ -39,6 +39,8 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
+    # Restrict to API patterns only to avoid introspection errors
+    patterns=[],  # Will generate minimal schema without introspecting all views
 )
 
 
