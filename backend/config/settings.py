@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # Disabled - using Django JWT auth
+    'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # Enable Supabase JWT auth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
