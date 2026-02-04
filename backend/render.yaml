@@ -2,7 +2,17 @@ services:
   - type: web
     name: cohort-backend
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      # Build frontend
+      npm install
+      npm run build
+      # Move built frontend into Django static folder
+      rm -rf backend/static/frontend || true
+      mkdir -p backend/static/frontend
+      mv dist/* backend/static/frontend/
+      # Install Python deps and collect static files
+      pip install -r requirements.txt
+      python backend/manage.py collectstatic --noinput
     startCommand: uvicorn config.asgi:application --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
