@@ -48,7 +48,7 @@ schema_view = get_schema_view(
 def serve_frontend_index(request):
     """Frontend is now served from Cloudflare Pages - redirect to API docs"""
     return HttpResponse(
-        '{"message": "Cohort Backend API", "status": "running", "docs": "/api/docs/", "frontend": "https://cohort.pages.dev"}',
+        '{"message": "Cohort Backend API", "status": "running", "docs": "/api/docs/", "frontend": "https://cohort-frontend.pages.dev"}',
         content_type="application/json"
     )
 

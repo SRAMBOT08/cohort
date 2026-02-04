@@ -88,10 +88,9 @@ services:
       - key: JWT_ALGORITHM
         value: HS256
       
-      # CORS Settings - IMPORTANT: Update after Cloudflare Pages deployment!
-      # Add your Cloudflare Pages URL here (e.g., https://cohort-web.pages.dev)
+      # CORS Settings - Frontend on Cloudflare Pages
       - key: CORS_ALLOWED_ORIGINS
-        value: https://cohort.pages.dev,https://cohort-37ur.onrender.com,http://localhost:5173
+        value: https://cohort-frontend.pages.dev,http://localhost:5173
 
       # Static/Media files
       - key: STATIC_URL
