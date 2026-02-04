@@ -5,7 +5,7 @@ const API_URL = `${API_CONFIG.BASE_URL}/cfc`;
 
 // Get auth token from localStorage
 const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
+  return localStorage.getItem('supabase_access_token');
 };
 
 // Create axios instance with auth header

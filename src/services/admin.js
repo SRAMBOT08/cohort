@@ -14,7 +14,7 @@ const adminAxios = axios.create({
 // Add auth token to requests
 adminAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,7 +28,9 @@ adminAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem('supabase_access_token');
+      localStorage.removeItem('supabase_refresh_token');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -288,7 +290,7 @@ export const getActivityLogs = async (params = {}) => {
 
 // ===== CAMPUS/FLOOR HIERARCHY =====
 export const getCampusOverview = async (campus) => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('supabase_access_token');
   const response = await axios.get(`${API_BASE_URL}/profiles/admin/campus/${campus}/`, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -298,7 +300,7 @@ export const getCampusOverview = async (campus) => {
 };
 
 export const getFloorDetail = async (campus, floor) => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('supabase_access_token');
   const response = await axios.get(`${API_BASE_URL}/profiles/admin/campus/${campus}/floor/${floor}/`, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -309,7 +311,7 @@ export const getFloorDetail = async (campus, floor) => {
 
 export const getStudentDetail = async (studentId) => {
   try {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('supabase_access_token');
     const response = await axios.get(`${API_BASE_URL}/profiles/admin/student/${studentId}/`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -329,7 +331,7 @@ export const assignFloorWing = async (campus, floor, userId) => {
     user_id: userId
   }, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      Authorization: `Bearer ${localStorage.getItem('supabase_access_token')}`
     }
   });
   return response.data;
@@ -342,7 +344,7 @@ export const assignMentor = async (campus, floor, userId) => {
     user_id: userId
   }, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      Authorization: `Bearer ${localStorage.getItem('supabase_access_token')}`
     }
   });
   return response.data;

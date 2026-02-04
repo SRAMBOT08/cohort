@@ -9,7 +9,19 @@ const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('accessToken');
+    let token = localStorage.getItem('supabase_access_token');
+    if (!token) {
+        try {
+            const raw = localStorage.getItem('cohort-supabase-auth');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                token = parsed?.access_token || parsed?.accessToken || null;
+            }
+        } catch (e) {
+            // ignore parse errors
+        }
+    }
+
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',

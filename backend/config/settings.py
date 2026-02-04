@@ -17,6 +17,12 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # In development, allow all hosts to avoid DisallowedHost during local testing
 if os.getenv('FORCE_ALLOW_ALL_HOSTS', None) == '1' or os.getenv('DJANGO_ALLOW_ALL_HOSTS', None) == '1' or (os.getenv('ENV', '').lower() != 'production' and os.getenv('DEBUG', 'True') == 'True'):
     ALLOWED_HOSTS = ['*']
+=======
+# Supabase Configuration
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -48,6 +54,9 @@ INSTALLED_APPS = [
     
     # Analytics & Scaling (NEW - for 2000+ students)
     'apps.analytics_summary',
+    
+    # Supabase Authentication
+    'apps.auth_supabase',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'apps.auth_supabase.middleware.SupabaseAuthMiddleware',  # Disabled - using Django JWT auth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -150,6 +160,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, os.getenv('STATIC_ROOT', 'staticfiles'))
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (User uploads)
@@ -172,7 +183,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,

@@ -10,7 +10,7 @@ const iipcAxios = axios.create({
 
 // Get auth token from localStorage
 const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
+  return localStorage.getItem('supabase_access_token');
 };
 
 // Configure axios with auth header
