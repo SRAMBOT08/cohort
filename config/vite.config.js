@@ -4,23 +4,17 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/static/frontend/',
+  base: '/',
   build: {
-    outDir: './backend/static/frontend',
+    outDir: 'dist',
     emptyOutDir: true,
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        secure: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'axios', 'framer-motion'],
+          ui: ['lucide-react', 'gsap'],
+        },
       },
-      '/media': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
+    },
+  },
 })
