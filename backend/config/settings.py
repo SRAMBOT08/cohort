@@ -18,11 +18,6 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 if os.getenv('FORCE_ALLOW_ALL_HOSTS', None) == '1' or os.getenv('DJANGO_ALLOW_ALL_HOSTS', None) == '1' or (os.getenv('ENV', '').lower() != 'production' and os.getenv('DEBUG', 'True') == 'True'):
     ALLOWED_HOSTS = ['*']
 
-# Supabase Configuration (optional)
-# SUPABASE_URL = os.getenv('SUPABASE_URL')
-# SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
-# SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
-
 
 # Application definition
 INSTALLED_APPS = [
