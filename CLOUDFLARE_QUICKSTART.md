@@ -36,7 +36,7 @@ wrangler pages deploy dist --project-name=cohort-web
 
 | Variable | Value |
 |----------|-------|
-| `VITE_API_URL` | `https://cohort-37ur.onrender.com/api` |
+| `VITE_API_URL` | `https://cohort-backend-api.onrender.com/api` |
 | `VITE_APP_URL` | `https://cohort.pages.dev` |
 | `VITE_SUPABASE_URL` | `https://yfoopcuwdyotlukbkoej.supabase.co` |
 | `VITE_SUPABASE_ANON_KEY` | Copy from `.env.cloudflare` |
@@ -49,7 +49,7 @@ In **Render Dashboard** → **cohort-web-app** → **Environment**:
 
 Add to `CORS_ALLOWED_ORIGINS`:
 ```
-https://cohort.pages.dev,https://cohort-37ur.onrender.com
+https://cohort.pages.dev,https://cohort-backend-api.onrender.com
 ```
 
 ---

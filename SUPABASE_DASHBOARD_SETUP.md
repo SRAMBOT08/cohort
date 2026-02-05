@@ -23,11 +23,11 @@
    ```
    http://localhost:5173/reset-password
    http://localhost:3000/reset-password
-   https://cohort-37ur.onrender.com/reset-password
+   https://cohort-backend-api.onrender.com/reset-password
    https://yourdomain.com/reset-password
    ```
    
-   Site URL: https://cohort-37ur.onrender.com
+   Site URL: https://cohort-backend-api.onrender.com
    
    Why: When users click "Forgot Password", Supabase sends them to this URL.
 
