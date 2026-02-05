@@ -37,9 +37,13 @@ class SupabaseJWTAuthentication(JWTAuthentication):
             from apps.supabase_integration import SupabaseService
             client = SupabaseService.get_client()
             
-            try:
-                # Verify token by fetching user
-                user_response = client.auth.get_user(raw_token)
+            # Ensure raw_token is a string (SimpleJWT passes bytes)
+            if isinstance(raw_token, bytes):
+                raw_token = raw_token.decode('utf-8')
+            
+                try:
+                    # Verify token by fetching user
+                    user_response = client.auth.get_user(raw_token)
                 if not user_response or not user_response.user:
                      print("DEBUG: [AuthClass] Token verification returned no user")
                      raise AuthenticationFailed('Token verification returned no user', code='invalid_token')
