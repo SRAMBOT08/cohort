@@ -323,3 +323,17 @@ if USE_ASYNC_TASKS:
     # CELERY_TASK_TRACK_STARTED = True
     # CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
     pass
+
+# ============================================================================
+# EMAIL CONFIGURATION (GMAIL SMTP)
+# ============================================================================
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Custom Backend to bypass macOS SSL Error (Cert Verify Failed)
+EMAIL_BACKEND = 'apps.auth_supabase.utils.UnverifiedEmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '').replace(' ', '')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

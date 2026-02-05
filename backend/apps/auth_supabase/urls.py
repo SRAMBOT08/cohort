@@ -23,4 +23,9 @@ urlpatterns = [
     # Health check
     path('health', views.health_check, name='health'),
     path('echo-headers/', views.echo_headers, name='echo_headers'),
+    
+    # Password Reset (Hybrid Flow)
+    # Password Reset (OTP Flow)
+    path('password-reset/code/request/', views.request_reset_code, name='request_reset_code'),
+    path('password-reset/code/verify/', views.verify_reset_code, name='verify_reset_code'),
 ]

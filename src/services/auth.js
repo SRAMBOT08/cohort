@@ -104,6 +104,83 @@ export const authService = {
   getAccessToken: () => {
     return localStorage.getItem('supabase_access_token') || localStorage.getItem('accessToken');
   },
+
+
+  /**
+    * Request password reset code (OTP)
+    * @param {string} email
+    */
+  requestResetCode: async (email) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+      const endpoint = `${API_URL}/supabase/password-reset/code/request/`;
+
+      console.log('Requesting OTP via Django:', endpoint);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send code');
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Request Code Error:', error);
+      return { error };
+    }
+  },
+
+  /**
+    * Verify password reset code and set new password
+    * @param {string} email
+    * @param {string} code
+    * @param {string} newPassword
+    */
+  verifyResetCode: async (email, code, newPassword) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+      const endpoint = `${API_URL}/supabase/password-reset/code/verify/`;
+
+      console.log('Verifying OTP via Django:', endpoint);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code, new_password: newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to verify code');
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Verify Code Error:', error);
+      return { error };
+    }
+  },
+
+  /**
+   * Update password
+   */
+  updatePassword: async (newPassword) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+    return { user: data?.user, error };
+  },
 };
 
 export default authService;

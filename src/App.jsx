@@ -6,6 +6,9 @@ import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, U
 import { ThemeProvider } from './theme/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ThemeToggle from './components/ThemeToggle';
+import { ForgotPassword } from './auth/ForgotPassword';
+import { ResetPassword } from './auth/ResetPassword';
+import { VerifyResetCode } from './auth/VerifyResetCode';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/student/Home';
 import CLT from './pages/student/CLT';
@@ -69,7 +72,7 @@ function Navigation() {
         });
       });
     }
-    
+
     // Fetch user profile for mentors
     if (user && (userRole === 'MENTOR' || userRole === 'mentor')) {
       import('./services/profile').then(module => {
@@ -278,7 +281,7 @@ function Navigation() {
                 <div className="profile-avatar">
                   <User size={48} />
                 </div>
-                
+
                 {/* Student Profile */}
                 {showNavItems && (
                   <>
@@ -303,13 +306,13 @@ function Navigation() {
                     </div>
                   </>
                 )}
-                
+
                 {/* Mentor Profile */}
                 {showMentorNavItems && (
                   <>
                     <h2>
-                      {userProfile ? 
-                        `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || userProfile.username 
+                      {userProfile ?
+                        `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || userProfile.username
                         : user?.username || 'Mentor'}
                     </h2>
                     <div className="profile-details">
@@ -332,7 +335,7 @@ function Navigation() {
                     </div>
                   </>
                 )}
-                
+
                 <Link to="/profile-settings" className="profile-settings-button" onClick={() => setShowProfile(false)}>
                   <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'center' }}>
                     <SettingsIcon size={18} />
@@ -438,8 +441,9 @@ function AppContent() {
   const isLoginPage = location.pathname === '/login';
   const isIntroPage = location.pathname === '/intro';
 
-  // If not logged in and not on login or intro page, redirect to login
-  if (!user && location.pathname !== '/login' && location.pathname !== '/intro') {
+  // If not logged in and not on public pages, redirect to login
+  const publicPaths = ['/login', '/intro', '/forgot-password', '/reset-password', '/verify-reset-code'];
+  if (!user && !publicPaths.includes(location.pathname)) {
     return <Navigate to="/login" replace />;
   }
 
@@ -452,6 +456,9 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/intro" element={<ParallaxIntro />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-reset-code" element={<VerifyResetCode />} />
 
           {/* Student Routes */}
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
@@ -467,29 +474,29 @@ function AppContent() {
           <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
 
           {/* Admin Campus Routes - Before AdminLayout */}
-          <Route 
-            path="/admin/campus-select" 
+          <Route
+            path="/admin/campus-select"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <CampusSelection />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/admin/campus/:campus" 
+          <Route
+            path="/admin/campus/:campus"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <CampusOverview />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/admin/campus/:campus/floor/:floor" 
+          <Route
+            path="/admin/campus/:campus/floor/:floor"
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <FloorDetail />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Admin Routes with Sidebar Layout */}
@@ -513,21 +520,21 @@ function AppContent() {
           </Route>
 
           {/* Other Role Dashboards */}
-          <Route 
-            path="/mentor-dashboard/*" 
+          <Route
+            path="/mentor-dashboard/*"
             element={
               <ProtectedRoute requiredRole="MENTOR">
                 <MentorLayout />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/floorwing-dashboard" 
+          <Route
+            path="/floorwing-dashboard"
             element={
               <ProtectedRoute requiredRole="FLOOR_WING">
                 <FloorWingDashboard />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </main>

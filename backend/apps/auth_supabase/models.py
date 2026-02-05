@@ -85,3 +85,44 @@ class SupabaseUserMapping(models.Model):
             supabase_id=supabase_id,
             supabase_email=supabase_email
         )
+
+# ------------------------------------------------------------------------------
+# Password Reset Code (OTP)
+# ------------------------------------------------------------------------------
+import uuid
+import datetime
+
+class PasswordResetCode(models.Model):
+    """
+    Store 6-digit numeric codes for password reset.
+    Valid for 15 minutes.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(db_index=True)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.IntegerField(default=0)
+    used = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'password_reset_code'
+        indexes = [
+            models.Index(fields=['email', 'code']),
+        ]
+
+    def is_valid(self):
+        return (
+            not self.used and
+            self.expires_at > timezone.now() and
+            self.attempts < 3
+        )
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            # Set expiry to 15 minutes from now
+            self.expires_at = timezone.now() + datetime.timedelta(minutes=15)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"ResetCode({self.email} - {self.code})"

@@ -95,6 +95,15 @@ export const AuthProvider = ({ children }) => {
         return ROLE_HOME_PATHS[user.role] || '/login';
     };
 
+    const requestResetCode = async (email) => {
+        return await authService.requestResetCode(email);
+    };
+
+    const verifyResetCode = async (email, code, newPassword) => {
+        return await authService.verifyResetCode(email, code, newPassword);
+    };
+
+
     const value = {
         user,
         login,
@@ -104,6 +113,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!user, // Use user state instead of checking localStorage
         getToken,
         getHomePath,
+        requestResetCode,
+        verifyResetCode,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
