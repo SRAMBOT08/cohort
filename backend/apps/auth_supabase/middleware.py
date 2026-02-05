@@ -92,40 +92,48 @@ class SupabaseAuthMiddleware:
         """
         try:
             # Debug log
+            print(f"DEBUG: Starting Supabase token verification... Token len: {len(token)}")
             logger.info("Starting Supabase token verification...")
             
             # Use Supabase admin client to verify token and fetch user
             try:
                 client = SupabaseService.get_client()
             except Exception as e:
+                print(f"DEBUG: Failed to get Supabase client: {e}")
                 logger.error(f"Failed to get Supabase client: {e}")
                 return None, 'other'
                 
             try:
                 response = client.auth.get_user(token)
             except Exception as e:
+                print(f"DEBUG: Supabase auth.get_user failed: {e}")
                 logger.error(f"Supabase auth.get_user failed: {e}")
                 # Check for expiration in the exception message from Supabase/Gotrue
                 if 'expired' in str(e).lower():
+                    print("DEBUG: Token confirmed expired via exception")
                     return None, 'expired'
                 return None, 'invalid'
 
             supabase_user = getattr(response, 'user', None)
             if not supabase_user:
+                print("DEBUG: Supabase returned no user for token")
                 logger.warning('Supabase returned no user for token')
                 return None, 'invalid'
 
             supabase_id = getattr(supabase_user, 'id', None)
             if not supabase_id:
+                print("DEBUG: Supabase user missing id")
                 logger.warning('Supabase user missing id')
                 return None, 'invalid'
                 
+            print(f"DEBUG: Supabase user found: {supabase_id} | {getattr(supabase_user, 'email', 'no-email')}")
             logger.info(f"Supabase user found: {supabase_id} | {getattr(supabase_user, 'email', 'no-email')}")
 
             # Map to Django user
             django_user = SupabaseUserMapping.get_django_user_by_supabase_id(supabase_id)
 
             if not django_user:
+                print("DEBUG: No existing mapping found. Attempting to create user/mapping...")
                 logger.info("No existing mapping found. Attempting to create user/mapping...")
                 # Try to find Django user by email and create mapping on-the-fly
                 supabase_email = getattr(supabase_user, 'email', None)
@@ -142,19 +150,29 @@ class SupabaseAuthMiddleware:
                             email=supabase_email or '',
                             password=None
                         )
+                        print(f"DEBUG: Created Django user: {username}")
                         logger.info(f'Created Django user for Supabase ID: {supabase_id} email: {supabase_email}')
                     except Exception as e:
+                        print(f"DEBUG: Failed to create Django user: {e}")
                         logger.error(f'Failed to create Django user: {e}')
                         return None, 'other'
 
                 # Create mapping
                 try:
                     SupabaseUserMapping.create_mapping(django_user, supabase_id, supabase_email or '')
+                    print(f"DEBUG: Created SupabaseUserMapping for {django_user.username}")
                     logger.info(f'Created SupabaseUserMapping for {django_user.username} <-> {supabase_id}')
                 except Exception as e:
+                    print(f"DEBUG: Failed to create mapping: {e}")
                     logger.error(f'Failed to create mapping: {e}')
+                    # If mapping fails but we have a user, do we fail auth? 
+                    # Ideally yes, but for robustness let's return the user anyway if it exists
+                    if django_user:
+                         print("DEBUG: Mapping failed but returning user anyway.")
+                         return django_user, None
                     return None, 'other'
             else:
+                print(f"DEBUG: Found existing Django user: {django_user.username} (ID: {django_user.id})")
                 logger.info(f"Found existing Django user: {django_user.username} (ID: {django_user.id})")
 
             # Update last login
@@ -167,14 +185,18 @@ class SupabaseAuthMiddleware:
             return django_user, None
             
         except jwt.ExpiredSignatureError:
+            print("DEBUG: Token expired (jwt)")
             logger.warning('Token expired (jwt)')
             return None, 'expired'
         except jwt.InvalidTokenError as e:
+            print(f"DEBUG: Invalid token (jwt): {e}")
             logger.warning(f'Invalid token (jwt): {e}')
             return None, 'invalid'
         except Exception as e:
+            print(f"DEBUG: Token verification error: {e}")
             logger.error(f'Token verification error: {e}')
             import traceback
+            traceback.print_exc()
             logger.error(traceback.format_exc())
             # Check if error message indicates expiration
             error_str = str(e).lower()
