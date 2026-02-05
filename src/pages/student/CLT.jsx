@@ -106,9 +106,30 @@ export const CLT = () => {
         driveLink: formData.driveLink
       });
 
-      // Validate drive link is present
-      if (!formData.driveLink || formData.driveLink.trim() === '') {
+      // Validate drive link is present and is a valid URL; try to auto-prefix with https://
+      const isValidUrl = (value) => {
+        try {
+          // eslint-disable-next-line no-new
+          new URL(value);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+
+      let drive = formData.driveLink?.trim();
+      if (!drive) {
         throw new Error('Please provide a Google Drive link to your certificate/evidence.');
+      }
+
+      if (!isValidUrl(drive)) {
+        // try adding https:// if user omitted scheme
+        const prefixed = `https://${drive}`;
+        if (isValidUrl(prefixed)) {
+          drive = prefixed;
+        } else {
+          throw new Error('Please provide a valid URL for the Drive link (e.g. https://drive.google.com/...).');
+        }
       }
 
       // Check if user has auth token
@@ -128,7 +149,7 @@ export const CLT = () => {
         description: formData.description,
         platform: formData.platform,
         completion_date: formData.completionDate,
-        drive_link: formData.driveLink,
+        drive_link: drive,
       };
 
       console.log('Calling createSubmission API...');
