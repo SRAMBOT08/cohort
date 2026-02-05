@@ -39,7 +39,11 @@ class SupabaseJWTAuthentication(JWTAuthentication):
             
             # Ensure raw_token is a string (SimpleJWT passes bytes)
             if isinstance(raw_token, bytes):
-                raw_token = raw_token.decode('utf-8')
+                try:
+                    raw_token = raw_token.decode('utf-8')
+                except Exception as e:
+                    print(f"DEBUG: [AuthClass] Token decode failed: {e}")
+                    raise AuthenticationFailed('Token decoding failed', code='token_decode_error')
             
             try:
                 # Verify token by fetching user
