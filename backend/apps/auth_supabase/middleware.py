@@ -50,14 +50,27 @@ class SupabaseAuthMiddleware:
         logger.info(f'Received Authorization token: {token_preview}')
         
         # Verify and decode token
-        user = self._verify_token(token)
+        user, error_type = self._verify_token(token)
         
         if user:
             request.user = user
             request.supabase_token_valid = True
         else:
-            request.user = AnonymousUser()
-            request.supabase_token_valid = False
+            # Return 401 for expired/invalid tokens to trigger frontend refresh
+            if error_type == 'expired':
+                return JsonResponse(
+                    {'detail': 'Token expired', 'code': 'token_expired'},
+                    status=401
+                )
+            elif error_type == 'invalid':
+                return JsonResponse(
+                    {'detail': 'Invalid token', 'code': 'invalid_token'},
+                    status=401
+                )
+            else:
+                # For missing or malformed tokens, set anonymous user
+                request.user = AnonymousUser()
+                request.supabase_token_valid = False
         
         return self.get_response(request)
     
@@ -74,7 +87,8 @@ class SupabaseAuthMiddleware:
     def _verify_token(self, token):
         """
         Verify Supabase JWT token and return Django user
-        Uses SUPABASE_JWT_SECRET with HS256 algorithm
+        Returns: (user, error_type) tuple
+        error_type can be: None, 'expired', 'invalid', 'other'
         """
         try:
             # Use Supabase admin client to verify token and fetch user
@@ -84,12 +98,12 @@ class SupabaseAuthMiddleware:
             supabase_user = getattr(response, 'user', None)
             if not supabase_user:
                 logger.warning('Supabase returned no user for token')
-                return None
+                return None, 'invalid'
 
             supabase_id = getattr(supabase_user, 'id', None)
             if not supabase_id:
                 logger.warning('Supabase user missing id')
-                return None
+                return None, 'invalid'
 
             # Map to Django user
             django_user = SupabaseUserMapping.get_django_user_by_supabase_id(supabase_id)
@@ -113,7 +127,7 @@ class SupabaseAuthMiddleware:
                         logger.info(f'Created Django user for Supabase ID: {supabase_id} email: {supabase_email}')
                     except Exception as e:
                         logger.error(f'Failed to create Django user: {e}')
-                        return None
+                        return None, 'other'
 
                 # Create mapping
                 try:
@@ -121,7 +135,7 @@ class SupabaseAuthMiddleware:
                     logger.info(f'Created SupabaseUserMapping for {django_user.username} <-> {supabase_id}')
                 except Exception as e:
                     logger.error(f'Failed to create mapping: {e}')
-                    return None
+                    return None, 'other'
 
             # Update last login
             try:
@@ -130,14 +144,18 @@ class SupabaseAuthMiddleware:
             except Exception as e:
                 logger.error(f'Failed to update last login: {e}')
 
-            return django_user
+            return django_user, None
             
         except jwt.ExpiredSignatureError:
             logger.warning('Token expired')
-            return None
+            return None, 'expired'
         except jwt.InvalidTokenError as e:
             logger.warning(f'Invalid token: {e}')
-            return None
+            return None, 'invalid'
         except Exception as e:
             logger.error(f'Token verification error: {e}')
-            return None
+            # Check if error message indicates expiration
+            error_str = str(e).lower()
+            if 'expired' in error_str or 'token is expired' in error_str:
+                return None, 'expired'
+            return None, 'other'
