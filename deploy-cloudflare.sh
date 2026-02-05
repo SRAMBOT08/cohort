@@ -56,7 +56,7 @@ echo "${GREEN}✓ Build output verified${NC}"
 # Step 6: Deploy to Cloudflare Pages
 echo ""
 echo "${YELLOW}Step 6: Deploying to Cloudflare Pages...${NC}"
-wrangler pages deploy dist --project-name=cohort-web
+wrangler pages deploy dist --project-name=cohort-web --branch=cloud_deploy
 
 echo ""
 echo "${GREEN}========================================${NC}"
