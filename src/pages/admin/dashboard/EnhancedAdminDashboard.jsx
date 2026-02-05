@@ -13,6 +13,7 @@ import {
 import GlassCard from '../../../components/GlassCard';
 import { dashboardStats, analyticsData, mentorsData, floorsData } from '../../../data/mockAdminData';
 import { useAuth } from '../../../context/AuthContext';
+import { API_CONFIG } from '../../../config';
 import snsctLogo from '../../../assets/snsct.jpeg';
 import snscasLogo from '../../../assets/snscas.jpeg';
 import './SimpleDashboard.css';
@@ -29,7 +30,7 @@ function EnhancedAdminDashboard() {
     const fetchStats = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profiles/admin/stats/`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/profiles/admin/stats/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

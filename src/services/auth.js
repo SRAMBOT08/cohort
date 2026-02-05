@@ -17,23 +17,27 @@ export const authService = {
    * @returns {Promise} - User data with tokens
    */
   login: async (username, password) => {
-    console.log('Auth service - attempting Supabase login with:', username);
+    console.log('Auth service - attempting Django JWT login with:', username);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: username,
-        password: password,
+      const response = await fetch(`${API_BASE_URL}/token/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
       });
 
-      if (error) {
-        console.error('Supabase login error:', error);
-        throw error;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Login failed' }));
+        throw new Error(errorData.detail || 'Login failed');
       }
 
-      const session = data?.session;
-      const user = data?.user;
-      const access = session?.access_token;
-      const refresh = session?.refresh_token;
+      const data = await response.json();
+      const { access, refresh, user } = data;
 
       // Persist tokens for compatibility with older code
       if (access) localStorage.setItem('supabase_access_token', access);
@@ -45,7 +49,7 @@ export const authService = {
 
       if (user) localStorage.setItem('user', JSON.stringify(user));
 
-      console.log('Auth service - Supabase login successful');
+      console.log('Auth service - Django JWT login successful');
 
       return { access, refresh, user };
     } catch (error) {

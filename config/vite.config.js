@@ -4,9 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  // Serve built assets from Django static URL
+  base: '/static/frontend/',
   build: {
-    outDir: 'dist',
+    // Build directly into Django's static folder so collectstatic picks it up
+    outDir: 'backend/static/frontend',
     emptyOutDir: true,
     rollupOptions: {
       output: {

@@ -8,22 +8,56 @@
 // API Configuration
 export const API_CONFIG = {
   // Base URL for backend API
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api',
+  BASE_URL: (() => {
+    const normalizeApiBase = (value) => {
+      if (!value) return value;
+      const trimmed = String(value).trim().replace(/\/+$/, '');
+      if (trimmed === '/api' || trimmed.endsWith('/api')) return trimmed;
+      // If a host/base URL is provided without /api, assume /api
+      return `${trimmed}/api`;
+    };
+
+    // Prefer explicit build-time env var (for separate frontend/backend deployments)
+    // Support both VITE_API_URL and the older/alternate VITE_API_BASE_URI.
+    const explicitApiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URI;
+    if (explicitApiUrl) return normalizeApiBase(explicitApiUrl);
+
+    // If the frontend is served by the backend (Render monolith), use same-origin to avoid CORS and stale domains
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return `${window.location.origin}/api`;
+    }
+
+    // Local development fallback
+    return 'http://127.0.0.1:8000/api';
+  })(),
   
   // Get full API URL
   getApiUrl: (path = '') => {
-    const base = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+    const base = API_CONFIG.BASE_URL;
     return path ? `${base}${path.startsWith('/') ? path : '/' + path}` : base;
   },
   
   // Backend base (without /api suffix)
-  BACKEND_BASE: import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://127.0.0.1:8000',
+  BACKEND_BASE: (() => {
+    const explicitApiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URI;
+    if (explicitApiUrl) {
+      const trimmed = String(explicitApiUrl).trim().replace(/\/+$/, '');
+      // If they provided host-only, return host; if they provided /api, strip it.
+      return trimmed.replace(/\/?api\/?$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin;
+    return 'http://127.0.0.1:8000';
+  })(),
 };
 
 // Frontend Configuration
 export const FRONTEND_CONFIG = {
   // Current frontend URL (for OAuth callbacks, etc.)
-  BASE_URL: import.meta.env.VITE_APP_URL || 'http://localhost:5173',
+  BASE_URL: (() => {
+    if (import.meta.env.VITE_APP_URL) return import.meta.env.VITE_APP_URL;
+    if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin;
+    return 'http://localhost:5173';
+  })(),
   
   // Default port
   PORT: import.meta.env.VITE_PORT || 5173,
