@@ -30,6 +30,7 @@ class SupabaseJWTAuthentication(JWTAuthentication):
         Returns the Supabase User object if valid, raises AuthenticationFailed otherwise.
         """
         try:
+            print("DEBUG: [AuthClass] Starting Supabase token verification via API...")
             logger.info("Starting Supabase token verification via API...")
             
             # Use Supabase Service to verify token directly
@@ -40,11 +41,14 @@ class SupabaseJWTAuthentication(JWTAuthentication):
                 # Verify token by fetching user
                 user_response = client.auth.get_user(raw_token)
                 if not user_response or not user_response.user:
+                     print("DEBUG: [AuthClass] Token verification returned no user")
                      raise AuthenticationFailed('Token verification returned no user', code='invalid_token')
                 
                 # Return the user object (as payload substitute)
+                print(f"DEBUG: [AuthClass] Token Validated. User ID: {user_response.user.id}")
                 return user_response.user
             except Exception as e:
+                print(f"DEBUG: [AuthClass] Supabase auth.get_user failed: {e}")
                 logger.error(f"Supabase auth.get_user failed: {e}")
                 if 'expired' in str(e).lower():
                      raise AuthenticationFailed('Token has expired', code='token_expired')
@@ -53,6 +57,7 @@ class SupabaseJWTAuthentication(JWTAuthentication):
         except AuthenticationFailed:
             raise
         except Exception as e:
+            print(f"DEBUG: [AuthClass] Token validation error: {e}")
             logger.error(f'Token validation error: {e}')
             raise AuthenticationFailed(f'Token validation failed: {e}', code='token_error')
     
@@ -69,12 +74,14 @@ class SupabaseJWTAuthentication(JWTAuthentication):
             if not supabase_id:
                 raise AuthenticationFailed('Supabase User missing ID')
             
+            print(f"DEBUG: [AuthClass] Authenticating Supabase User: {supabase_id}")
             logger.info(f"Authenticated Supabase User: {supabase_id}")
 
             # Get Django user via mapping
             django_user = SupabaseUserMapping.get_django_user_by_supabase_id(supabase_id)
             
             if not django_user:
+                print("DEBUG: [AuthClass] No existing mapping found. Attempting auto-create...")
                 # Try to auto-create mapping if we have email in user object
                 email = getattr(supabase_user, 'email', None)
                 if email:
@@ -90,8 +97,10 @@ class SupabaseJWTAuthentication(JWTAuthentication):
                                 email=email,
                                 password=None
                             )
+                            print(f"DEBUG: [AuthClass] Created new Django user: {username}")
                             logger.info(f'Created new Django user: {username}')
                         except Exception as e:
+                            print(f"DEBUG: [AuthClass] Failed to create Django user: {e}")
                             logger.error(f'Failed to create Django user: {e}')
                             raise AuthenticationFailed('Failed to create user account')
 
@@ -105,15 +114,20 @@ class SupabaseJWTAuthentication(JWTAuthentication):
                             )
                             logger.info(f'Created auto-mapping for user {django_user.username}')
                         except Exception as e:
+                             print(f"DEBUG: [AuthClass] Failed to create mapping: {e}")
                              logger.error(f"Failed to create mapping: {e}")
                              # Allow proceeding if user exists
                 
             if not django_user:
+                 print(f"DEBUG: [AuthClass] User not found for Supabase ID: {supabase_id}")
                  logger.warning(f'No Django user found for Supabase ID: {supabase_id}')
                  raise AuthenticationFailed('User not found')
             
             if not django_user.is_active:
+                print(f"DEBUG: [AuthClass] User {django_user.username} is inactive")
                 raise AuthenticationFailed('User account is disabled')
+            
+            print(f"DEBUG: [AuthClass] Returning Django User: {django_user.username} (ID: {django_user.id})")
             
             # Update last login
             try:
@@ -125,8 +139,10 @@ class SupabaseJWTAuthentication(JWTAuthentication):
             return django_user
             
         except User.DoesNotExist:
+            print("DEBUG: [AuthClass] User DoesNotExist")
             raise AuthenticationFailed('User not found')
         except Exception as e:
+            print(f"DEBUG: [AuthClass] Error getting user from token: {e}")
             logger.error(f'Error getting user from token: {e}')
             raise AuthenticationFailed('User retrieval failed')
     
