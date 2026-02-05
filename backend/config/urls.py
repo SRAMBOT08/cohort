@@ -88,6 +88,7 @@ urlpatterns = [
     
     # JWT Authentication endpoints (with Supabase)
     path('api/auth/token/', supabase_login, name='token_obtain_pair'),  # Supabase hybrid auth
+    path('api/token/', supabase_login, name='simple_token_obtain'),  # Simple endpoint
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # User Profile

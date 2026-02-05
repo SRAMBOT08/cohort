@@ -16,19 +16,19 @@ def supabase_login(request):
     """
     Authenticate with Supabase and return Django JWT tokens
     POST /api/auth/supabase-login/
-    Body: {"email": "user@example.com", "password": "password"}
+    Body: {"username": "user@example.com", "password": "password"} or {"email": "..."}
     """
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     try:
         data = json.loads(request.body)
-        email = data.get('email')
+        username_or_email = data.get('username') or data.get('email')
         password = data.get('password')
         
-        if not email or not password:
+        if not username_or_email or not password:
             return JsonResponse({
-                'detail': 'Email and password required',
+                'detail': 'Username/email and password required',
                 'code': 'validation_error'
             }, status=400)
         
@@ -46,7 +46,7 @@ def supabase_login(request):
         try:
             supabase = create_client(url, key)
             auth_response = supabase.auth.sign_in_with_password({
-                "email": email,
+                "email": username_or_email,
                 "password": password
             })
             
@@ -76,13 +76,13 @@ def supabase_login(request):
             user = mapping.django_user
         except SupabaseUserMapping.DoesNotExist:
             # Try to find user by email
-            user = User.objects.filter(email=email).first()
+            user = User.objects.filter(email=username_or_email).first()
             if not user:
                 # Create Django user
-                username = email.split('@')[0].replace('.', '_')[:150]
+                username = username_or_email.split('@')[0].replace('.', '_')[:150]
                 user = User.objects.create_user(
                     username=username,
-                    email=email,
+                    email=username_or_email,
                     password=password  # This won't be used for auth
                 )
             
@@ -90,7 +90,7 @@ def supabase_login(request):
             SupabaseUserMapping.objects.create(
                 django_user=user,
                 supabase_id=supabase_user.id,
-                supabase_email=email
+                supabase_email=username_or_email
             )
         
         # Generate Django JWT tokens

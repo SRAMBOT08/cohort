@@ -18,7 +18,7 @@ key = os.environ.get('SUPABASE_SERVICE_ROLE_KEY')
 supabase = create_client(url, key)
 
 # User to reset
-test_email = 'priya.k.iot.2024@snsce.ac.in'
+test_email = 'jabbastin.k.csd.2024@snsce.ac.in'
 new_password = 'pass123@'
 
 print(f'🔄 Resetting password for: {test_email}')
