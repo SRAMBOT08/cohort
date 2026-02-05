@@ -30,6 +30,8 @@ const gamificationAPI = {
   
   // Leaderboard
   getCurrentLeaderboard: () => api.get('/gamification/leaderboard/current_season/'),
+  // Backwards-compatible alias used by older builds/components
+  getCurrentSeasonLeaderboard: () => api.get('/gamification/leaderboard/current_season/'),
   getFullLeaderboard: () => api.get('/gamification/leaderboard/full_leaderboard/'),
   getMyPosition: () => api.get('/gamification/leaderboard/my_position/'),
   
