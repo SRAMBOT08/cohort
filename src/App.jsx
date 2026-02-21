@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, us
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Lightbulb, Heart, Trophy, Linkedin, Code, Menu, X, LogOut, Zap, Users, ClipboardCheck, Megaphone, Gamepad2, User, Mail, Phone, FileText, Settings as SettingsIcon } from 'lucide-react';
+import cohortLogo from './assets/cohort-logo.svg';
 import { ThemeProvider } from './theme/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ThemeToggle from './components/ThemeToggle';
@@ -133,12 +134,12 @@ function Navigation() {
         <Link to={getHomePath()} className="nav-logo">
           <motion.div
             className="nav-logo-icon"
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6 }}
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.3 }}
           >
-            <Lightbulb size={32} />
+            <img src={cohortLogo} alt="Cohort Logo" style={{ width: '40px', height: 'auto' }} />
           </motion.div>
-          <span className="nav-logo-text">Cohort Web</span>
+          <span className="nav-logo-text">Cohort Summit</span>
         </Link>
 
         {/* Desktop Navigation */}

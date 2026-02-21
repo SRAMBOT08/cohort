@@ -1,7 +1,7 @@
 # Frontend Performance Optimization Guide
 ## Scaling React App for 2000+ Students
 
-This guide documents all frontend performance optimizations for scaling the Cohort Web App.
+This guide documents all frontend performance optimizations for scaling the Cohort Summit App.
 
 ---
 

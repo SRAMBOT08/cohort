@@ -91,7 +91,7 @@ export const HomePage = () => {
   const [seasonActive, setSeasonActive] = useState(false);
 
   useEffect(() => {
-    document.title = 'Dashboard | Cohort Web';
+    document.title = 'Dashboard | Cohort Summit';
     
     // Check if user is authenticated
     const token = localStorage.getItem('accessToken');
@@ -1434,7 +1434,7 @@ export const HomePage = () => {
       <footer className="home-footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>Cohort Web</h3>
+            <h3>Cohort Summit</h3>
             <p>© 2025 All rights reserved</p>
           </div>
           <div className="footer-section">

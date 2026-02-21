@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the incremental, backward-compatible scaling optimizations added to the Cohort Web Application. All changes are designed to support 2,000+ students without breaking existing functionality.
+This document describes the incremental, backward-compatible scaling optimizations added to the Cohort Summit Application. All changes are designed to support 2,000+ students without breaking existing functionality.
 
 **Version:** 1.0  
 **Date:** January 29, 2026  

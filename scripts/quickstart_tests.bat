@@ -3,7 +3,7 @@ REM Quick Start Script for E2E Test Suite
 REM Windows batch file to set up and run tests
 
 echo ================================================
-echo   Cohort Web App - E2E Test Suite Quick Start
+echo   Cohort Summit App - E2E Test Suite Quick Start
 echo ================================================
 echo.
 

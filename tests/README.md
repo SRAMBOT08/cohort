@@ -1,8 +1,8 @@
-# Cohort Web App - E2E Test Suite
+# Cohort Summit App - E2E Test Suite
 
-## 🎯 Overview
+## Overview
 
-Comprehensive End-to-End Selenium test suite for the Cohort Web Application. This suite validates the entire system including authentication, all user roles, gamification logic, and API interactions.
+Comprehensive End-to-End Selenium test suite for the Cohort Summit Application. This suite validates the entire system including authentication, all user roles, gamification logic, and API interactions.
 
 ## 🏗️ Architecture
 

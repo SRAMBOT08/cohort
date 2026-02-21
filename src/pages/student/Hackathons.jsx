@@ -22,7 +22,7 @@ export const Hackathons = () => {
   ];
 
   useEffect(() => {
-    document.title = 'Hackathons & Competitions | Cohort Web';
+    document.title = 'Hackathons & Competitions | Cohort Summit';
     loadHackathons();
     
     // Rotate notification messages every 5 seconds

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, LogIn, UserPlus, Lightbulb, ArrowRight, GraduationCap, Users, Crown } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, LogIn, UserPlus, ArrowRight, GraduationCap, Users, Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GlassCard from '../components/GlassCard';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import WingsIcon from '../components/WingsIcon';
+import cohortLogo from '../assets/cohort-logo.svg';
 import './Login.css';
 
 const ROLES = [
@@ -179,12 +180,12 @@ const Login = () => {
                 >
                     <motion.div
                         className="login-logo"
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        <Lightbulb size={64} />
+                        <img src={cohortLogo} alt="Cohort Logo" style={{ width: '120px', height: 'auto' }} />
                     </motion.div>
-                    <h1 className="login-title">Cohort Web</h1>
+                    <h1 className="login-title">Cohort Summit</h1>
                     <p className="login-subtitle">
                         Track your academic journey, showcase your skills, and build your professional portfolio
                     </p>

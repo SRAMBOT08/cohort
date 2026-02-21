@@ -17,7 +17,7 @@ const MonthlyReport = () => {
   const refreshIntervalRef = useRef(null);
 
   useEffect(() => {
-    document.title = 'Monthly Report | Cohort Web';
+    document.title = 'Monthly Report | Cohort Summit';
     fetchAvailableMonths();
 
     // Set up auto-refresh every 30 seconds

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the centralized configuration system implemented to eliminate hardcoded values throughout the Cohort Web Application.
+This document describes the centralized configuration system implemented to eliminate hardcoded values throughout the Cohort Summit Application.
 
 ## Architecture
 

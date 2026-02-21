@@ -1,7 +1,7 @@
 # ==============================================
 # Docker Deployment Guide
 # ==============================================
-# Comprehensive guide for deploying the Cohort Web Application with Docker
+# Comprehensive guide for deploying the Cohort Summit Application with Docker
 
 ## Overview
 

@@ -17,7 +17,7 @@ Visit: https://www.linkedin.com/developers/
 ### 1.2 Create a New App
 1. Click "Create app"
 2. Fill in the required information:
-   - **App name**: Cohort Web App
+   - **App name**: Cohort Summit App
    - **LinkedIn Page**: Your company/organization page (required)
    - **App logo**: Upload your app logo
    - **Legal agreement**: Check the box

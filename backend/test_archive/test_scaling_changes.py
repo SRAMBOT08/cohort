@@ -183,7 +183,7 @@ def test_health_endpoints():
 def main():
     """Run all tests"""
     print("\n" + "#" * 70)
-    print("COHORT WEB APPLICATION - SCALING VERIFICATION")
+    print("COHORT SUMMIT APPLICATION - SCALING VERIFICATION")
     print("#" * 70)
     
     results = {

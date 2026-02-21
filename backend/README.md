@@ -1,6 +1,6 @@
-# Cohort Web Application - Backend
+# Cohort Summit Application - Backend
 
-Backend API for the Cohort Web Application built with Django REST Framework.
+Backend API for the Cohort Summit Application built with Django REST Framework.
 
 ## Tech Stack
 

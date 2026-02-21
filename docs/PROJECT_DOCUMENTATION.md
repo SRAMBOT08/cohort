@@ -1,4 +1,4 @@
-# Cohort Web Application - Complete Project Documentation
+# Cohort Summit Application - Complete Project Documentation
 
 **Version:** 1.0.0  
 **Last Updated:** December 20, 2025  
@@ -24,7 +24,7 @@
 
 ## 🎯 Project Overview
 
-Cohort Web Application is a comprehensive platform that connects students, mentors, floor/wing representatives, and administrators in a structured journey of academic and personal excellence. The platform tracks student development across five pillars of holistic growth with sophisticated submission workflows, review systems, and analytics.
+Cohort Summit Application is a comprehensive platform that connects students, mentors, floor/wing representatives, and administrators in a structured journey of academic and personal excellence. The platform tracks student development across five pillars of holistic growth with sophisticated submission workflows, review systems, and analytics.
 
 ### Purpose
 - **Track & Manage** student development across multiple dimensions

@@ -1,4 +1,4 @@
-# Cohort Web Application
+# Cohort Summit Application
 
 A comprehensive platform connecting students, mentors, and institutions through five pillars of holistic development.
 

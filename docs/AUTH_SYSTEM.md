@@ -1,7 +1,7 @@
 # Role-Based Authentication System
 
 ## Overview
-Your Cohort Web application now has a complete role-based authentication system with 4 user roles:
+Your Cohort Summit application now has a complete role-based authentication system with 4 user roles:
 
 ### User Roles
 1. **Student** - Access to all student pages (Home, CLT, SRI, CFC, IIPC, SCD)

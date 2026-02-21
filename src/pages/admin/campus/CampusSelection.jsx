@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Building2, GraduationCap } from 'lucide-react';
 import GlassCard from '../../../components/GlassCard';
-import snsctLogo from '../../../assets/snsct.jpeg';
-import snscasLogo from '../../../assets/snscas.jpeg';
+import cohortLogo from '../../../assets/cohort-logo.svg';
 import './CampusSelection.css';
 
 function CampusSelection() {
@@ -15,7 +14,7 @@ function CampusSelection() {
             id: 'TECH',
             name: 'SNS College of Technology',
             icon: Building2,
-            logo: snsctLogo,
+            logo: cohortLogo,
             color: '#2196F3',
             floors: 4,
             description: 'Engineering and Technology Campus',
@@ -25,7 +24,7 @@ function CampusSelection() {
             id: 'ARTS',
             name: 'Dr. SNS Rajalakshmi College of Arts and Science',
             icon: GraduationCap,
-            logo: snscasLogo,
+            logo: cohortLogo,
             color: '#9C27B0',
             floors: 3,
             description: 'Arts and Science Campus',

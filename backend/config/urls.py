@@ -20,9 +20,9 @@ class EmailTokenObtainPairView(BaseTokenObtainPairView):
 # Swagger/OpenAPI Schema
 schema_view = get_schema_view(
     openapi.Info(
-        title="Cohort Web API",
+        title="Cohort Summit API",
         default_version='v1',
-        description="API documentation for Cohort Web Application",
+        description="API documentation for Cohort Summit Application",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@cohort.local"),
         license=openapi.License(name="BSD License"),
@@ -35,8 +35,9 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     
-    # Health Check Endpoints (NEW - for monitoring and scaling)
+    # Health Check Endpoints (for monitoring and scaling)
     path('health/', health_check, name='health_check'),
+    path('api/health/', health_check, name='api_health_check'),  # API alias
     path('health/ready/', readiness_check, name='readiness_check'),
     path('health/live/', liveness_check, name='liveness_check'),
     

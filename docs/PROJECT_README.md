@@ -1,4 +1,4 @@
-# Cohort Web Application
+# Cohort Summit Application
 
 A comprehensive platform connecting students, mentors, and institutions in a structured journey of academic and personal excellence through five pillars of holistic development.
 
@@ -31,7 +31,7 @@ A comprehensive platform connecting students, mentors, and institutions in a str
 
 ## Project Overview
 
-Cohort Web Application is a unified platform designed to track and manage student development across multiple dimensions. It provides a complete ecosystem for students, mentors, floor/wing representatives, and administrators to collaborate effectively.
+Cohort Summit Application is a unified platform designed to track and manage student development across multiple dimensions. It provides a complete ecosystem for students, mentors, floor/wing representatives, and administrators to collaborate effectively.
 
 ### Purpose
 

@@ -1,8 +1,8 @@
 C:\Python310\cohort_webapp\cohort>curl -X POST https://wholesome-cat-production.up.railway.app/api/setup-database/ -d "setup_key=cohort_setup_2024"
 {"admin_created": false, "students_created": 0, "students_updated": 0, "errors": ["CSV not found. Tried: ['/app/apps/../../dummy users - Sheet1.csv', '/app/apps/../../../dummy users - Sheet1.csv', '/app/dummy users - Sheet1.csv']"], "admin_updated": true}
-C:\Python310\cohort_webapp\cohort># Railway Deployment Guide - Cohort Web Application
+C:\Python310\cohort_webapp\cohort># Railway Deployment Guide - Cohort Summit Application
 
-This guide walks you through deploying the Cohort Web Application on Railway.app with PostgreSQL database.
+This guide walks you through deploying the Cohort Summit Application on Railway.app with PostgreSQL database.
 
 ## Prerequisites
 

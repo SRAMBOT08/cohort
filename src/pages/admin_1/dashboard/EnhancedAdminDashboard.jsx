@@ -13,8 +13,7 @@ import {
 import GlassCard from '../../../components/GlassCard';
 import { dashboardStats, analyticsData, mentorsData, floorsData } from '../../../data/mockAdminData';
 import { useAuth } from '../../../context/AuthContext';
-import snsctLogo from '../../../assets/snsct.jpeg';
-import snscasLogo from '../../../assets/snscas.jpeg';
+import cohortLogo from '../../../assets/cohort-logo.svg';
 import './SimpleDashboard.css';
 
 function EnhancedAdminDashboard() {
@@ -149,8 +148,7 @@ function EnhancedAdminDashboard() {
             {/* Header Section */}
             <div className="admin-header-section">
                 <div className="admin-header-logos">
-                    <img src={snsctLogo} alt="SNSCT" className="admin-header-logo" />
-                    <img src={snscasLogo} alt="SNSCAS" className="admin-header-logo" />
+                    <img src={cohortLogo} alt="Cohort Logo" className="admin-header-logo" style={{ width: '100px', height: 'auto' }} />
                 </div>
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
