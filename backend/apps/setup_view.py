@@ -8,15 +8,19 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from apps.profiles.models import UserProfile
-import sys
-import os
-
-# Add backend directory to path for test_config import
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from test_config import get_test_password, get_test_email
 from apps.gamification.models import Season, Title
 import csv
 import os
+
+
+def get_test_email(username, domain='test.com'):
+    """Generate test email"""
+    return f"{username}@{domain}"
+
+
+def get_test_password(username):
+    """Generate test password"""
+    return f"{username}123#"
 
 @csrf_exempt
 @require_http_methods(["POST"])

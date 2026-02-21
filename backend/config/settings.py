@@ -156,8 +156,23 @@ MEDIA_ROOT = os.path.join(BASE_DIR, os.getenv('MEDIA_ROOT', 'media'))
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Settings
-# Temporarily allow all origins for development
-CORS_ALLOW_ALL_ORIGINS = True  # Allow all for development
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+
+# If not allowing all origins, use the allowed origins list
+if not CORS_ALLOW_ALL_ORIGINS:
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip() 
+        for origin in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
+        if origin.strip()
+    ]
+
+# CSRF Trusted Origins (for production security)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173').split(',')
+    if origin.strip()
+]
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']

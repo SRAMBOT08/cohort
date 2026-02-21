@@ -9,11 +9,11 @@ from django.contrib.auth.models import User
 from apps.profiles.models import UserProfile
 import csv
 import os
-import sys
 
-# Add backend directory to path for test_config import
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from test_config import get_test_password
+
+def get_test_password(username):
+    """Generate test password"""
+    return f"{username}123#"
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
