@@ -33,7 +33,7 @@ services:
     envVars:
       # Python Configuration
       - key: PYTHON_VERSION
-        value: "3.10"
+        value: "3.12"
       
       # Django Core Settings
       - key: SECRET_KEY
