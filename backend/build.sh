@@ -27,7 +27,11 @@ echo "👥 Creating default production users..."
 python manage.py create_production_users
 
 echo ""
-echo "🔍 Checking user status..."
+echo "� Importing users from Excel file..."
+python manage.py import_users_from_excel
+
+echo ""
+echo "�🔍 Checking user status..."
 python manage.py check_users
 
 echo ""

@@ -46,6 +46,10 @@ django-ratelimit==4.1.0
 gunicorn==21.2.0
 whitenoise==6.6.0
 
+# Excel file processing
+pandas>=2.0.0
+openpyxl>=3.1.0
+
 # API Documentation - Temporarily disabled due to Python 3.13 pkg_resources issue
 # drf-yasg==1.21.8
 # TODO: Re-enable after switching to Python 3.12 or finding compatible version
