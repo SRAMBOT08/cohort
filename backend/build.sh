@@ -11,7 +11,10 @@ python manage.py collectstatic --no-input
 echo "🔄 Running migrations..."
 python manage.py migrate
 
-echo "👥 Creating default production users..."
+echo "� Fixing user sequence..."
+python manage.py fix_user_sequence || true
+
+echo "�👥 Creating default production users..."
 python manage.py create_production_users
 
 echo "✅ Build complete!"
