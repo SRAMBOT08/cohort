@@ -85,6 +85,8 @@ class Command(BaseCommand):
         return user
 
     def handle(self, *args, **options):
+        from django.db import connection
+        
         self.stdout.write('========================================')
         self.stdout.write('Creating/updating production users...')
         self.stdout.write('========================================\n')
@@ -92,8 +94,22 @@ class Command(BaseCommand):
         # Remove all existing users
         self.stdout.write('🧹 Removing all existing users from database...')
         user_count = User.objects.all().count()
-        User.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'✅ Deleted {user_count} existing users\n'))
+        
+        try:
+            # First, try to delete any supabase_user_mapping entries if table exists
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute("DELETE FROM supabase_user_mapping")
+                    self.stdout.write('✅ Cleared supabase_user_mapping table')
+                except Exception as e:
+                    self.stdout.write(f'ℹ️  No supabase_user_mapping table to clear: {e}')
+            
+            # Now delete all users
+            User.objects.all().delete()
+            self.stdout.write(self.style.WARNING(f'✅ Deleted {user_count} existing users\n'))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'⚠️  Could not delete all users: {e}'))
+            self.stdout.write(self.style.WARNING('Will update existing users instead\n'))
         
         # Create/Update Admin User
         self.create_or_update_user(
