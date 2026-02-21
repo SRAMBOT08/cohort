@@ -141,54 +141,60 @@ DEFAULT_FROM_EMAIL=Cohort Summit <your-email@gmail.com>
 
 ## Part 3: Cloudflare Pages Frontend Deployment
 
-### Step 7: Install Wrangler CLI (Optional)
-
-For local testing and deployment via CLI:
-
-```bash
-npm install -g wrangler
-wrangler login
-```
-
-### Step 8: Deploy via Cloudflare Dashboard (Recommended)
+### Step 7: Deploy via Cloudflare Dashboard
 
 1. Go to [https://dash.cloudflare.com](https://dash.cloudflare.com)
 2. Navigate to **Workers & Pages**
 3. Click **"Create application"** → **"Pages"** → **"Connect to Git"**
 
-### Step 9: Configure Cloudflare Pages
+### Step 8: Configure Cloudflare Pages
 
-1. **Select repository**: `cohort` (or your repo name)
-2. **Project name**: `cohort-summit-frontend`
+1. **Select repository**: Your GitHub repository (e.g., `cohort`)
+2. **Project name**: `cohort-summit-frontend` (or your choice)
+3. **Production branch**: `main`
 
 **Build Configuration:**
 ```
 Framework preset: Vite
-Build command: npm install && npm run build
+Build command: npm run build
 Build output directory: dist
-Root directory: (leave empty)
+Root directory: (leave empty or /)
 ```
 
-### Step 10: Set Frontend Environment Variables
+**IMPORTANT:** Do NOT use `npm install && npm run build` - Cloudflare automatically runs `npm install` first.
 
-In Cloudflare Pages → **Settings** → **Environment variables**:
+### Step 9: Set Frontend Environment Variables
 
+In Cloudflare Pages → **Settings** → **Environment variables** → **Production**:
+
+**Required:**
 ```bash
-# Production Variables
 VITE_API_URL=https://cohort-summit.onrender.com
 NODE_VERSION=18
-NODE_ENV=production
 ```
 
-**Important:** Remove any trailing slashes from `VITE_API_URL`!
+**Optional (Google Analytics):**
+```bash
+VITE_GA_TRACKING_ID=G-XXXXXXXXXX
+```
 
-### Step 11: Deploy Frontend
+**Important Notes:**
+- Remove any trailing slashes from `VITE_API_URL`!
+- Use your actual Render backend URL
+- Click **"Save"** after adding variables
+
+### Step 10: Deploy Frontend
 
 1. Click **"Save and Deploy"**
 2. Wait 2-3 minutes for build
 3. Your frontend URL: `https://cohort-summit-frontend.pages.dev`
 
-### Step 12: Update Backend CORS
+**Troubleshooting Build:**
+- If build fails, check the build logs
+- Verify `NODE_VERSION=18` is set
+- Ensure build command is just `npm run build` (not `npm install && npm run build`)
+
+### Step 11: Update Backend CORS
 
 Now that frontend is deployed, update backend:
 
@@ -362,17 +368,20 @@ git push origin main
 
 ## 📚 Useful Commands
 
-### Frontend (Cloudflare)
+### Frontend (Cloudflare Pages)
 
+All deployment is via the Cloudflare Dashboard:
+
+- **View deployments**: Cloudflare Dashboard → Pages → Your project
+- **View logs**: Click on any deployment to see build logs
+- **Rollback**: Click "..." on a previous deployment → "Rollback to this deployment"
+- **Environment variables**: Settings → Environment variables
+- **Custom domains**: Custom domains tab
+
+**Local development:**
 ```bash
-# Deploy via CLI
-wrangler pages deploy dist --project-name=cohort-summit-frontend
-
-# View logs
-wrangler pages deployment tail
-
-# Local preview
-npm run build && wrangler pages dev dist
+npm run dev
+# Opens on http://localhost:5173
 ```
 
 ### Backend (Render)
