@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developers.cloudflare.com/pages/platform/build-configuration-schema.json",
+  "version": 1,
+  "build": {
+    "command": "npm install && npm run build",
+    "cwd": "/",
+    "output": "dist"
+  },
+  "env": {
+    "NODE_VERSION": "18",
+    "NODE_ENV": "production"
+  }
+}

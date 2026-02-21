@@ -1,0 +1,21 @@
+# Cloudflare Pages Configuration for Cohort Summit Frontend
+# Deployment: Frontend → Cloudflare Pages, Backend → Render, DB → Supabase
+
+name = "cohort-summit-frontend"
+compatibility_date = "2024-01-01"
+
+pages_build_output_dir = "dist"
+
+[build]
+command = "npm install && npm run build"
+
+[build.environment]
+NODE_VERSION = "18"
+
+# Environment variables for frontend
+[vars]
+# Backend API URL (Render service)
+VITE_API_URL = "https://cohort-summit.onrender.com"
+
+# Production build
+NODE_ENV = "production"
