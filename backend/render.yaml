@@ -19,8 +19,9 @@ services:
       pip install -r requirements.txt
       python manage.py collectstatic --no-input
       python manage.py migrate --no-input
+      python manage.py fix_user_sequence || true
       python manage.py create_production_users || true
-      python manage.py list_users || true
+      echo "=== DATABASE USERS ===" && python manage.py list_users || true
     
     # Start Command
     startCommand: |
