@@ -52,6 +52,18 @@ def manage_seasons(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # Parse date strings to date objects
+        try:
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            if isinstance(end_date, str):
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         # Check if season number already exists
         if Season.objects.filter(season_number=season_number).exists():
             return Response(
@@ -96,8 +108,24 @@ def manage_season_detail(request, season_id):
     if request.method == 'PUT':
         # Update season fields
         season.name = request.data.get('name', season.name)
-        season.start_date = request.data.get('start_date', season.start_date)
-        season.end_date = request.data.get('end_date', season.end_date)
+        
+        # Parse date strings if provided
+        start_date = request.data.get('start_date', season.start_date)
+        end_date = request.data.get('end_date', season.end_date)
+        
+        try:
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            if isinstance(end_date, str):
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        season.start_date = start_date
+        season.end_date = end_date
         
         is_active = request.data.get('is_active', season.is_active)
         if is_active and not season.is_active:
@@ -150,6 +178,18 @@ def manage_episodes(request, season_id):
         if not all([episode_number, name, start_date, end_date]):
             return Response(
                 {'error': 'All required fields must be provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Parse date strings to date objects
+        try:
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            if isinstance(end_date, str):
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
