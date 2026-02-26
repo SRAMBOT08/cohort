@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q, Count
+from django.conf import settings
 import re
 import requests
 from datetime import date
@@ -144,9 +145,14 @@ class HackathonSubmissionViewSet(viewsets.ModelViewSet):
             }
         
         try:
+            # Prepare headers with GitHub token if available
+            headers = {}
+            if hasattr(settings, 'GITHUB_TOKEN') and settings.GITHUB_TOKEN:
+                headers['Authorization'] = f'token {settings.GITHUB_TOKEN}'
+            
             # Fetch repository info from GitHub API
             api_url = f'https://api.github.com/repos/{owner}/{repo}'
-            response = requests.get(api_url, timeout=10)
+            response = requests.get(api_url, headers=headers, timeout=10)
             
             if response.status_code == 404:
                 return {
@@ -510,9 +516,14 @@ class GenAIProjectSubmissionViewSet(viewsets.ModelViewSet):
             }
         
         try:
+            # Prepare headers with GitHub token if available
+            headers = {}
+            if hasattr(settings, 'GITHUB_TOKEN') and settings.GITHUB_TOKEN:
+                headers['Authorization'] = f'token {settings.GITHUB_TOKEN}'
+            
             # Fetch repository info from GitHub API
             api_url = f'https://api.github.com/repos/{owner}/{repo}'
-            response = requests.get(api_url, timeout=10)
+            response = requests.get(api_url, headers=headers, timeout=10)
             
             if response.status_code == 404:
                 return {
@@ -534,12 +545,12 @@ class GenAIProjectSubmissionViewSet(viewsets.ModelViewSet):
             
             # Check if repository has README
             readme_url = f'https://api.github.com/repos/{owner}/{repo}/readme'
-            readme_response = requests.get(readme_url, timeout=10)
+            readme_response = requests.get(readme_url, headers=headers, timeout=10)
             has_readme = readme_response.status_code == 200
             
             # Get commit count
             commits_url = f'https://api.github.com/repos/{owner}/{repo}/commits'
-            commits_response = requests.get(commits_url, params={'per_page': 1}, timeout=10)
+            commits_response = requests.get(commits_url, params={'per_page': 1}, headers=headers, timeout=10)
             commit_count = 0
             if commits_response.status_code == 200:
                 # Get commit count from Link header if available
