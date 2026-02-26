@@ -680,92 +680,125 @@ def get_submission_detail(request, pillar, submission_type, submission_id):
 def get_mentor_students(request):
     """
     Get list of students assigned to the current mentor with their progress stats
+    Optimized with bulk queries and aggregation
     """
+    from django.db.models import Count, Q, Max, Exists, OuterRef
+    
     if not is_mentor(request.user):
         return Response(
             {"error": "You don't have permission to access this resource"},
             status=status.HTTP_403_FORBIDDEN
         )
     
-    # Get mentor's assigned students
-    assigned_students = request.user.mentored_students.all().select_related('user')
+    # Get mentor's assigned students with optimized query
+    assigned_students = request.user.mentored_students.select_related('user').all()
+    student_ids = [profile.user.id for profile in assigned_students]
     
+    if not student_ids:
+        return Response({'students': [], 'total': 0})
+    
+    # Batch query all submissions for all students
+    clt_data = CLTSubmission.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'),
+        approved=Count('id', filter=Q(status='approved')),
+        pending=Count('id', filter=Q(status__in=['draft', 'submitted', 'under_review'])),
+        last_sub=Max('created_at')
+    )
+    clt_map = {item['user_id']: item for item in clt_data}
+    
+    # CFC submissions - aggregate all types
+    hackathon_data = HackathonSubmission.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'), approved=Count('id', filter=Q(status='approved')), last_sub=Max('created_at')
+    )
+    bmc_data = BMCVideoSubmission.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'), approved=Count('id', filter=Q(status='approved')), last_sub=Max('created_at')
+    )
+    internship_data = InternshipSubmission.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'), approved=Count('id', filter=Q(status='approved')), last_sub=Max('created_at')
+    )
+    genai_data = GenAIProjectSubmission.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'), approved=Count('id', filter=Q(status='approved')), last_sub=Max('created_at')
+    )
+    
+    # Combine CFC data
+    cfc_map = {}
+    for student_id in student_ids:
+        hack = next((x for x in hackathon_data if x['user_id'] == student_id), {'total': 0, 'approved': 0, 'last_sub': None})
+        bmc = next((x for x in bmc_data if x['user_id'] == student_id), {'total': 0, 'approved': 0, 'last_sub': None})
+        intern = next((x for x in internship_data if x['user_id'] == student_id), {'total': 0, 'approved': 0, 'last_sub': None})
+        gen = next((x for x in genai_data if x['user_id'] == student_id), {'total': 0, 'approved': 0, 'last_sub': None})
+        
+        cfc_map[student_id] = {
+            'total': hack['total'] + bmc['total'] + intern['total'] + gen['total'],
+            'approved': hack['approved'] + bmc['approved'] + intern['approved'] + gen['approved'],
+            'last_sub': max(filter(None, [hack['last_sub'], bmc['last_sub'], intern['last_sub'], gen['last_sub']]), default=None)
+        }
+    
+    # IIPC stats
+    iipc_data = LinkedInPostVerification.objects.filter(user_id__in=student_ids).values('user_id').annotate(
+        total=Count('id'),
+        verified=Count('id', filter=Q(status='verified')),
+        pending=Count('id', filter=Q(status='pending')),
+        last_sub=Max('created_at')
+    )
+    iipc_map = {item['user_id']: item for item in iipc_data}
+    
+    # SCD stats - batch query LeetCode profiles
+    leetcode_data = LeetCodeProfile.objects.filter(user_id__in=student_ids).values(
+        'user_id', 'total_solved', 'monthly_problems_count', 'last_synced'
+    )
+    leetcode_map = {item['user_id']: item for item in leetcode_data}
+    
+    # Build response
     students_data = []
     for profile in assigned_students:
         student = profile.user
+        student_id = student.id
         
-        # Get submission stats for each pillar
-        clt_submissions = CLTSubmission.objects.filter(user=student)
+        # CLT stats
+        clt = clt_map.get(student_id, {'total': 0, 'approved': 0, 'pending': 0, 'last_sub': None})
         clt_stats = {
-            'status': 'completed' if clt_submissions.filter(status='approved').exists() 
-                     else 'pending' if clt_submissions.filter(status__in=['draft', 'submitted', 'under_review']).exists()
-                     else 'not-started',
-            'count': clt_submissions.count(),
-            'lastSubmission': clt_submissions.order_by('-created_at').first().created_at if clt_submissions.exists() else None
+            'status': 'completed' if clt['approved'] > 0 else 'pending' if clt['pending'] > 0 else 'not-started',
+            'count': clt['total'],
+            'lastSubmission': clt['last_sub']
         }
         
-        # CFC stats (all types combined)
-        hackathons = HackathonSubmission.objects.filter(user=student)
-        bmc_videos = BMCVideoSubmission.objects.filter(user=student)
-        internships = InternshipSubmission.objects.filter(user=student)
-        genai_projects = GenAIProjectSubmission.objects.filter(user=student)
-        
-        cfc_total = hackathons.count() + bmc_videos.count() + internships.count() + genai_projects.count()
-        cfc_approved = (hackathons.filter(status='approved').count() + 
-                       bmc_videos.filter(status='approved').count() +
-                       internships.filter(status='approved').count() +
-                       genai_projects.filter(status='approved').count())
-        cfc_pending = cfc_total - cfc_approved
-        
+        # CFC stats
+        cfc = cfc_map.get(student_id, {'total': 0, 'approved': 0, 'last_sub': None})
         cfc_stats = {
-            'status': 'completed' if cfc_approved > 0 
-                     else 'pending' if cfc_pending > 0
-                     else 'not-started',
-            'count': cfc_total,
-            'lastSubmission': max(
-                [s.created_at for s in list(hackathons) + list(bmc_videos) + list(internships) + list(genai_projects)],
-                default=None
-            )
+            'status': 'completed' if cfc['approved'] > 0 else 'pending' if cfc['total'] > 0 else 'not-started',
+            'count': cfc['total'],
+            'lastSubmission': cfc['last_sub']
         }
         
         # IIPC stats
-        iipc_posts = LinkedInPostVerification.objects.filter(user=student)
+        iipc = iipc_map.get(student_id, {'total': 0, 'verified': 0, 'pending': 0, 'last_sub': None})
         iipc_stats = {
-            'status': 'completed' if iipc_posts.filter(status='verified').exists()
-                     else 'pending' if iipc_posts.filter(status='pending').exists()
-                     else 'not-started',
-            'count': iipc_posts.count(),
-            'lastSubmission': iipc_posts.order_by('-created_at').first().created_at if iipc_posts.exists() else None
+            'status': 'completed' if iipc['verified'] > 0 else 'pending' if iipc['pending'] > 0 else 'not-started',
+            'count': iipc['total'],
+            'lastSubmission': iipc['last_sub']
         }
         
         # SCD stats
-        try:
-            leetcode_profile = LeetCodeProfile.objects.get(user=student)
+        leetcode = leetcode_map.get(student_id)
+        if leetcode:
             scd_stats = {
-                'status': 'completed' if leetcode_profile.monthly_problems_count >= 10 else 'pending',
-                'count': leetcode_profile.total_solved,
-                'lastSubmission': leetcode_profile.last_synced
+                'status': 'completed' if leetcode['monthly_problems_count'] >= 10 else 'pending',
+                'count': leetcode['total_solved'],
+                'lastSubmission': leetcode['last_synced']
             }
-        except LeetCodeProfile.DoesNotExist:
-            scd_stats = {
-                'status': 'not-started',
-                'count': 0,
-                'lastSubmission': None
-            }
+        else:
+            scd_stats = {'status': 'not-started', 'count': 0, 'lastSubmission': None}
         
-        # SRI stats (placeholder - not implemented yet)
-        sri_stats = {
-            'status': 'not-started',
-            'count': 0,
-            'lastSubmission': None
-        }
+        # SRI stats (placeholder)
+        sri_stats = {'status': 'not-started', 'count': 0, 'lastSubmission': None}
         
         students_data.append({
-            'id': student.id,
+            'id': student_id,
             'name': student.get_full_name() or student.username,
             'email': student.email,
             'username': student.username,
-            'rollNo': f'STU{student.id:03d}',  # Generate roll number from ID
+            'rollNo': f'STU{student_id:03d}',
             'submissions': {
                 'clt': clt_stats,
                 'sri': sri_stats,
