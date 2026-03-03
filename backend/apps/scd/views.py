@@ -137,7 +137,7 @@ class LeetCodeProfileViewSet(viewsets.ModelViewSet):
                     # Check if notification already exists for this month
                     current_month = datetime.now().strftime('%Y-%m')
                     existing_notif = Notification.objects.filter(
-                        user=request.user.profile.assigned_mentor,
+                        recipient=request.user.profile.assigned_mentor,
                         message__contains=f"monthly target ({current_month})",
                         created_at__month=datetime.now().month,
                         created_at__year=datetime.now().year
@@ -147,7 +147,7 @@ class LeetCodeProfileViewSet(viewsets.ModelViewSet):
                         problems_count = calendar_data['monthly_problems'] if calendar_data else 0
                         student_name = request.user.get_full_name() or request.user.username
                         Notification.objects.create(
-                            user=request.user.profile.assigned_mentor,
+                            recipient=request.user.profile.assigned_mentor,
                             message=f"{student_name} has only solved {problems_count}/10 problems this month on LeetCode (monthly target ({current_month}))",
                             notification_type='warning'
                         )
